@@ -1,0 +1,151 @@
+[
+    {
+        "operation": "remove",
+        "spec": {
+            "took": "",
+            "timed_out": "",
+            "_shards": "",
+            "hits": {
+                "total": "",
+                "max_score": ""
+            }
+        },
+        "_comment": "start by stripping out the standard search result wrapper code"
+    },
+    {
+        "operation": "cardinality",
+        "spec": {
+            "hits": {
+                "hits": "ONE"
+            }
+        },
+        "_comment": "select the first hit (there should only be one anyway)"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "hits": {
+                "hits": {
+                    "_source": "source",
+                    "*": "&"
+                }
+            }
+        },
+        "_comment": "flatten the structure (don't really need to change _source to source)"
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "source": {
+                "data_cleaning_query": "",
+                "access": "",
+                "handling": "",
+                "plinth": ""
+            }
+        },
+        "_comment": "remove unwanted keys"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "@context": "https://linked.art/ns/v1/linked-art.json",
+            "prefix": "https://data.ng.ac.uk/package/",
+            "object_prefix": "https://data.ng.ac.uk/object/",
+            "type": "Set",
+			"name_type": "Name",
+			"referred_to_type": "LinguisticObject",
+            "referred_to_classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300435416",
+                    "type": "Type",
+                    "_label": "Description",
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300418049",
+                            "type": "Type",
+                            "_label": "Brief Text"
+                        }
+                    ]
+                }
+            ]
+        },
+        "_comment": "add default values. Prefixes are there primarily as 'constants', to prepend to URLs"
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "source": {
+                "\\@admin": {
+                    "base_uri": "=concat(@(3,prefix),@(1,uid))"
+                },
+                "object": {
+                    "*": {
+                        "\\@admin": {
+                            "object_id": "=concat(@(5,object_prefix),@(1,uuid))"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "*context": "&",
+            "source": {
+                "\\@admin": {
+                    "base_uri": "id"
+                },
+                "\\@datatype": {
+                    "actual": "type"
+                },
+				"name":  {
+					"@(2,name_type)": "identified_by[0].type",
+					"value": "identified_by[0].content"
+				},
+	            "description": {
+                    "value": "referred_to_by[0].content",
+					"@(2,referred_to_type)": "referred_to_by[0].type",
+					"@(2,referred_to_classified_as)": "referred_to_by[0].classified_as"
+    	        },
+                "summary": {
+                    "title": "_label"
+                },
+                "role": {
+                    "*": {
+                        "value": "carried_out[1]._label"
+                    }
+                },
+                "object": {
+                    "*": {
+                        "\\@admin": {
+                            "object_id": "member.[&2].id"
+                        },
+                        "summary": {
+                            "title": "member.[&2].identified_by[0].content",
+							"@(4,name_type)": "member.[&2].identified_by[0].type"
+                        }
+                    }
+                },
+                "*": "&"
+            },
+            "*": "&"
+        }
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "_index": "",
+            "_type": "",
+            "_id": "",
+            "_score": "",
+            "_ignored": "",
+			"name_type": "",
+            "identifier": "",
+            "object_prefix": "",
+            "prefix": "",
+			"referred_to_classified_as": "",
+			"referred_to_type": ""
+        }
+    }
+]

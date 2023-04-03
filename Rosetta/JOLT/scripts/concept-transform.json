@@ -1,0 +1,216 @@
+[
+    {
+        "operation": "remove",
+        "spec": {
+            "took": "",
+            "timed_out": "",
+            "_shards": "",
+            "hits": {
+                "total": "",
+                "max_score": ""
+            }
+        },
+        "_comment": "start by stripping out the standard search result wrapper code"
+    },
+    {
+        "operation": "cardinality",
+        "spec": {
+            "hits": {
+                "hits": "ONE"
+            }
+        },
+        "_comment": "select the first hit (there should only be one anyway)"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "hits": {
+                "hits": {
+                    "_source": "source",
+                    "*": "&"
+                }
+            }
+        },
+        "_comment": "flatten the structure (don't really need to change _source to source)"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "source": {
+                "\\@hierarchy": "source.hierarchy",
+                "*": "source.&"
+            }
+        },
+        "_comment": "this is required because the cardinality operation can't cope with keys beginning with '@' - with or without \\ escaping"
+    },
+    {
+        "operation": "cardinality",
+        "spec": {
+            "source": {
+                "hierarchies": "ONE",
+                "hierarchy": "ONE",
+                "identifier": "ONE",
+                "description": "ONE",
+                "coordinates": "ONE",
+                "term": "ONE"
+            }
+        },
+        "_comment": "these keys are expressed as arrays. Setting them to cardinality ONE returns the first member of the array as a simple object"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "type": "http://www.w3.org/2004/02/skos/core#Concept",
+            "prefix": "https://data.ng.ac.uk/"
+        },
+        "_comment": "add default values. Prefix is there primarily as a 'constant', to prepend to URLs - see next three operations"
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "source": {
+                "\\@admin": {
+                    "base_uri": "=concat(@(3,prefix),@(1,uid))"
+                }
+            }
+        }
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "source": {
+                "parent": {
+                    "*": {
+                        "\\@admin": {
+                            "uri": "=concat(@(5,prefix),@(1,uuid))"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "source": {
+                "hierarchy": {
+                    "*": {
+                        "\\@admin": {
+                            "uuid": "=concat(@(5,prefix),@(1,uuid))"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "source": {
+                "\\@admin": {
+                    "base_uri": "&"
+                },
+                "*": "&1.&"
+            },
+            "*": "&"
+        }
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "_index": "",
+            "_type": "",
+            "_score": "",
+            "_ignored": "",
+            "source": {
+                "@admin": "",
+                "@hierarch": "",
+                "hierarchy": "",
+                "hierarchies": "",
+                "identifier": "",
+                "name": "",
+                "term": "",
+                "thesaurus": "",
+                "@datatype": ""
+            }
+        },
+        "_comment": "remove objects we don't need from the top-level object and from within source"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "base_uri": "uri",
+            "type": "type[0]",
+            "source": {
+                "summary": {
+                    "title": "prefLabel.en"
+                },
+                "description": {
+                    "value": "definition.en[0]"
+                },
+                "note": {
+                    "*": {
+                        "scope_note": "scopeNote.en[0]",
+                        "history_note": "historyNote.en[0]"
+                    }
+                },
+                "parent": {
+                    "*": {
+                        "\\@admin": {
+                            "uri": "broader[&2].uri"
+                        },
+                        "summary": {
+                            "title": "broader[&2].prefLabel.en"
+                        }
+                    }
+                },
+                "coordinates": {
+                    "latitude": {
+                        "value": "location.&2.lat"
+                    },
+                    "longitude": {
+                        "value": "location.&2.long"
+                    }
+                },
+                "*": "&"
+            }
+        },
+        "_comment": "main shift operation: creates the output structure"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "location": {
+                "coordinates": {
+                    "lat": "location.coordinates[1]",
+                    "long": "location.coordinates[0]"
+                }
+            },
+            "*": "&"
+        },
+        "_comment": "reverse order of lat/long"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "loctype": "Point"
+        },
+        "_comment": "put in coordinates type (iff location is present ...)"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "location": {
+                "@(1,loctype)": "&1.type",
+                "*": "&1.&"
+            },
+            "*": "&"
+        }
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "loctype": ""
+        }
+    }
+]
