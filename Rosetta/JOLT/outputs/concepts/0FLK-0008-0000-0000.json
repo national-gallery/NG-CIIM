@@ -1,0 +1,22 @@
+{
+  "uri" : "https://data.ng.ac.uk/0FLK-0008-0000-0000",
+  "type" : [ "http://www.w3.org/2004/02/skos/core#Concept" ],
+  "definition" : {
+    "en" : [ "In oil paint the pigment is mixed with the medium of oil. It was used in Northern Europe in the 13th and 14th centuries for panel painting as well as wall painting and its properties were further exploited by Van Eyck and Campin whose innovations were subsequently introduced to Italy in the early 15th century. \r\n\r\nOils of different kinds can be used: linseed, walnut and poppy. Oil paint dries slowly and is a more flexible medium than egg tempera. It allowed a wide range of optical effects and a broader and more detailed application of paint, and so extended the range of new expressive possibilities for artists." ]
+  },
+  "scopeNote" : {
+    "en" : [ "Used for drying oil used as a medium." ]
+  },
+  "historyNote" : {
+    "en" : [ "Term generated within the Gallery and mapped to AAT." ]
+  },
+  "broader" : [ {
+    "uri" : "https://data.ng.ac.uk/58fe4fe3-3cec-3b09-ae4c-432dfa7b67f0",
+    "prefLabel" : {
+      "en" : "media"
+    }
+  } ],
+  "prefLabel" : {
+    "en" : "oil"
+  }
+}

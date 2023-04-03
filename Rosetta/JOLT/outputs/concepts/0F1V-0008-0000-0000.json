@@ -1,0 +1,21 @@
+{
+  "uri" : "https://data.ng.ac.uk/0F1V-0008-0000-0000",
+  "type" : [ "http://www.w3.org/2004/02/skos/core#Concept" ],
+  "definition" : {
+    "en" : [ "In paintings, a binder (or medium) is the material that holds the coloured pigments together to form paint. In paintings at the National Gallery, this is often a drying oil, but may also be egg yolk or animal glue. " ]
+  },
+  "broader" : [ {
+    "uri" : "https://data.ng.ac.uk/b671ce40-958d-3783-a729-f7f369b822ca",
+    "prefLabel" : {
+      "en" : "materials"
+    }
+  }, {
+    "uri" : "https://data.ng.ac.uk/58b3edef-229a-31de-bc88-9df08126b226",
+    "prefLabel" : {
+      "en" : "layers of a painting"
+    }
+  } ],
+  "prefLabel" : {
+    "en" : "media"
+  }
+}

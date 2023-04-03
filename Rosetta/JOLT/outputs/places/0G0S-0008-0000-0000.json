@@ -1,0 +1,49 @@
+{
+  "uri" : "https://data.ng.ac.uk/0G0S-0008-0000-0000",
+  "type" : [ "http://www.w3.org/2004/02/skos/core#Concept" ],
+  "location" : {
+    "type" : "Point",
+    "coordinates" : [ 11.6167, 44.8333 ]
+  },
+  "ancestors" : [ {
+    "uri" : "https://data.ng.ac.uk/bbec33f0-ba79-3f12-a130-75e83d68c16f",
+    "prefLabel" : {
+      "en" : "Emilia"
+    }
+  }, {
+    "uri" : "https://data.ng.ac.uk/45295d29-2ffb-3877-bcb4-f8a1c2256d88",
+    "prefLabel" : {
+      "en" : "Italy"
+    }
+  }, {
+    "uri" : "https://data.ng.ac.uk/f8c4f126-0b5e-309b-b1d1-49572ce30e25",
+    "prefLabel" : {
+      "en" : "Europe"
+    }
+  }, {
+    "uri" : "https://data.ng.ac.uk/fa03f915-016c-3c8a-b55e-d03934f16408",
+    "prefLabel" : {
+      "en" : "Places"
+    }
+  } ],
+  "scopeNote" : {
+    "en" : [ "A scope note for Ferrara." ]
+  },
+  "historyNote" : {
+    "en" : [ "A history note for Ferrara." ]
+  },
+  "broader" : [ {
+    "uri" : "https://data.ng.ac.uk/45295d29-2ffb-3877-bcb4-f8a1c2256d88",
+    "prefLabel" : {
+      "en" : "Italy"
+    }
+  }, {
+    "uri" : "https://data.ng.ac.uk/bbec33f0-ba79-3f12-a130-75e83d68c16f",
+    "prefLabel" : {
+      "en" : "Emilia"
+    }
+  } ],
+  "prefLabel" : {
+    "en" : "Ferrara"
+  }
+}

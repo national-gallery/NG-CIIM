@@ -1,0 +1,64 @@
+{
+  "id" : "https://data.ng.ac.uk/0TDP-0001-0000-0000",
+  "born" : {
+    "timespan" : {
+      "begin_of_the_begin" : "1585-01-01",
+      "end_of_the_end" : "1585-12-31"
+    }
+  },
+  "type" : "Individual",
+  "carried_out" : [ {
+    "timespan" : {
+      "begin_of_the_begin" : "1585",
+      "end_of_the_end" : "1642"
+    },
+    "note" : "1585 - 1642"
+  }, {
+    "_label" : [ "owner", "glossary", "history" ]
+  } ],
+  "died" : {
+    "timespan" : {
+      "begin_of_the_begin" : "1642-01-01",
+      "end_of_the_end" : "1642-12-31"
+    }
+  },
+  "referred_to_by" : [ {
+    "content" : "Armand-Jean du Plessis, Duc de Richelieu (1585 - 1642), was made a cardinal in 1622. He became chief minister to King Louis XIII of France and as such enjoyed considerable success implementing reforms in France, particularly in terms of the administrative structure of the government. He also secured the country's position abroad by ensuring that the German states were not united under Habsburg control, and by successfully prosecuting French interests during the Thirty Years War.Philippe de Champaigne and studio: 'Triple Portrait of Cardinal de Richelieu' Richelieu was an important patron of the arts. Portraits of him by Philippe de Champaigne are in the Collection, the 'Triple Portrait of Cardinal de Richelieu' was intended as a study for a bust by a Roman sculptor. The Collection also includes a statue of Fame by Bernardo Strozzi, which may have graced the entrance to his chateau, and Poussin's 'TheTriumph of Pan', which he commissioned."
+  } ],
+  "identified_by" : [ {
+    "part" : [ {
+      "type" : "Name",
+      "classified_as" : [ {
+        "id" : "http://vocab.getty.edu/aat/300404651",
+        "_label" : "Given Name",
+        "type" : "Type"
+      } ],
+      "content" : "Armand-Jean"
+    }, {
+      "type" : "Name",
+      "classified_as" : [ {
+        "_label" : "Middle Name",
+        "id" : "http://vocab.getty.edu/aat/300404654",
+        "type" : "Type"
+      } ],
+      "content" : "de"
+    }, {
+      "type" : "Name",
+      "classified_as" : [ {
+        "type" : "Type",
+        "id" : "http://vocab.getty.edu/aat/300404652",
+        "_label" : "Family Name"
+      } ],
+      "content" : "Plessis"
+    } ],
+    "type" : "Name",
+    "classified_as" : [ {
+      "_label" : "Primary Name",
+      "id" : "http://vocab.getty.edu/aat/300404670",
+      "type" : "Type"
+    } ],
+    "content" : "Cardinal Armand-Jean de Plessis, Duc de Richelieu"
+  } ],
+  "_label" : "Cardinal Armand-Jean de Plessis, Duc de Richelieu",
+  "@context" : "https://linked.art/ns/v1/linked-art.json"
+}

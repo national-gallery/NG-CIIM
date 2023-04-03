@@ -1,0 +1,38 @@
+{
+  "id" : "https://data.ng.ac.uk/0P6V-0001-0000-0000",
+  "address" : {
+    "city" : "London",
+    "country" : "UK"
+  },
+  "type" : "Organisation",
+  "identified_by" : [ {
+    "type" : "Name",
+    "classified_as" : [ {
+      "_label" : "Primary Name",
+      "id" : "http://vocab.getty.edu/aat/300404670",
+      "type" : "Type"
+    } ],
+    "content" : "John Mitchell Fine Paintings"
+  } ],
+  "_label" : "John Mitchell Fine Paintings",
+  "web" : {
+    "url" : [ {
+      "type" : "website",
+      "value" : "http://www.johnmitchell.net",
+      "website" : "http://www.johnmitchell.net"
+    } ]
+  },
+  "@context" : "https://linked.art/ns/v1/linked-art.json",
+  "born" : {
+    "timespan" : {
+      "begin_of_the_begin" : "-01-01",
+      "end_of_the_end" : "-12-31"
+    }
+  },
+  "died" : {
+    "timespan" : {
+      "begin_of_the_begin" : "-01-01",
+      "end_of_the_end" : "-12-31"
+    }
+  }
+}
