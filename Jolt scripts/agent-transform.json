@@ -1,0 +1,348 @@
+[
+    {
+        "operation": "remove",
+        "spec": {
+            "took": "",
+            "timed_out": "",
+            "_shards": "",
+            "hits": {
+                "total": "",
+                "max_score": ""
+            }
+        },
+        "_comment": "start by stripping out the standard search result wrapper code"
+    },
+    {
+        "operation": "cardinality",
+        "spec": {
+            "hits": {
+                "hits": "ONE"
+            }
+        },
+        "_comment": "select the first hit (there should only be one anyway)"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "hits": {
+                "hits": {
+                    "_source": "source",
+                    "*": "&"
+                }
+            }
+        },
+        "_comment": "flatten the structure (don't really need to change _source to source)"
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "source": {
+                "note": "",
+                "access": ""
+            }
+        },
+        "_comment": "remove unwanted keys"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "@context": "https://linked.art/ns/v1/linked-art.json",
+            "prefix": "https://data.ng.ac.uk/"
+        },
+        "_comment": "add default values. Prefix is there primarily as a 'constant', to prepend to URLs"
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "source": {
+                "\\@admin": {
+                    "base_uri": "=concat(@(3,prefix),@(1,uid))"
+                }
+            }
+        },
+        "_comment": "create an identity from the _id key"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "name_type": "Name",
+            "identifier_type": "Identifier",
+            "person_type": "Person",
+            "group_type": "Group",
+            "linguistic_object_type": "LinguisticObject",
+            "digital_object_type": "DigitalObject",
+            "biography_type": "LinguisticObject",
+			"html_format": "text/html",
+            "biography_classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300435422",
+                    "type": "Type",
+                    "_label": "Biography Statement",
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300418049",
+                            "type": "Type",
+                            "_label": "Brief Text"
+                        }
+                    ]
+                }
+            ],
+            "primary_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404670",
+                "type": "Type",
+                "_label": "Primary Name"
+            },
+            "non_preferred_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300264273",
+                "type": "Type",
+                "_label": "Non-preferred Name"
+            },
+            "title_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404661",
+                "type": "Type",
+                "_label": "Title"
+            },
+            "last_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404652",
+                "type": "Type",
+                "_label": "Family Name"
+            },
+            "first_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404651",
+                "type": "Type",
+                "_label": "Given Name"
+            },
+            "middle_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404654",
+                "type": "Type",
+                "_label": "Middle Name"
+            },
+            "suffix_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404661",
+                "type": "Type",
+                "_label": "Suffix"
+            },
+            "institution_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300445020",
+                "type": "Type",
+                "_label": "Institution"
+            },
+            "city_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300008389",
+                "type": "Type",
+                "_label": "City"
+            },
+            "country_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300387506",
+                "type": "Type",
+                "_label": "Country"
+            },
+            "web_site_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300265431",
+                "type": "Type",
+                "_label": "Web Site"
+            }
+        },
+        "_comment": "names: declare default structures for merging into name components"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "*context": "&",
+            "source": {
+                "\\@admin": {
+                    "base_uri": "id"
+                },
+                "summary": {
+                    "title": "_label"
+                },
+                "birth": {
+                    "date": {
+                        "from": "born.timespan.begin_of_the_begin",
+                        "to": "born.timespan.end_of_the_end"
+                    }
+                },
+                "death": {
+                    "date": {
+                        "from": "died.timespan.begin_of_the_begin",
+                        "to": "died.timespan.end_of_the_end"
+                    }
+                },
+                "date": {
+                    "from": "carried_out[0].timespan.begin_of_the_begin",
+                    "to": "carried_out[0].timespan.end_of_the_end",
+                    "value": "carried_out[0].note"
+                },
+                "description": {
+                    "*": {
+                        "@(3,biography_type)": "referred_to_by[&1].type",
+                        "@(3,biography_classified_as)": "referred_to_by[&1].classified_as",
+                        "value": "referred_to_by[&1].content"
+                    }
+                },
+                "role": {
+                    "*": {
+                        "value": "carried_out[1]._label"
+                    }
+                },
+                "identifier": {
+                    "*": {
+                        "pid_external": "equivalent.[&1].id",
+                        "note": {
+                            "value": "equivalent.[&2]._label"
+                        }
+                    }
+                },
+                "name": {
+                    "*": {
+                        "primary_name": {
+                            "@(4,name_type)": "name[&2].type",
+                            "@(4,primary_name_classified_as)": "name[&2].classified_as[]",
+                            "@": "name[&2].content"
+                        },
+                        "non_preferred_name": {
+                            "@(4,name_type)": "name[&2].type",
+                            "@(4,non_preferred_name_classified_as)": "name[&2].classified_as[]",
+                            "@": "name[&2].content"
+                        },
+                        "title|first_name|middle_name|last_name|suffix|institution": {
+                            "@": "name[&2].part[].&"
+                        }
+                    }
+                },
+                "address": {
+                    "city": {
+                        "@": "contact_point[0].content",
+                        "@(3,identifier_type)": "contact_point[0].type",
+                        "@(3,city_classified_as)": "contact_point[0].classified_as"
+                    },
+                    "country": {
+                        "@": "contact_point[1].content",
+                        "@(3,identifier_type)": "contact_point[1].type",
+                        "@(3,country_classified_as)": "contact_point[1].classified_as"
+                    }
+                },
+                "web": {
+					"@(3,digital_object_type)": "subject_of[0].type",
+					"@(3,web_site_classified_as)": "subject_of[0].classified_as[]",
+					"@(3,html_format)": "subject_of[0].format",
+                    "url": {
+                        "*": {
+                            "value": "subject_of[0].access_point[&1].id",
+							"@(4,digital_object_type)": "subject_of[0].access_point[&1].type"
+                        }
+                    }
+                },
+                "*": "&"
+            },
+            "*": "&"
+        },
+        "_comment": "add transforms for other concepts here, i.e. before @datatype"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "name": {
+                "*": {
+                    "part": {
+                        "*": {
+                            "title": {
+                                "@(6,name_type)": "name[&4].part[0].type",
+                                "@(6,title_classified_as)": "name[&4].part[0].classified_as[]",
+                                "@": "name[&4].part[0].content"
+                            },
+                            "first_name": {
+                                "@(6,name_type)": "name[&4].part[1].type",
+                                "@(6,first_name_classified_as)": "name[&4].part[1].classified_as[]",
+                                "@": "name[&4].part[1].content"
+                            },
+                            "middle_name": {
+                                "@(6,name_type)": "name[&4].part[2].type",
+                                "@(6,middle_name_classified_as)": "name[&4].part[2].classified_as[]",
+                                "@": "name[&4].part[2].content"
+                            },
+                            "last_name": {
+                                "@(6,name_type)": "name[&4].part[3].type",
+                                "@(6,last_name_classified_as)": "name[&4].part[3].classified_as[]",
+                                "@": "name[&4].part[3].content",
+                                "@(6,person_type)": "type"
+                            },
+                            "suffix": {
+                                "@(6,name_type)": "name[&4].part[4].type",
+                                "@(6,suffix_classified_as)": "name[&4].part[4].classified_as[]",
+                                "@": "name[&4].part[4].content"
+                            },
+                            "institution": {
+                                "@(6,name_type)": "name[&4].part[5].type",
+                                "@(6,institution_classified_as)": "name[&4].part[5].classified_as[]",
+                                "@": "name[&4].part[5].content",
+                                "@(6,group_type)": "type"
+                            }
+                        }
+                    },
+                    "*": "name[&1].&"
+                }
+            },
+            "*": "&"
+        }
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "_index": "",
+            "_type": "",
+            "_id": "",
+            "_score": "",
+            "_ignored": "",
+            "@datatype": "",
+            "prefix": "",
+            "name_type": "",
+            "identifier_type": "",
+            "person_type": "",
+            "group_type": "",
+            "linguistic_object_type": "",
+            "digital_object_type": "",
+            "biography_type": "",
+			"html_format": "",
+            "biography_classified_as": "",
+            "title_classified_as": "",
+            "primary_name_classified_as": "",
+            "non_preferred_name_classified_as": "",
+            "first_name_classified_as": "",
+            "middle_name_classified_as": "",
+            "last_name_classified_as": "",
+            "suffix_classified_as": "",
+            "institution_classified_as": "",
+            "city_classified_as": "",
+            "country_classified_as": "",
+            "web_site_classified_as": ""
+        },
+        "_comment": {
+            "removed from following operation since it creates this structure when not present": {
+                "born|died": {
+                    "timespan": {
+                        "begin_of_the_begin": "=concat(@0, '-01-01')",
+                        "end_of_the_end": "=concat(@0, '-12-31')"
+                    }
+                }
+            },
+            "_comment": "firstElement below removes duplicate inferred type (Person or Group) where there is more than one name:"
+        }
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "type": "=firstElement(@(1,type))",
+            "name": "=recursivelySquashNulls",
+            "equivalent": "=recursivelySquashNulls",
+            "carried_out": "=recursivelySquashNulls"
+        }
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "name": "identified_by",
+            "*": "&"
+        }
+    }
+]

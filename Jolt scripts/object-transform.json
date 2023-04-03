@@ -1,0 +1,293 @@
+[
+    {
+        "operation": "remove",
+        "spec": {
+            "took": "",
+            "timed_out": "",
+            "_shards": "",
+            "hits": {
+                "total": "",
+                "max_score": ""
+            }
+        },
+        "_comment": "start by stripping out the standard search result wrapper code"
+    },
+    {
+        "operation": "cardinality",
+        "spec": {
+            "hits": {
+                "hits": "ONE"
+            }
+        },
+        "_comment": "select the first hit (there should only be one anyway)"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "hits": {
+                "hits": {
+                    "_source": "source",
+                    "*": "&"
+                }
+            }
+        },
+        "_comment": "flatten the structure (don't really need to change _source to source)"
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "source": {
+                "note": "",
+                "access": ""
+            }
+        },
+        "_comment": "remove unwanted keys"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "@context": "https://linked.art/ns/v1/linked-art.json",
+            "prefix": "https://data.ng.ac.uk/"
+        },
+        "_comment": "add default values. Prefix is there primarily as a 'constant', to prepend to URLs"
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "source": {
+                "\\@admin": {
+                    "base_uri": "=concat(@(3,prefix),@(1,uid))"
+                }
+            }
+        },
+        "_comment": "create an identity from the _id key"
+    },
+    {
+        "operation": "default",
+        "spec": {
+            "name_type": "Name",
+            "type_type": "Type",
+            "identifier_type": "Identifier",
+            "person_type": "Person",
+            "group_type": "Group",
+            "linguistic_object_type": "LinguisticObject",
+            "digital_object_type": "DigitalObject",
+            "document_type": "Document",
+            "biography_type": "LinguisticObject",
+            "visual_item_type": "VisualItem",
+            "html_format": "text/html",
+            "biography_classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300435422",
+                    "type": "Type",
+                    "_label": "Biography Statement",
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300418049",
+                            "type": "Type",
+                            "_label": "Brief Text"
+                        }
+                    ]
+                }
+            ],
+            "primary_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404670",
+                "type": "Type",
+                "_label": "Primary Name"
+            },
+            "non_preferred_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300264273",
+                "type": "Type",
+                "_label": "Non-preferred Name"
+            },
+            "title_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404661",
+                "type": "Type",
+                "_label": "Title"
+            },
+            "name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404670",
+                "type": "Type",
+                "_label": "Primary Name"
+            },
+            "last_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404652",
+                "type": "Type",
+                "_label": "Family Name"
+            },
+            "first_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404651",
+                "type": "Type",
+                "_label": "Given Name"
+            },
+            "middle_name_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404654",
+                "type": "Type",
+                "_label": "Middle Name"
+            },
+            "suffix_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300404661",
+                "type": "Type",
+                "_label": "Suffix"
+            },
+            "institution_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300445020",
+                "type": "Type",
+                "_label": "Institution"
+            },
+            "city_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300008389",
+                "type": "Type",
+                "_label": "City"
+            },
+            "country_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300387506",
+                "type": "Type",
+                "_label": "Country"
+            },
+            "web_site_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300265431",
+                "type": "Type",
+                "_label": "Web Site"
+            },
+            "style_classified_as": {
+                "id": "http://vocab.getty.edu/aat/300015646",
+                "type": "Type",
+                "_label": "Style"
+            }
+        },
+        "_comment": "names: declare default structures for merging into name components"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "*context": "&",
+            "source": {
+                "\\@admin": {
+                    "base_uri": "id"
+                },
+                "summary": {
+                    "title": "_label"
+                },
+                "*": "&"
+            },
+            "*": "&"
+        },
+        "_comment": "add transforms for other concepts here, i.e. before @datatype"
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "_index": "",
+            "_type": "",
+            "_id": "",
+            "_score": "",
+            "_ignored": "",
+            "data_cleaning_query": "",
+            "handling": "",
+            "access": "",
+            "handling": "",
+            "plinth": ""
+        }
+    },
+    {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "style|subject|bibliography|bibliogrpahy": {
+                "*": {
+                    "\\@admin": {
+                        "uid": "=concat(@(4,prefix),@(1,uuid))"
+                    }
+                }
+            }
+        },
+        "_comment": "add URL prefix to all uuid keys"
+    },
+    {
+        "operation": "shift",
+        "spec": {
+            "title": {
+                "*": {
+                    "@(2,name_type)": "identified_by[&1].type",
+                    "@(2,name_classified_as)": "identified_by[&1].classified_as[]",
+                    "value": "identified_by[&1].content"
+                }
+            },
+            "classification": {
+                "*": {
+                    "type": "classified_as[&1].type",
+                    "value": "classified_as[&1]._label"
+                }
+            },
+            "style": {
+                "@(1,visual_item_type)": "shows[0].type",
+                "*": {
+                    "\\@admin": {
+                        "uid": "shows[0].classified_as[&2].id"
+                    },
+                    "@(2,type_type)": "shows[0].classified_as[&1].type",
+                    "summary": {
+                        "title": "shows[0].classified_as[&2]._label"
+                    },
+                    "@(2,style_classified_as)": "shows[0].classified_as[&1].classified_as[]"
+                }
+            },
+            "subject": {
+                "@(1,visual_item_type)": "shows[0].type",
+                "*": {
+                    "\\@admin": {
+                        "uid": "shows[0].about[&2].id"
+                    },
+                    "@(2,type_type)": "shows[0].about[&1].type",
+                    "summary": {
+                        "title": "shows[0].about[&2]._label"
+                    }
+                }
+            },
+            "bibliography|bibliogrpahy": {
+                "@(1,linguistic_object_type)": "referred_to_by[0].type",
+                "*": {
+                    "\\@admin": {
+                        "uid": "referred_to_by[0].citation[&2].id"
+                    },
+                    "@(2,document_type)": "referred_to_by[0].citation[&1].type",
+                    "summary": {
+                        "title": "referred_to_by[0].citation[&2]._label"
+                    }
+                }
+            },
+            "*": "&"
+        }
+    },
+    {
+        "operation": "remove",
+        "spec": {
+            "prefix": "",
+            "name_type": "",
+            "type_type": "",
+            "identifier_type": "",
+            "person_type": "",
+            "group_type": "",
+            "linguistic_object_type": "",
+            "digital_object_type": "",
+            "document_type": "",
+            "biography_type": "",
+            "visual_item_type": "",
+            "html_format": "",
+            "biography_classified_as": "",
+            "title_classified_as": "",
+            "name_classified_as": "",
+            "primary_name_classified_as": "",
+            "non_preferred_name_classified_as": "",
+            "first_name_classified_as": "",
+            "middle_name_classified_as": "",
+            "last_name_classified_as": "",
+            "suffix_classified_as": "",
+            "institution_classified_as": "",
+            "city_classified_as": "",
+            "country_classified_as": "",
+            "web_site_classified_as": "",
+            "style_classified_as": ""
+        }
+    }
+]
