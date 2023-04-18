@@ -43,6 +43,11 @@
                           of the object and MUST follow the requirements for Type -->
                 <array key="classified_as">
                   <xsl:apply-templates select="map:array[@key='classification']/map:map" mode="classification"/>
+                  <xsl:apply-templates select="map:array[@key='category']/map:map" mode="classification"/>
+                  <xsl:apply-templates select="map:array[@key='function']/map:map" mode="url-classification"/>
+                  <xsl:apply-templates select="map:array[@key='genre']/map:map" mode="url-classification"/>
+                  <xsl:apply-templates select="map:array[@key='physical']/map:map" mode="url-classification"/>
+                  <xsl:apply-templates select="map:map[@key='legal']/map:string[@key='status']" mode="status-classification"/>
                 </array>
                 
                 <!-- identified_by: [array Recommended] An array of json objects, each of which is a name/title 
@@ -57,6 +62,10 @@
                         statement about the object and MUST follow the requirements for Statement -->
                 <array key="referred_to_by">
                   <xsl:apply-templates select="map:array[@key='description']/map:map" mode="description"/>
+                  <xsl:apply-templates select="map:map[@key='provenance']/map:map[@key='text']" mode="provenance"/>
+                  <xsl:apply-templates select="map:map[@key='legal']/map:string[@key[starts-with(., 'credit')]]" mode="credit-line"/>
+                  <xsl:apply-templates select="map:map[@key='legal']/map:map[@key='image']/map:map[@key='rights']/map:string[@key='details']" mode="image-rights"/>
+                  <xsl:apply-templates select="map:map[@key='access']/map:map[@key='item']/map:map[@key='lending']/map:string[@key='restrictions']" mode="access-lending"/>                  
                 </array>
                 
                 <!-- equivalent: [array Optional] An array of json objects, each of which is an reference to an 
@@ -91,8 +100,9 @@
                 
                 <!--part_of: [array Optional] An array of json objects, each of which is a reference to another 
                         Physical Object that the current object is a part of -->
-                <!--array key="part_of">
-                </array-->
+                <array key="part_of">
+                  <xsl:apply-templates select="map:array[@key='parent']/map:map" mode="part-of"/>
+                </array>
                 
                 <!-- dimension: [array Optional] An array of json objects, each of which is a Dimension, such as 
                         height or width, of the current object -->
@@ -107,9 +117,10 @@
                 </array>
                 
                 <!-- part: an array created to hold [the materials of] medium and support, but potentially 
-                        may also need to hold any other 'parts' that are identified: -->
+                        may also need to hold any other 'parts' that are identified. The first of these is dimensions: -->
                 <array key="part">
                   <xsl:apply-templates select="map:array[@key='material']/map:map" mode="part-made-of"/>
+                  <xsl:apply-templates select="map:array[@key='measurements']/map:map" mode="part-dimensions"/>
                 </array>
                 
                 <!-- current_owner: [array Optional] An array of json, objects each of which is a reference to a
@@ -142,14 +153,15 @@
                 
                 <!-- carries: [array Optional] An array of json objects, each of which is a reference to a Textual 
                         Work that this object carries the text of-->
-                <!--array key="carries">
-                </array-->
+                <array key="carries">
+                  <xsl:apply-templates select="map:array[@key='inscription']/map:map" mode="carries"/>
+                </array>
                 
                 <!-- shows: [array Optional] An array of json objects, each of which is a reference to a Visual Work 
                         that this object shows a rendition of -->
                 <array key="shows">
                   <xsl:apply-templates select="map:array[@key='style']/map:map" mode="style-classification"/>
-                  <xsl:apply-templates select="map:array[@key='subject']/map:map" mode="subject-keywords"/>
+                  <xsl:apply-templates select="map:array[@key='subject']/map:map" mode="subject"/>
                 </array>
                 
                 <!-- produced_by: [json object Optional] A json object representing the production of the object, 
@@ -177,6 +189,8 @@
       </array>
     </xsl:variable>
     <xsl:value-of select="xml-to-json($output)"/>
+    <!-- to debug JSON serialization errors, set output type to XML and use this command instead of the line above: -->
+    <!--xsl:copy-of select="$output"/-->
   </xsl:template>
   
   <xsl:variable name="quot">&quot;</xsl:variable>
@@ -189,7 +203,7 @@
     <xsl:call-template name="find-and-process">
       <xsl:with-param name="path" select="'_id'"/>
       <xsl:with-param name="key" select="'id'"/>
-      <xsl:with-param name="prefix" select="$ng-prefix"/>
+      <xsl:with-param name="prefix" select="concat($ng-prefix, 'object/')"/>
     </xsl:call-template>
   </xsl:template>
   
@@ -330,6 +344,16 @@
     <xsl:param name="suffix"/>
     <xsl:param name="transform"/>
     <xsl:param name="node"/>
+    <!--xsl:variable name="pre">
+      <xsl:if test="string($prefix)">
+        <xsl:value-of select="concat($prefix, ' ')"/>
+      </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="post">
+      <xsl:if test="string($suffix)">
+        <xsl:value-of select="concat(' ', $suffix)"/>
+      </xsl:if>
+    </xsl:variable-->
     <xsl:if test="$node">
       <string key="{$key}"><xsl:value-of select="concat($prefix, $node/text(), $suffix)"/></string>
     </xsl:if>
@@ -387,6 +411,37 @@
       </map>
     </array>
   </xsl:template>
+
+  <xsl:template name="dual-classified-as">
+    <xsl:param name="url1"/>
+    <xsl:param name="url2"/>
+    <xsl:param name="label1"/>
+    <xsl:param name="label2"/>
+    <array key="classified_as">
+      <xsl:if test="string($url1) or string($label1)">
+        <map>
+          <xsl:if test="string($url1)">
+            <string key="id"><xsl:value-of select="$url1"/></string>
+          </xsl:if>
+          <string key="type">Type</string>
+          <xsl:if test="string($label1)">
+            <string key="_label"><xsl:value-of select="$label1"/></string>
+          </xsl:if>
+        </map>
+      </xsl:if>
+      <xsl:if test="string($url2) or string($label2)">
+        <map>
+          <xsl:if test="string($url2)">
+            <string key="id"><xsl:value-of select="$url2"/></string>
+          </xsl:if>
+          <string key="type">Type</string>
+          <xsl:if test="string($label2)">
+            <string key="_label"><xsl:value-of select="$label2"/></string>
+          </xsl:if>
+        </map>
+      </xsl:if>
+    </array>
+  </xsl:template>
   
   <xsl:template name="referred-to-by">
     <xsl:param name="label"/>
@@ -423,13 +478,84 @@
     </xsl:call-template>
   </xsl:template>
   
+  <!-- Process-map: creates a content string using summary.title, with prefix and suffix added if present: -->
+  <xsl:template name="process-map">
+    <xsl:param name="string-key" select="'content'"/>
+    <xsl:variable name="content" select="map:map[@key='summary']/map:string[@key='title']"/>
+    <xsl:if test="string($content)">
+      <xsl:variable name="prefix" select="map:map[@key='@link']/map:string[@key='prefix']"/>
+      <xsl:variable name="suffix" select="map:map[@key='@link']/map:string[@key='suffix']"/>
+      <xsl:variable name="pre">
+        <xsl:if test="string($prefix)">
+          <xsl:value-of select="concat($prefix, ' ')"/>
+        </xsl:if>
+      </xsl:variable>
+      <xsl:variable name="post">
+        <xsl:if test="string($suffix)">
+          <xsl:value-of select="concat(' ', $suffix)"/>
+        </xsl:if>
+      </xsl:variable>
+      <string key="{$string-key}">
+        <xsl:value-of select="concat($pre, $content, $post)"/>
+      </string>
+    </xsl:if>
+  </xsl:template>
+  
   <!-- more general templates for common cases: -->
   
   <xsl:template match="map:string" mode="textual-object">
     <xsl:param name="node" select="."/>
+    <xsl:param name="class-url"/>
+    <xsl:param name="class-label"/>
     <xsl:if test="string($node)">
       <map>
         <string key="type">LinguisticObject</string>
+        <xsl:if test="string($class-url) or string($class-label)">
+          <array key="classified_as">
+            <map>
+              <xsl:if test="string($class-url)">
+                <string key="id"><xsl:value-of select="$class-url"/></string>
+              </xsl:if>
+              <string key="type">Type</string>
+              <xsl:if test="string($class-label)">
+                <string key="_label"><xsl:value-of select="$class-label"/></string>
+              </xsl:if>
+            </map>
+          </array>
+        </xsl:if>
+        <string key="content"><xsl:value-of select="$node"/></string>
+      </map>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="map:string" mode="citation">
+    <xsl:param name="node" select="."/>
+    <xsl:if test="string($node)">
+      <!--array key="referred_to_by"-->
+      <map>
+        <string key="type">LinguisticObject</string>
+        <string key="_label">Citations (Bibliographic References)</string>
+        <xsl:call-template name="classified-as">
+            <xsl:with-param name="url" select="'http://vocab.getty.edu/aat/300311705'"/>
+            <xsl:with-param name="label" select="'Citations (Bibliographic References)'"/>
+        </xsl:call-template>
+        <string key="content"><xsl:value-of select="$node"/></string>
+      </map>
+      <!--/array-->
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="map:string" mode="note">
+    <xsl:param name="node" select="."/>
+    <xsl:param name="note-type" select="'note'"/>
+    <xsl:if test="string($node)">
+      <map>
+        <string key="type">LinguisticObject</string>
+        <xsl:call-template name="classified-as">
+            <xsl:with-param name="url" select="'http://vocab.getty.edu/aat/300435415'"/>
+            <xsl:with-param name="label" select="'descriptive note'"/>
+        </xsl:call-template>
+        <string key="_label"><xsl:value-of select="$note-type"/></string>
         <string key="content"><xsl:value-of select="$node"/></string>
       </map>
     </xsl:if>
@@ -445,14 +571,57 @@
   </xsl:template>
   
   <!-- mode-specific templates: -->
-  
+  <xsl:variable name="apos">&apos;</xsl:variable>
   <xsl:template match="map:map" mode="title">
+    <xsl:variable name="title-type">
+      <xsl:call-template name="find-node">
+        <xsl:with-param name="path" select="'type'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="title-type-uri">
+      <xsl:choose>
+        <xsl:when test="$title-type='full title'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300417476'"/>
+        </xsl:when>
+        <xsl:when test="$title-type='short title'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300417477'"/>
+        </xsl:when>
+        <xsl:when test="$title-type='foreign language title' or $title-type='exhibition title' or $title-type=concat('lender', $apos, 's title')">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300417478'"/>
+        </xsl:when>
+        <xsl:when test="$title-type='previous title' or $title-type='previous short title'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300449151'"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    <!--xsl:variable name="output-title-type">
+      <xsl:choose>
+        <xsl:when test="$title-type='full title'">
+          <xsl:value-of select="'Primary Name'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$title-type"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable-->
     <map>
       <string key="type">Name</string>
-      <xsl:call-template name="classified-as">
-        <xsl:with-param name="url" select="'http://vocab.getty.edu/aat/300404670'"/>
-        <xsl:with-param name="label" select="'Primary Name'"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$title-type='full title'">
+          <xsl:call-template name="dual-classified-as">
+            <xsl:with-param name="url1" select="'http://vocab.getty.edu/aat/300404670'"/>
+            <xsl:with-param name="label1" select="'Primary Name'"/>
+            <xsl:with-param name="url2" select="$title-type-uri"/>
+            <xsl:with-param name="label2" select="$title-type"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="classified-as">
+            <xsl:with-param name="url" select="$title-type-uri"/>
+            <xsl:with-param name="label" select="$title-type"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'value'"/>
         <xsl:with-param name="key" select="'content'"/>
@@ -467,9 +636,14 @@
       </xsl:call-template>
     </xsl:variable>
     <xsl:variable name="style-url">
-      <xsl:if test="$class-type='school'">
-        <xsl:value-of select="'http://vocab.getty.edu/page/aat/300015646'"/>
-      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="$class-type='school'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300015646'"/>
+        </xsl:when>
+        <xsl:when test="$class-type='function'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300068844'"/>
+        </xsl:when>
+      </xsl:choose>
     </xsl:variable>
     <map>
       <!--string key="type">Name</string-->
@@ -479,6 +653,13 @@
             <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435444'"/>
             <xsl:with-param name="class-label" select="'Classification'"/>
             <xsl:with-param name="subclass-url" select="$style-url"/>
+            <xsl:with-param name="subclass-label" select="$class-type"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:when test="string($class-type)">
+          <xsl:call-template name="sub-classified-as">
+            <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435444'"/>
+            <xsl:with-param name="class-label" select="'Classification'"/>
             <xsl:with-param name="subclass-label" select="$class-type"/>
           </xsl:call-template>
         </xsl:when>
@@ -493,6 +674,72 @@
         <xsl:with-param name="path" select="'value'"/>
         <xsl:with-param name="key" select="'content'"/>
       </xsl:call-template>
+    </map>
+  </xsl:template>
+  
+  <xsl:template match="map:map" mode="url-classification">
+    <xsl:variable name="class-type">
+      <xsl:call-template name="find-node">
+        <xsl:with-param name="path" select="'@link.role.[0].value'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="class-url">
+      <xsl:choose>
+        <xsl:when test="$class-type='function'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300068844'"/>
+        </xsl:when>
+        <xsl:when test="$class-type='genre'">
+          <xsl:value-of select="' http://vocab.getty.edu/aat/300056462'"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    <map>
+      <!--string key="type">Name</string-->
+      <xsl:choose>
+        <xsl:when test="string($class-url)">
+          <xsl:call-template name="sub-classified-as">
+            <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435444'"/>
+            <xsl:with-param name="class-label" select="'Classification'"/>
+            <xsl:with-param name="subclass-url" select="$class-url"/>
+            <xsl:with-param name="subclass-label" select="$class-type"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:when test="string($class-type)">
+          <xsl:call-template name="sub-classified-as">
+            <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435444'"/>
+            <xsl:with-param name="class-label" select="'Classification'"/>
+            <xsl:with-param name="subclass-label" select="$class-type"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="classified-as">
+            <xsl:with-param name="url" select="'http://vocab.getty.edu/aat/300435444'"/>
+            <xsl:with-param name="label" select="'Classification'"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:call-template name="linked-url">
+        <xsl:with-param name="endpoint-path" select="'concept'"/>
+      </xsl:call-template>
+      <string key="_label"><xsl:value-of select="$class-type"/></string>
+      <xsl:call-template name="find-and-process">
+        <xsl:with-param name="path" select="'summary.title'"/>
+        <xsl:with-param name="key" select="'content'"/>
+      </xsl:call-template>
+    </map>
+  </xsl:template>
+  
+  <xsl:template match="map:string" mode="status-classification">
+    <map>
+      <xsl:call-template name="sub-classified-as">
+        <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435444'"/>
+        <xsl:with-param name="class-label" select="'Classification'"/>
+        <xsl:with-param name="subclass-url" select="'http://vocab.getty.edu/aat/300417633'"/>
+        <xsl:with-param name="subclass-label" select="'Legal Status'"/>
+      </xsl:call-template>
+      <string key="type">LinguisticObject</string>
+      <string key="_label">Legal Status</string>
+      <string key="content"><xsl:value-of select="."/></string>
     </map>
   </xsl:template>
   
@@ -514,7 +761,27 @@
     </map>
   </xsl:template>
   
-  <xsl:template match="map:map" mode="subject-keywords">
+  <xsl:template match="map:map" mode="physical-make-up">
+    
+  </xsl:template>
+  
+  <xsl:template match="map:map" mode="subject">
+    <xsl:variable name="base-datatype" select="map:map[@key='@datatype']/map:string[@key='base']"/>
+    <xsl:variable name="admin-id" select="map:map[@key='@admin']/map:string[@key='id']"/>
+    <xsl:choose>
+      <xsl:when test="$base-datatype='concept'">
+        <xsl:apply-templates select="." mode="shows-concept"/>
+      </xsl:when>
+      <xsl:when test="$base-datatype='agent'">
+        <xsl:apply-templates select="." mode="shows-actor"/>
+      </xsl:when>
+      <xsl:when test="starts-with($admin-id, 'place-')">
+        <xsl:apply-templates select="." mode="shows-place"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="map:map" mode="shows-concept">
     <map>
       <string key="type">VisualItem</string>
       <xsl:call-template name="sub-classified-as">
@@ -530,6 +797,44 @@
         <xsl:with-param name="key" select="'content'"/>
       </xsl:call-template>
     </map>
+  </xsl:template>
+  
+  <xsl:template match="map:map" mode="shows-actor">
+    <map>
+      <string key="type">VisualItem</string>
+      <array key="represents">
+        <map>
+          <string key="type">Actor</string>
+          <xsl:call-template name="linked-url">
+            <xsl:with-param name="endpoint-path" select="'person'"/>
+          </xsl:call-template>
+          <xsl:call-template name="process-map">
+            <xsl:with-param name="string-key" select="'_label'"/>
+          </xsl:call-template>
+        </map>
+      </array>
+    </map>    
+  </xsl:template>
+  
+  <xsl:template match="map:map" mode="shows-place">
+    <map>
+      <string key="type">VisualItem</string>
+      <array key="represents">
+        <map>
+          <string key="type">Place</string>
+          <xsl:call-template name="linked-url">
+            <xsl:with-param name="endpoint-path" select="'place'"/>
+          </xsl:call-template>
+          <xsl:call-template name="find-and-process">
+            <xsl:with-param name="path" select="'role.[0].value'"/>
+            <xsl:with-param name="key" select="'_label'"/>
+          </xsl:call-template>
+          <xsl:call-template name="process-map">
+            <xsl:with-param name="string-key" select="'_label'"/>
+          </xsl:call-template>
+        </map>
+      </array>
+    </map>    
   </xsl:template>
   
   <xsl:template match="map:map" mode="bibliography">
@@ -548,6 +853,7 @@
         <xsl:with-param name="path" select="'summary.title'"/>
         <xsl:with-param name="key" select="'_label'"/>
       </xsl:call-template>
+      <xsl:apply-templates select="map:map[@key='@link']/map:map[@key='details']" mode="citation-note"/>
     </map>
   </xsl:template>
   
@@ -571,32 +877,85 @@
     </map>
   </xsl:template>
   
+  <!-- N.B. we are already at the map node with key 'text': -->
+  <xsl:template match="map:map" mode="provenance">
+    <map>
+      <string key="type">LinguisticObject</string>
+      <xsl:call-template name="sub-classified-as">
+        <xsl:with-param name="class-url" select="'https://vocab.getty.edu/aat/300435416'"/>
+        <xsl:with-param name="class-label" select="'Description'"/>
+        <xsl:with-param name="subclass-url" select="'https://vocab.getty.edu/aat/300055863'"/>
+        <xsl:with-param name="subclass-label" select="'Provenance Statement'"/>
+      </xsl:call-template>
+      <xsl:if test="map:map[@key='source']/map:string[@key='value'] or
+              ../map:map[@key='incomplete']/map:string[@key='value'] or
+              map:map[@key='status']/map:map[@key='note']/map:string[@key='value']">
+        <array key="referred_to_by">
+          <xsl:apply-templates select="../map:map[@key='incomplete']/map:string[@key='value']" mode="note">
+            <xsl:with-param name="note-type" select="'completeness'"/>
+          </xsl:apply-templates>
+          <xsl:apply-templates select="map:map[@key='source']/map:string[@key='value']" mode="citation"/>
+          <xsl:apply-templates select="map:map[@key='status']/map:string[@key='value']" mode="note">
+            <xsl:with-param name="note-type" select="'status'"/>
+          </xsl:apply-templates>
+        </array>
+      </xsl:if>
+      <xsl:call-template name="process-node">
+        <xsl:with-param name="key" select="'content'"/>
+        <xsl:with-param name="node" select="map:string[@key='value']"/>
+      </xsl:call-template>
+    </map>
+  </xsl:template>
+  
+  <xsl:template match="map:string" mode="credit-line">
+    <xsl:variable name="text-type">
+      <xsl:choose>
+        <xsl:when test="@key='credit' or @key='credit_long'">Full Text</xsl:when>
+        <xsl:when test="@key='credit_AIL'">Acceptance in Lieu Text</xsl:when>
+        <xsl:when test="@key='credit_short'">Brief Text</xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    <map>
+      <string key="type">LinguisticObject</string>
+      <xsl:call-template name="sub-classified-as">
+        <xsl:with-param name="class-url" select="'https://vocab.getty.edu/aat/300026687'"/>
+        <xsl:with-param name="class-label" select="'Credit Statement'"/>
+        <xsl:with-param name="subclass-url" select="'https://vocab.getty.edu/aat/300418049'"/>
+        <xsl:with-param name="subclass-label" select="$text-type"/>
+      </xsl:call-template>
+      <string key="content"><xsl:value-of select="."/></string>
+    </map>
+  </xsl:template>
+  
   <xsl:template match="map:map" mode="identifier">
     <xsl:variable name="identifier-type" select="map:string[@key='type']/text()"/>
-    <xsl:if test="$identifier-type='display number' or $identifier-type='PID'">
+    <xsl:variable name="type-label">
+      <xsl:choose>
+        <xsl:when test="$identifier-type='display number'">
+          <xsl:value-of select="'Accession number'"/>
+        </xsl:when>
+        <xsl:when test="$identifier-type='PID'">
+          <xsl:value-of select="'Persistent identifier'"/>
+        </xsl:when>
+        <xsl:when test="$identifier-type='Joint Owner Object Number' or $identifier-type='Owner Object Number' 
+              or $identifier-type='Lender Object Number' or $identifier-type='Previous Object Number' 
+              or $identifier-type='Catalogue Raisonné Ref' or $identifier-type=concat('Owner', $apos, ' object URI')">
+              <!-- or $identifier-type='Incorrect Object Number'" - for testing only -->
+          <xsl:value-of select="$identifier-type"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="string($type-label)">
       <xsl:variable name="type-url">
         <xsl:choose>
-          <xsl:when test="$identifier-type='display number'">
-            <xsl:value-of select="'http://vocab.getty.edu/page/aat/300312355'"/>
+          <xsl:when test="$identifier-type='display number' or $identifier-type='Previous Object Number'">
+            <xsl:value-of select="'http://vocab.getty.edu/aat/300312355'"/>
           </xsl:when>
           <xsl:when test="$identifier-type='PID'">
-            <xsl:value-of select="'http://vocab.getty.edu/page/aat/300387580'"/>
+            <xsl:value-of select="'http://vocab.getty.edu/aat/300387580'"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="'http://vocab.getty.edu/page/aat/300404012'"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-      <xsl:variable name="type-label">
-        <xsl:choose>
-          <xsl:when test="$identifier-type='display number'">
-            <xsl:value-of select="'Accession number'"/>
-          </xsl:when>
-          <xsl:when test="$identifier-type='PID'">
-            <xsl:value-of select="'Persistent identifier'"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="'Unique identifier'"/>
+            <xsl:value-of select="'http://vocab.getty.edu/aat/300404012'"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
@@ -606,6 +965,8 @@
           <xsl:with-param name="url" select="$type-url"/>
           <xsl:with-param name="label" select="$type-label"/>
         </xsl:call-template>
+        <xsl:apply-templates select="map:map[@key='date']" mode="date-assigned"/>
+        <xsl:apply-templates select="map:map[@key='note']/map:string[@key='value']" mode="identifier-note"/>
         <xsl:call-template name="process-node">
           <xsl:with-param name="key" select="'_label'"/>
           <xsl:with-param name="node" select="map:string[@key='type']"/>
@@ -616,6 +977,12 @@
         </xsl:call-template>
       </map>
     </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="map:string" mode="identifier-note">
+    <array key="referred-to-by">
+      <xsl:apply-templates select="." mode="note"/>
+    </array>
   </xsl:template>
   
   <xsl:template match="map:map" mode="member-of">
@@ -631,15 +998,60 @@
     </map>
   </xsl:template>
   
+  <xsl:template match="map:map" mode="part-dimensions">
+    <xsl:variable name="desc-value">
+      <xsl:call-template name="find-node">
+        <xsl:with-param name="path" select="'description.value'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:if test="string($desc-value)">
+      <map>
+        <string key="type">HumanMadeObject</string>
+        <string key="_label"><xsl:value-of select="$desc-value"/></string>
+        <array key="dimension">
+          <xsl:apply-templates select="map:array[@key='dimensions']/map:map" mode="dimension"/>
+        </array>
+      </map>
+    </xsl:if>
+  </xsl:template>
+  
   <!-- have not yet addressed date, display or method keys (see object-4668): -->
   <xsl:template match="map:map" mode="dimensions">
-    <xsl:apply-templates select="map:map[@key='description']/map:string[@key='value']" mode="textual-object"/>
-    <xsl:apply-templates select="map:array[@key='dimensions']/map:map" mode="dimension"/>
+    <xsl:variable name="desc-value">
+      <xsl:call-template name="find-node">
+        <xsl:with-param name="path" select="'description.value'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <!--xsl:apply-templates select="map:map[@key='description']/map:string[@key='value']" mode="textual-object"/-->
+    <xsl:if test="not(string($desc-value))">
+      <xsl:apply-templates select="map:array[@key='dimensions']/map:map" mode="dimension"/>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template match="map:map" mode="dimension">
+    <xsl:variable name="measurement" select="map:string[@key='dimension']/text()"/>
+    <xsl:variable name="measurement-url">
+      <xsl:choose>
+        <xsl:when test="$measurement='Height'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300055644'"/>
+        </xsl:when>
+        <xsl:when test="$measurement='Width'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300055647'"/>
+        </xsl:when>
+        <xsl:when test="$measurement='Depth'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300072633'"/>
+        </xsl:when>
+        <xsl:when test="$measurement='Weight'">
+          <xsl:value-of select="'http://vocab.getty.edu/aat/300056240'"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
     <map>
       <string key="type">Dimension</string>
+      <xsl:call-template name="classified-as">
+        <xsl:with-param name="url" select="$measurement-url"/>
+        <xsl:with-param name="label" select="$measurement"/>
+      </xsl:call-template>
       <xsl:call-template name="dimension-summary"/>
       <xsl:call-template name="process-node-as-number">
         <xsl:with-param name="key" select="'value'"/>
@@ -648,6 +1060,15 @@
       <xsl:apply-templates select="map:string[@key='units']" mode="units-object"/>
     </map>
   </xsl:template>
+
+    <!-- ** N.B. this summary doesn't appear, because we are now within the individual dimension object. 
+              Agreed not to put it in as "referred_to_by" at the top level: -->
+    <!--array key="referred_to_by">
+      <xsl:apply-templates select="map:string[@key='display']" mode="textual-object">
+        <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435430'"/>
+        <xsl:with-param name="class-label" select="'Dimensions description'"/>
+      </xsl:apply-templates>
+    </array-->
   
   <xsl:template name="dimension-summary">
     <xsl:variable name="measurement" select="map:string[@key='dimension']/text()"/>
@@ -730,19 +1151,55 @@
       </map>
     </xsl:if>
   </xsl:template>
+
+<!-- use location.@link.supplement if it has a value; otherwise summary.title.
+        If using location.@link.supplement, don't output the URI (because it's the permanent location, i.e. it's wrong): -->
   <xsl:template match="map:map" mode="current-location">
+    <xsl:variable name="temp-location">
+      <xsl:call-template name="find-node">
+        <xsl:with-param name="path" select="'@link.supplement'"/>
+      </xsl:call-template>
+    </xsl:variable>
     <map key="current_location">
       <string key="type">Place</string>
-      <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'place'"/>
-      </xsl:call-template>
-      <xsl:call-template name="find-and-process">
-        <xsl:with-param name="path" select="'summary.title'"/>
-        <xsl:with-param name="key" select="'_label'"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="string($temp-location)">
+          <xsl:call-template name="find-and-process">
+            <xsl:with-param name="path" select="'@link.supplement'"/>
+            <xsl:with-param name="key" select="'_label'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="linked-url">
+            <xsl:with-param name="endpoint-path" select="'place'"/>
+          </xsl:call-template>
+          <xsl:call-template name="find-and-process">
+            <xsl:with-param name="path" select="'summary.title'"/>
+            <xsl:with-param name="key" select="'_label'"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </map>
   </xsl:template>  
-  
+
+  <xsl:template match="map:map" mode="carries">
+    <map>
+      <string key="type">LinguisticObject</string>
+      <xsl:call-template name="classified-as">
+        <xsl:with-param name="url" select="'http://vocab.getty.edu/aat/300028702'"/>
+        <xsl:with-param name="label" select="'inscriptions'"/>
+      </xsl:call-template>
+      <xsl:call-template name="find-and-process">
+        <xsl:with-param name="path" select="'summary'"/>
+        <xsl:with-param name="key" select="'_label'"/>
+      </xsl:call-template>
+      <xsl:call-template name="find-and-process">
+        <xsl:with-param name="path" select="'transcription.[0].value'"/>
+        <xsl:with-param name="key" select="'content'"/>
+      </xsl:call-template>
+    </map>
+  </xsl:template>
+
   <xsl:template match="map:map" mode="agent">
     <map>
       <string key="type">Agent</string>
@@ -779,6 +1236,21 @@
     <xsl:apply-templates select="map:string[@key='from']" mode="earliest"/>
     <xsl:apply-templates select="map:string[@key='to']" mode="latest"/>
   </map>
+  </xsl:template>
+
+<xsl:template match="map:map" mode="date-assigned">
+  <xsl:if test="string(map:string[@key='from']) or string(map:string[@key='to'])">
+    <array key="assigned_by">
+      <map>
+        <string key="type">AttributeAssignment</string>
+        <map key="timespan">
+          <string key="type">TimeSpan</string>
+          <xsl:apply-templates select="map:string[@key='from']" mode="earliest"/>
+          <xsl:apply-templates select="map:string[@key='to']" mode="latest"/>
+        </map>
+      </map>
+    </array>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="map:string" mode="earliest">
@@ -829,6 +1301,8 @@
 </xsl:template>
 
 <xsl:template match="map:map" mode="maker">
+  <xsl:variable name="prefix" select="map:map[@key='@link']/map:string[@key='prefix']"/>
+  <xsl:variable name="suffix" select="map:map[@key='@link']/map:string[@key='suffix']"/>
     <map>
       <string key="type">Person</string>
       <xsl:call-template name="linked-url">
@@ -837,8 +1311,76 @@
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
         <xsl:with-param name="key" select="'_label'"/>
+        <xsl:with-param name="prefix" select="$prefix"/>
+        <xsl:with-param name="suffix" select="$suffix"/>
       </xsl:call-template>
     </map>
+</xsl:template>
+
+<xsl:template match="map:string" mode="access-lending">
+  <map>
+    <string key="type">LinguisticObject</string>
+    <xsl:call-template name="sub-classified-as">
+      <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300133046'"/>
+      <xsl:with-param name="class-label" select="'access'"/>
+      <xsl:with-param name="subclass-url" select="'http://vocab.getty.edu/aat/300069741'"/>
+      <xsl:with-param name="subclass-label" select="'lending'"/>
+    </xsl:call-template>    
+    <string key="_label">Access: lending</string>
+    <string key="content"><xsl:value-of select="."/></string>
+  </map>
+</xsl:template>
+
+<xsl:template match="map:string" mode="image-rights">
+  <map>
+    <string key="type">LinguisticObject</string>
+    <xsl:call-template name="sub-classified-as">
+      <xsl:with-param name="class-url" select="'http://vocab.getty.edu/aat/300435434'"/>
+      <xsl:with-param name="class-label" select="'Copyright/License Statement'"/>
+      <xsl:with-param name="subclass-url" select="'http://vocab.getty.edu/aat/300418049'"/>
+      <xsl:with-param name="subclass-label" select="'Brief Text'"/>
+    </xsl:call-template>
+    <string key="_label">Image Rights</string>
+    <string key="content"><xsl:value-of select="."/></string>
+  </map>
+</xsl:template>
+
+<xsl:template match="map:map" mode="part-of">
+  <xsl:variable name="note" select="map:map[@key='@link']/map:map[@key='note']/map:string[@key='value']"/>
+  <map>
+    <string key="type">Object</string>
+    <xsl:if test="string($note)">
+      <array key="referred_to_by">
+        <xsl:apply-templates select="$note" mode="note"/>
+      </array>
+    </xsl:if>
+    <xsl:call-template name="linked-url">
+      <xsl:with-param name="endpoint-path" select="'object'"/>
+    </xsl:call-template>
+    <xsl:call-template name="find-and-process">
+      <xsl:with-param name="path" select="'summary.title'"/>
+      <xsl:with-param name="key" select="'_label'"/>
+    </xsl:call-template>
+  </map>
+</xsl:template>
+
+<xsl:template match="map:map" mode="citation-note">
+  <xsl:variable name="note" select="map:map[@key='note']/map:string[@key='value']"/>
+  <xsl:if test="string($note)">
+    <xsl:variable name="type" select="map:string[@key='type']"/>
+    <xsl:variable name="page" select="map:string[@key='page']"/>
+    <xsl:variable name="page-ref">
+      <xsl:if test="string($page)">
+        <xsl:value-of select="concat(' p.', $page)"/>
+      </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="note-type" select="concat($type, $page-ref)"/>
+  <array key="referred_to_by">
+      <xsl:apply-templates select="$note" mode="note">
+        <xsl:with-param name="note-type" select="$note-type"/>
+      </xsl:apply-templates>
+  </array>
+  </xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>
