@@ -157,6 +157,5 @@
     "_label" : "Diana and Endymion"
   } ],
   "_label" : "Valentine",
-  "@context" : "https://linked.art/ns/v1/linked-art.json",
-  "object_type" : "HumanMadeObject"
+  "@context" : "https://linked.art/ns/v1/linked-art.json"
 }
