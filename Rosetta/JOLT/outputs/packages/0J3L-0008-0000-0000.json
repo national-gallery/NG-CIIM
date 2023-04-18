@@ -20,108 +20,143 @@
     "content" : "Valentine"
   } ],
   "member" : [ {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/3fdbc333-d16f-380d-9714-a67520ad5fce",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Bacchus and Ariadne"
-    } ]
+    } ],
+    "_label" : "Bacchus and Ariadne"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/be741628-97cb-304a-aa3d-c083dad6a871",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "The Arnolfini Portrait"
-    } ]
+    } ],
+    "_label" : "The Arnolfini Portrait"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/099f57e4-4557-3322-a24d-2c1e884c6373",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Allegory of Virtue and Riches"
-    } ]
+    } ],
+    "_label" : "Allegory of Virtue and Riches"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/1f069976-e902-3ebd-b0f7-7d4e256b70d8",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "An Allegory with Venus and Cupid"
-    } ]
+    } ],
+    "_label" : "An Allegory with Venus and Cupid"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/9bcf3929-e8c3-3860-ba1b-8579df6a3fe5",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Venus and Mars"
-    } ]
+    } ],
+    "_label" : "Venus and Mars"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/a67d0207-b516-3938-9b4d-76d681e40841",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Unfaithfulness"
-    } ]
+    } ],
+    "_label" : "Unfaithfulness"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/dca6ee0a-d6e8-3add-a335-604992828594",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Scorn"
-    } ]
+    } ],
+    "_label" : "Scorn"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/3aa1e624-3097-393e-abac-8f539be52a6f",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Respect"
-    } ]
+    } ],
+    "_label" : "Respect"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/be41fd7a-8e20-305d-a7c1-a826f3e0d983",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Happy Union"
-    } ]
+    } ],
+    "_label" : "Happy Union"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/47186d77-3922-330b-86a6-fd806f6eb135",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Two Couples with Cupid"
-    } ]
+    } ],
+    "_label" : "Two Couples with Cupid"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/72f1ad0e-2b54-3185-bd7a-95e3a0078807",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "A Young Woman standing at a Virginal"
-    } ]
+    } ],
+    "_label" : "A Young Woman standing at a Virginal"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/41419a41-f49d-39dd-8b09-d830b28fb50b",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "The Toilet of Venus ('The Rokeby Venus')"
-    } ]
+    } ],
+    "_label" : "The Toilet of Venus ('The Rokeby Venus')"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/873be36d-da28-3a05-a525-5cf3218ec775",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "The Judgement of Paris"
-    } ]
+    } ],
+    "_label" : "The Judgement of Paris"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/f76fade9-ebf8-378b-aaf9-03c376595c40",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Cupid complaining to Venus"
-    } ]
+    } ],
+    "_label" : "Cupid complaining to Venus"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/a2211f63-9621-39ff-94f8-348e532883eb",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "An Allegory with Venus and Time"
-    } ]
+    } ],
+    "_label" : "An Allegory with Venus and Time"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/9dd46530-a76f-3cc8-988f-340172fd98bf",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Psyche showing her Sisters her Gifts from Cupid"
-    } ]
+    } ],
+    "_label" : "Psyche showing her Sisters her Gifts from Cupid"
   }, {
+    "type" : "HumanMadeObject",
     "id" : "https://data.ng.ac.uk/object/19ec6f27-fddc-3db1-9151-c0f610fb5c7a",
     "identified_by" : [ {
       "type" : "Name",
       "content" : "Diana and Endymion"
-    } ]
+    } ],
+    "_label" : "Diana and Endymion"
   } ],
   "_label" : "Valentine",
-  "@context" : "https://linked.art/ns/v1/linked-art.json"
+  "@context" : "https://linked.art/ns/v1/linked-art.json",
+  "object_type" : "HumanMadeObject"
 }
