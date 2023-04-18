@@ -1348,7 +1348,7 @@
 <xsl:template match="map:map" mode="part-of">
   <xsl:variable name="note" select="map:map[@key='@link']/map:map[@key='note']/map:string[@key='value']"/>
   <map>
-    <string key="type">Object</string>
+    <string key="type">HumanMadeObject</string>
     <xsl:if test="string($note)">
       <array key="referred_to_by">
         <xsl:apply-templates select="$note" mode="note"/>
