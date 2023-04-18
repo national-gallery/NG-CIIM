@@ -53,6 +53,7 @@
             "object_prefix": "https://data.ng.ac.uk/object/",
             "type": "Set",
 			"name_type": "Name",
+			"object_type": "HumanMadeObject",
 			"referred_to_type": "LinguisticObject",
             "referred_to_classified_as": [
                 {
@@ -119,10 +120,11 @@
                 "object": {
                     "*": {
                         "\\@admin": {
-                            "object_id": "member.[&2].id"
+                            "object_id": "member.[&2].id",
+							"@(4,object_type)": "member.[&2].type"
                         },
                         "summary": {
-                            "title": "member.[&2].identified_by[0].content",
+                            "title": [ "member.[&2]._label", "member.[&2].identified_by[0].content" ],
 							"@(4,name_type)": "member.[&2].identified_by[0].type"
                         }
                     }
