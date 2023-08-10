@@ -52,28 +52,31 @@
           </xsl:apply-templates>
         </array>
       </xsl:if>
+
+      <!-- for events, this is the timespan of the event: -->
+      <xsl:if test="$base='event'">
+        <xsl:if test="map:array[@key='date']">
+          <array key="timespan">
+            <xsl:apply-templates select="map:array[@key='date']/map:map[1]" mode="date"/>
+          </array>
+        </xsl:if>
+      </xsl:if>
       
       <!-- agents: birth and death details -->
-      <xsl:if test="map:array[@key='date']">
-        <map key="carried_out">
-          <xsl:apply-templates select="map:array[@key='date']/map:map[1]" mode="date"/>
-        </map>
-      </xsl:if>
-
       <xsl:if test="map:map[@key='birth']">
-        <map key="born">
+        <array key="born">
           <xsl:if test="map:map[@key='birth']/map:array[@key='date']">
             <xsl:apply-templates select="map:map[@key='birth']/map:array[@key='date']/map:map[1]" mode="date"/>
           </xsl:if>
-        </map>
+        </array>
       </xsl:if>
 
       <xsl:if test="map:map[@key='death']">
-        <map key="died">
+        <array key="died">
           <xsl:if test="map:map[@key='death']/map:array[@key='date']">
             <xsl:apply-templates select="map:map[@key='death']/map:array[@key='date']/map:map[1]" mode="date"/>
           </xsl:if>
-        </map>
+        </array>
       </xsl:if>
                 
       <!-- referred_to_by: [array Optional] An array of json objects, each of which is a human readable 
@@ -85,7 +88,8 @@
         </xsl:apply-templates>
         <xsl:apply-templates select="map:map[@key='provenance']/map:map[@key='text']" mode="provenance"/>
         <xsl:apply-templates select="map:map[@key='legal']/map:string[@key[starts-with(., 'credit')]]" mode="credit-line"/>
-        <xsl:apply-templates select="map:map[@key='legal']/map:map[@key='image']/map:map[@key='rights']/map:string[@key='details']" mode="image-rights"/>
+        <!-- removed 8.8.2023 at Rupert's request: -->
+        <!--xsl:apply-templates select="map:map[@key='legal']/map:map[@key='image']/map:map[@key='rights']/map:string[@key='details']" mode="image-rights"/-->
         <xsl:apply-templates select="map:map[@key='access']/map:map[@key='item']/map:map[@key='lending']/map:string[@key='restrictions']" mode="access-lending"/>    
         <xsl:apply-templates select="map:array[@key='note']/map:map" mode="research-note"/>
       </array>
@@ -684,7 +688,7 @@
         </xsl:otherwise>
       </xsl:choose>
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'concept'"/>
+        <!--xsl:with-param name="endpoint-path" select="'concept'"/-->
       </xsl:call-template>
       <string key="_label"><xsl:value-of select="$class-type"/></string>
       <xsl:call-template name="find-and-process">
@@ -717,7 +721,7 @@
         <xsl:with-param name="label" select="'Style'"/>
       </xsl:call-template>
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'visual'"/>
+        <!--xsl:with-param name="endpoint-path" select="'visual'"/-->
       </xsl:call-template>
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
@@ -768,7 +772,7 @@
         <xsl:with-param name="subclass-label" select="'Subject Matter'"/>
       </xsl:call-template>
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'visual'"/>
+        <!--xsl:with-param name="endpoint-path" select="'visual'"/-->
       </xsl:call-template>
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
@@ -784,7 +788,7 @@
         <map>
           <string key="type">Actor</string>
           <xsl:call-template name="linked-url">
-            <xsl:with-param name="endpoint-path" select="'person'"/>
+            <!--xsl:with-param name="endpoint-path" select="'person'"/-->
           </xsl:call-template>
           <xsl:call-template name="process-map">
             <xsl:with-param name="string-key" select="'_label'"/>
@@ -801,7 +805,7 @@
         <map>
           <string key="type">Place</string>
           <xsl:call-template name="linked-url">
-            <xsl:with-param name="endpoint-path" select="'place'"/>
+            <!--xsl:with-param name="endpoint-path" select="'place'"/-->
           </xsl:call-template>
           <xsl:call-template name="find-and-process">
             <xsl:with-param name="path" select="'role.[0].value'"/>
@@ -825,7 +829,7 @@
         <xsl:with-param name="label" select="'Citation'"/>
       </xsl:call-template-->
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'text'"/>
+        <!--xsl:with-param name="endpoint-path" select="'text'"/-->
       </xsl:call-template>      
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
@@ -884,22 +888,25 @@
     </map>
   </xsl:template>
   
+  <!-- limit this to notes with project 'lbso' (8.8.2023): -->
   <xsl:template match="map:map" mode="research-note">
-    <map>
-      <!--string key="type">LinguisticObject</string-->
-      <xsl:call-template name="classified-as">
-        <xsl:with-param name="url" select="'https://vocab.getty.edu/aat/300265639'"/>
-        <xsl:with-param name="label" select="'research notes'"/>
-      </xsl:call-template>
-      <xsl:call-template name="process-node">
-        <xsl:with-param name="key" select="'type'"/>
-        <xsl:with-param name="node" select="map:string[@key='type']"/>
-      </xsl:call-template>
-      <xsl:call-template name="process-node">
-        <xsl:with-param name="key" select="'content'"/>
-        <xsl:with-param name="node" select="map:string[@key='value']"/>
-      </xsl:call-template>
-    </map>
+    <xsl:if test="map:string[@key='project'][.='lbso']">
+      <map>
+        <!--string key="type">LinguisticObject</string-->
+        <xsl:call-template name="classified-as">
+          <xsl:with-param name="url" select="'https://vocab.getty.edu/aat/300265639'"/>
+          <xsl:with-param name="label" select="'research notes'"/>
+        </xsl:call-template>
+        <xsl:call-template name="process-node">
+          <xsl:with-param name="key" select="'type'"/>
+          <xsl:with-param name="node" select="map:string[@key='type']"/>
+        </xsl:call-template>
+        <xsl:call-template name="process-node">
+          <xsl:with-param name="key" select="'content'"/>
+          <xsl:with-param name="node" select="map:string[@key='value']"/>
+        </xsl:call-template>
+      </map>
+    </xsl:if>
   </xsl:template>
   
   <!-- N.B. we are already at the map node with key 'text': -->
@@ -1041,7 +1048,7 @@
     <map>
       <string key="type">Set</string>
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'set'"/>
+        <!--xsl:with-param name="endpoint-path" select="'set'"/-->
       </xsl:call-template>
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
@@ -1182,7 +1189,7 @@
           <map>
             <string key="type">Material</string>
               <xsl:call-template name="linked-url">
-                <xsl:with-param name="endpoint-path" select="'concept'"/>
+                <!--xsl:with-param name="endpoint-path" select="'concept'"/-->
               </xsl:call-template>
               <xsl:call-template name="find-and-process">
               <xsl:with-param name="path" select="'summary.title'"/>
@@ -1223,7 +1230,7 @@
         </xsl:when>
         <xsl:otherwise>
           <xsl:call-template name="linked-url">
-            <xsl:with-param name="endpoint-path" select="'place'"/>
+            <!--xsl:with-param name="endpoint-path" select="'place'"/-->
           </xsl:call-template>
           <xsl:call-template name="find-and-process">
             <xsl:with-param name="path" select="'summary.title'"/>
@@ -1272,7 +1279,11 @@
   
   <xsl:template match="map:map" mode="creation">
       <string key="type">Production</string>
-      <xsl:apply-templates select="map:array[@key='date']/map:map[1]" mode="date"/>
+      <xsl:if test="map:array[@key='date']/map:map">
+        <array key="timespan">
+          <xsl:apply-templates select="map:array[@key='date']/map:map" mode="date"/>
+        </array>      
+      </xsl:if>
       <!-- xsl:apply-templates select="map[@key='timespan']" mode="timespan"/-->
       <array key="took_place_at">
         <xsl:apply-templates select="map:array[@key='place']/map:map" mode="place"/>
@@ -1283,15 +1294,15 @@
   </xsl:template>
 
   <xsl:template match="map:map" mode="date">
-    <map key="timespan">
+    <map>
       <string key="type">TimeSpan</string>
       <xsl:apply-templates select="map:string[@key='from']" mode="earliest"/>
       <xsl:apply-templates select="map:string[@key='to']" mode="latest"/>
+      <xsl:call-template name="find-and-process">
+        <xsl:with-param name="path" select="'value'"/>
+        <xsl:with-param name="key" select="'note'"/>
+      </xsl:call-template>
     </map>
-    <xsl:call-template name="find-and-process">
-      <xsl:with-param name="path" select="'value'"/>
-      <xsl:with-param name="key" select="'note'"/>
-    </xsl:call-template>
   </xsl:template>
 
 <xsl:template match="map:map" mode="date-assigned">
@@ -1347,7 +1358,7 @@
     <map>
       <string key="type">Place</string>
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'place'"/>
+        <!--xsl:with-param name="endpoint-path" select="'place'"/-->
       </xsl:call-template>
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
@@ -1362,7 +1373,7 @@
     <map>
       <string key="type">Person</string>
       <xsl:call-template name="linked-url">
-        <xsl:with-param name="endpoint-path" select="'person'"/>
+        <!--xsl:with-param name="endpoint-path" select="'person'"/-->
       </xsl:call-template>
       <xsl:call-template name="find-and-process">
         <xsl:with-param name="path" select="'summary.title'"/>
@@ -1411,7 +1422,7 @@
       </array>
     </xsl:if>
     <xsl:call-template name="linked-url">
-      <xsl:with-param name="endpoint-path" select="'object'"/>
+      <!--xsl:with-param name="endpoint-path" select="'object'"/-->
     </xsl:call-template>
     <xsl:call-template name="find-and-process">
       <xsl:with-param name="path" select="'summary.title'"/>

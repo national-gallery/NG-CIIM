@@ -8,6 +8,8 @@
 			National Gallery CIIM output and generating Linked Data results. -->
 
   <xsl:variable name="ng-prefix" select="'https://data.ng.ac.uk/'"/>
+  
+  <xsl:key name="map-with-uid" match="map:map" use="map:map[@key='@admin']/map:string[@key='uid']"/>
 
   <!-- general templates: now hived off into a separate 'library' file: -->
   
@@ -239,16 +241,58 @@
   </xsl:template>
 
   <xsl:template name="record-id">
-    <xsl:call-template name="find-and-process">
-      <xsl:with-param name="path" select="'_id'"/>
-      <xsl:with-param name="key" select="'id'"/>
-      <xsl:with-param name="prefix" select="$ng-prefix"/>
-    </xsl:call-template>
+    <xsl:param name="target"/>
+    <xsl:choose>
+      <xsl:when test="$target='linked-data'">
+        <xsl:call-template name="find-and-process">
+          <xsl:with-param name="path" select="'_id'"/>
+          <xsl:with-param name="key" select="'id'"/>
+          <xsl:with-param name="prefix" select="$ng-prefix"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$target='jskos'">
+        <xsl:call-template name="find-and-process">
+          <xsl:with-param name="path" select="'_id'"/>
+          <xsl:with-param name="key" select="'uri'"/>
+          <xsl:with-param name="prefix" select="$ng-prefix"/>
+        </xsl:call-template>        
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="record-type">
+    <xsl:param name="target"/>
+    <xsl:param name="base"/>
+    <xsl:param name="actual-datatype"/>
+    <xsl:choose>
+      <xsl:when test="$target='linked-art'">
+        <string key="type">
+          <xsl:choose>
+            <xsl:when test="$base='agent'">
+              <xsl:choose>
+                <xsl:when test="$actual-datatype='Individual'">Person</xsl:when>
+                <xsl:when test="$actual-datatype='Organisation'">Group</xsl:when>
+                <xsl:otherwise>Agent</xsl:otherwise>
+              </xsl:choose>
+            </xsl:when>
+            <xsl:when test="$base='event'">Event</xsl:when>
+            <xsl:when test="$base='package'">Set</xsl:when>
+            <xsl:when test="$target='linked-art'">HumanMadeObject</xsl:when>
+          </xsl:choose>
+        </string>
+      </xsl:when>
+      <xsl:when test="$target='jskos'">
+        <array key="type">
+          <string>https://gbv.github.io/jskos/context.json</string>
+        </array>
+      </xsl:when>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template name="linked-url">
-    <xsl:param name="endpoint-path"/>
-    <!--xsl:variable name="path">
+    <xsl:param name="target-path" select="'id'"/>
+    <!--xsl:param name="endpoint-path"/>
+    <xsl:variable name="path">
     <xsl:choose>
       <xsl:when test="string($endpoint-path)">
         <xsl:value-of select="$endpoint-path"/>
@@ -260,7 +304,7 @@
     </xsl:variable-->
     <xsl:call-template name="find-and-process">
       <xsl:with-param name="path" select="'@admin.uid'"/>
-      <xsl:with-param name="key" select="'id'"/>
+      <xsl:with-param name="key" select="$target-path"/>
       <!--xsl:with-param name="prefix" select="concat($ng-prefix, $path, '/')"/-->
       <xsl:with-param name="prefix" select="$ng-prefix"/>
     </xsl:call-template>

@@ -3,7 +3,7 @@
 	xmlns="http://www.w3.org/2005/xpath-functions"
 	xmlns:map="http://www.w3.org/2005/xpath-functions"
 	exclude-result-prefixes="map">
-	<xsl:output method="text" media-type="application/json" encoding="UTF-8"/>
+	<xsl:output method="xml" media-type="text/xml" encoding="UTF-8"/>
 	<xsl:param name="file"/>
 	<xsl:include href="./ng-json-library.xsl"/>
 	<xsl:include href="./ng-linked-art-library.xsl"/>
@@ -60,9 +60,9 @@
 				</xsl:for-each>
 			</array>
 		</xsl:variable>
-		<xsl:value-of select="xml-to-json($output)"/>
+		<!--xsl:value-of select="xml-to-json($output)"/-->
 		<!-- to debug JSON serialization errors, set output type to XML and use this command instead of the line above: -->
-		<!--xsl:copy-of select="$output"/-->              		
+		<xsl:copy-of select="$output"/>              		
 	</xsl:template>
 	
 	<xsl:template name="target-format">
