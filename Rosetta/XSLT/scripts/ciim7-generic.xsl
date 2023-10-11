@@ -58,6 +58,24 @@
 						</xsl:for-each>
 					</map>
 				</xsl:for-each>
+				<!-- all this code is [just] to support the possible JSKOS mapping of one concept to others
+						(because it's a separate map in the top-level array): -->
+				<xsl:for-each select="$doc/*">
+					<xsl:for-each select="map:map[@key='hits']/map:array[@key='hits']/map:map[1]">
+						<xsl:variable name="base" select="map:map[@key='_source']/map:map[@key='@datatype']/map:string[@key='base']"/>
+						<xsl:variable name="target">
+							<xsl:call-template name="target-format">
+								<xsl:with-param name="base" select="$base"/>
+							</xsl:call-template>
+						</xsl:variable>
+						<xsl:if test="$target='jskos'">
+							<xsl:apply-templates select="map:map[@key='_source']/map:array[@key='identifier']" mode="exact-match">
+								<xsl:with-param name="record-id" select="map:string[@key='_id']"/>
+								<xsl:with-param name="target" select="$target"/>
+							</xsl:apply-templates>
+						</xsl:if>
+					</xsl:for-each>
+				</xsl:for-each>
 			</array>
 		</xsl:variable>
 		<xsl:value-of select="xml-to-json($output)"/>
