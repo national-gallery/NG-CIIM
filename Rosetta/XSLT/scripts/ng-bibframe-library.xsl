@@ -5,7 +5,7 @@
   exclude-result-prefixes="map">
       
   <xsl:template match="map:map" mode="bibframe">    
-          <map>
+          <!--map-->
 
               <!-- id: [string Required] The value MUST be the HTTP(S) URI at which the publication's 
 										representation can be dereferenced -->
@@ -37,7 +37,7 @@
                 <xsl:call-template name="related-works"/>
                 
               </xsl:for-each>
-          </map>
+          <!--/map-->
 	
   </xsl:template>
 	
@@ -289,17 +289,17 @@
   </xsl:template>
   
   <xsl:template name="work-agents">
-    <xsl:apply-templates select="map:map[@key='work']/map:map[@key='creation']/map:array[@key='maker']/map:map" mode="agent"/>
-    <xsl:apply-templates select="map:array[@key='agent']/map:map" mode="agent"/>
-    <xsl:apply-templates select="map:array[@key='organisation']/map:map" mode="agent"/>
-    <xsl:apply-templates select="map:array[@key='subject']/map:map[map:string[@key='@tag'][.='600' or .='610' or .='611']]" mode="agent"/>
+    <xsl:apply-templates select="map:map[@key='work']/map:map[@key='creation']/map:array[@key='maker']/map:map" mode="bf-agent"/>
+    <xsl:apply-templates select="map:array[@key='agent']/map:map" mode="bf-agent"/>
+    <xsl:apply-templates select="map:array[@key='organisation']/map:map" mode="bf-agent"/>
+    <xsl:apply-templates select="map:array[@key='subject']/map:map[map:string[@key='@tag'][.='600' or .='610' or .='611']]" mode="bf-agent"/>
   </xsl:template>
   
   <xsl:template name="instance-agents">
-    <xsl:apply-templates select="map:map[@key='creation']/map:array[@key='maker']/map:map" mode="agent"/>
-    <xsl:apply-templates select="map:array[@key='agent']/map:map" mode="agent"/>
-    <xsl:apply-templates select="map:array[@key='organisation']/map:map" mode="agent"/>
-    <xsl:apply-templates select="map:array[@key='subject']/map:map[map:string[@key='@tag'][.='600' or .='610' or .='611']]" mode="agent"/>
+    <xsl:apply-templates select="map:map[@key='creation']/map:array[@key='maker']/map:map" mode="bf-agent"/>
+    <xsl:apply-templates select="map:array[@key='agent']/map:map" mode="bf-agent"/>
+    <xsl:apply-templates select="map:array[@key='organisation']/map:map" mode="bf-agent"/>
+    <xsl:apply-templates select="map:array[@key='subject']/map:map[map:string[@key='@tag'][.='600' or .='610' or .='611']]" mode="bf-agent"/>
   </xsl:template>
   
   <xsl:template name="agencies">
@@ -350,7 +350,7 @@
   
   <!-- specific modes of processing maps, arrays and strings: -->
   
-  <xsl:template match="map:map" mode="agent">
+  <xsl:template match="map:map" mode="bf-agent">
     <xsl:variable name="source-system">
       <xsl:call-template name="get-source-system"/>
     </xsl:variable>
@@ -418,7 +418,7 @@
     </xsl:choose>
   </xsl:template>
   
-  <xsl:template match="map:map" mode="agent-only">
+  <xsl:template match="map:map" mode="bf-agent-only">
     <map>
       <xsl:call-template name="linked-url"/>
       <string key="label">
@@ -612,7 +612,7 @@
     </map>
   </xsl:template>
   
-  <xsl:template match="map:string" mode="place">
+  <xsl:template match="map:string" mode="bf-place">
     <map key="place">
       <string key="Place">
         <xsl:apply-templates select="." mode="strip-trailing-chars"/>
@@ -639,7 +639,7 @@
           <map>
             <xsl:apply-templates select="map:array[@key='date']/map:map" mode="bf-date"/>
             <xsl:apply-templates select="map:map[@key='date']" mode="bf-date"/>
-            <xsl:apply-templates select="map:map[@key='place']" mode="place"/>
+            <xsl:apply-templates select="map:map[@key='place']" mode="bf-place"/>
             <xsl:apply-templates select="map:array[@key='publisher']" mode="provision"/>
             <xsl:apply-templates select="map:array[@key='maker']/map:map" mode="provision"/>
           </map>
@@ -648,10 +648,11 @@
     </xsl:if-->
     <xsl:choose>
       <xsl:when test="map:array[@key='publisher']"> <!-- EOS pattern of recording -->
+        <!-- N.B. Publication is a sub-class of ProvisionActivity: -->
         <map key="publication">
           <array key="Publication">
             <map>
-              <xsl:apply-templates select="map:array[@key='date']/map:map" mode="bf-date"/>
+              <xsl:apply-templates select="map:array[@key='date']" mode="bf-date"/>
               <xsl:apply-templates select="map:map[@key='date']" mode="bf-date"/>
               <xsl:apply-templates select="map:array[@key='publisher']" mode="publication-agent"/>
               <xsl:apply-templates select="map:array[@key='publisher']" mode="publication-place"/>
@@ -664,7 +665,7 @@
           <array key="ProvisionActivity">
             <map>
               <xsl:apply-templates select="map:map[@key='date']" mode="bf-date"/>
-              <xsl:apply-templates select="map:map[@key='place']" mode="place"/>
+              <xsl:apply-templates select="map:map[@key='place']" mode="bf-place"/>
               <xsl:apply-templates select="map:array[@key='maker']" mode="publication-agent"/>
             </map>
           </array>
@@ -678,7 +679,7 @@
       <xsl:when test="@key='maker'">
         <map key="agent">
           <array key="Agent">
-            <xsl:apply-templates select="map:map" mode="agent"/>
+            <xsl:apply-templates select="map:map" mode="bf-agent"/>
           </array>
         </map>
       </xsl:when>
@@ -708,7 +709,7 @@
   <xsl:template match="map:map" mode="provision">
     <map>
       <xsl:apply-templates select="map:array[@key='name']" mode="names"/>
-      <xsl:apply-templates select="map:string[@key='place']" mode="place"/>
+      <xsl:apply-templates select="map:string[@key='place']" mode="bf-place"/>
     </map>
   </xsl:template>
   
@@ -718,7 +719,7 @@
         <xsl:choose>
           <xsl:when test="@key='maker'">
             <!--string>[agent here]</string-->
-            <xsl:apply-templates select="map:map" mode="agent-only"/>
+            <xsl:apply-templates select="map:map" mode="bf-agent-only"/>
           </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates select="map:map/map:array[@key='name']/map:map" mode="bf-name"/>
@@ -790,6 +791,14 @@
 
 <!-- low-level generic templates: -->
 
+  <xsl:template match="map:array" mode="bf-date">
+    <xsl:if test="map:map">
+      <array key="date">
+        <xsl:apply-templates select="map:map/map:string[@key='value']" mode="string"/>
+      </array>
+    </xsl:if>
+  </xsl:template>
+  
   <xsl:template match="map:map" mode="bf-date">
     <string key="date"><xsl:apply-templates select="map:string[@key='value']" mode="strip-trailing-chars"/></string>
   </xsl:template>
