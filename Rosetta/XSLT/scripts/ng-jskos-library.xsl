@@ -10,7 +10,7 @@
 		<xsl:for-each select="map:map[@key='_source']">
 
 			<xsl:apply-templates select="map:array[@key='term']/map:map" mode="prefLabel"/>
-			<xsl:apply-templates select="map:array[@key='description']/map:map" mode="scopeNote"/>
+			<xsl:apply-templates select="map:array[@key='description']/map:map" mode="definition"/>
 			<xsl:apply-templates select="map:array[@key='parent']" mode="broader"/>
 			<xsl:apply-templates select="map:array[@key='@hierarchy']/map:array[1]" mode="ancestors"/> <!-- only one set of ancestor concepts allowed by JSKOS -->
 			<xsl:apply-templates select="map:array[@key='@hierarch']" mode="inScheme"/>
@@ -29,12 +29,35 @@
 		</xsl:if>
 	</xsl:template>
 	
-	<xsl:template match="map:map" mode="scopeNote">
+	<xsl:template match="map:map" mode="definition">
 		<xsl:if test="map:string[@key='status'][.='Active']">
-			<map key="scopeNote">
+			<map key="definition">
 				<array key="en">
 					<string><xsl:value-of select="map:string[@key='value']"/></string>
 				</array>
+			</map>
+		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template match="map:array" mode="exact-match">
+		<xsl:param name="record-id"/>
+		<xsl:param name="target"/>
+		<xsl:if test="map:map[map:string[@key='type'][.='PID (external)']]">
+			<map>
+				<xsl:call-template name="context">
+					<xsl:with-param name="target" select="$target"/>
+				</xsl:call-template>				
+				<array key="type"><string>http://www.w3.org/2004/02/skos/core#exactMatch</string></array>
+				<map key="from">
+					<array key="memberSet">
+						<map><string key="uri"><xsl:value-of select="concat($ng-prefix, $record-id)"/></string></map>
+					</array>
+				</map>
+				<map key="to">
+					<array key="memberSet">
+						<xsl:apply-templates select="map:map[map:string[@key='type'][.='PID (external)']]" mode="related-url"/>
+					</array>
+				</map>				
 			</map>
 		</xsl:if>
 	</xsl:template>
@@ -72,6 +95,12 @@
 					<xsl:with-param name="node" select="map:map[@key='summary']/map:string[@key='title']"/>
 				</xsl:call-template>
 			</map>
+		</map>
+	</xsl:template>
+	
+	<xsl:template match="map:map" mode="related-url">
+		<map>
+			<string key="uri"><xsl:value-of select="map:string[@key='value']"/></string>
 		</map>
 	</xsl:template>
 	
