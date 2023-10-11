@@ -232,7 +232,7 @@
         <string key="@context">https://linked.art/ns/v1/linked-art.json</string>        
       </xsl:when>
       <xsl:when test="$target='jskos'">
-        <string key="@context">http://richardofsussex.me.uk/ng/jskos.json</string>
+        <string key="@context">https://gbv.github.io/jskos/context.json</string>
       </xsl:when>
       <xsl:when test="$target='bibframe'">
         <string key="@context">http://richardofsussex.me.uk/ng/bibframe-context.json</string>
@@ -243,7 +243,7 @@
   <xsl:template name="record-id">
     <xsl:param name="target"/>
     <xsl:choose>
-      <xsl:when test="$target='linked-data'">
+      <xsl:when test="$target='linked-art'">
         <xsl:call-template name="find-and-process">
           <xsl:with-param name="path" select="'_id'"/>
           <xsl:with-param name="key" select="'id'"/>
@@ -281,11 +281,32 @@
           </xsl:choose>
         </string>
       </xsl:when>
-      <xsl:when test="$target='jskos'">
+      <!--xsl:when test="$target='jskos'">
         <array key="type">
           <string>https://gbv.github.io/jskos/context.json</string>
         </array>
+      </xsl:when-->
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="uncool-uri">
+    <xsl:param name="prefix"/>
+    <xsl:param name="suffix"/>
+    <xsl:param name="slug"/>
+    <xsl:choose>
+      <xsl:when test="string($slug)">
+        <string key="id"><xsl:value-of select="concat($ng-prefix, 'term/', translate($slug, ' ', '_'))"/></string>
       </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="slug">
+          <xsl:if test="string($prefix)"><xsl:value-of select="concat($prefix, ' ')"/></xsl:if>
+          <xsl:call-template name="find-node">
+            <xsl:with-param name="path" select="'summary.title'"/>
+          </xsl:call-template>
+          <xsl:if test="string($suffix)"><xsl:value-of select="concat(' ', $suffix)"/></xsl:if>
+        </xsl:variable>
+        <string key="id"><xsl:value-of select="concat($ng-prefix, 'term/', translate($slug, ' ', '_'))"/></string>
+      </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
@@ -308,6 +329,21 @@
       <!--xsl:with-param name="prefix" select="concat($ng-prefix, $path, '/')"/-->
       <xsl:with-param name="prefix" select="$ng-prefix"/>
     </xsl:call-template>
+  </xsl:template>
+  
+  <xsl:template name="get-base-type">
+    <xsl:value-of select="ancestor::map:map[@key='_source']/map:map[@key='@datatype']/map:string[@key='base']"/>
+  </xsl:template>
+  
+  <xsl:template name="get-base-linked-data-entity">
+    <xsl:variable name="base-type">
+      <xsl:call-template name="get-base-type"/>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$base-type='object'">HumanMadeObject</xsl:when>
+      <xsl:when test="$base-type='event'">Event</xsl:when>
+      <xsl:otherwise><xsl:value-of select="$base-type"/></xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 	
 </xsl:stylesheet>
