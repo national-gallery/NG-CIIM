@@ -1,0 +1,86 @@
+{
+  "target_format": {
+    "#type": "switch",
+    "value": "$.@datatype.base",
+    "cases": {
+      "concept": "jskos",
+      "place": "jskos",
+      "object": "linked_art",
+      "agent": "linked_art",
+      "event": "linked_art",
+      "package": "linked_art",
+      "publication": "bibframe"
+    }
+  },
+  "entity_type_for_url": {
+    "#type": "switch",
+    "value": "$.@datatype.base",
+    "cases": {
+      "concept": "concept",
+      "place": "place",
+	  "location": "place",
+      "object": "object",
+      "agent":  {
+          "#type": "switch",
+          "value": "{$.@datatype.actual}",
+          "cases": {
+            "Individual": "person",
+            "Organisation": "group"
+          },
+          "default": "person"
+      },
+      "event": "event",
+      "package": "set",
+      "publication": "text"
+    },
+	"default": "linked-art"
+  },
+  "uri_url": {
+    "uri": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}"
+  },
+  "id_url": {
+    "id": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}"
+  },
+  "generic_url": {
+	"uri": {
+		"#type": "string_join",
+		"values": [
+			"{%.linked_art_base_url}",
+			{ "#type": "entity_type_for_url" },
+			"/",
+			"{$.@admin.uid}"
+		]
+	}
+  },
+  "jskos_context_url": {
+    "@context": {
+      "@import": "https:\/\/gbv.github.io\/jskos\/context.json",
+      "_exactMatch": "http:\/\/www.w3.org\/2004\/02\/skos\/core#exactMatch"
+    }
+  },
+  "bibframe_context_url": {
+    "@context": "http://richardofsussex.me.uk/ng/bibframe-context.json"
+  },
+  "jskos_context": {
+    "#type": "merge",
+    "values": [
+      {
+        "#type": "jskos_context_url"
+      },
+      {
+        "#type": "uri_url"
+      }
+    ]
+  },
+  "bibframe_context": {
+    "#type": "merge",
+    "values": [
+      {
+        "#type": "bibframe_context_url"
+      },
+      {
+        "#type": "id_url"
+      }
+    ]
+  }
+}
