@@ -1,0 +1,41 @@
+{
+  "#type": "scope",
+  "scope": {
+    "#type": "http_request",
+    "url": "{[R]%.url}/_search",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "#type": "fallback",
+      "strategies": [
+        "$",
+        {
+          "#type": "literal",
+          "value": {}
+        }
+      ]
+    },
+    "require_allowed": true,
+    "require_response": true
+  },
+  "value": {
+    "results": {
+      "#type": "fallback",
+      "strategies": [
+        {
+          "#type": "as_list",
+          "values": "$.hits.hits[*]._source"
+        },
+        {
+          "#type": "literal",
+          "value": []
+        }
+      ]
+    },
+    "stats": {
+      "total": "$.hits.total.value"
+    }
+  }
+}
