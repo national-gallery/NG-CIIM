@@ -1,0 +1,4 @@
+{
+  "#type": "as_list",
+  "values": "$.data[0]"
+}
