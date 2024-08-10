@@ -1,0 +1,17 @@
+{
+  "#type": "switch",
+  "value": {
+    "#type": "target_format"
+  },
+  "cases": {
+    "jskos": {
+      "#type": "process_jskos"
+    },
+    "linked_art": {
+      "#type": "process_linked_art"
+    },
+    "bibframe": {
+      "#type": "process_bibframe"
+    }
+  }
+}
