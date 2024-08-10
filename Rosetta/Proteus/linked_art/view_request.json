@@ -1,0 +1,17 @@
+{
+  "request": {
+    "query": {
+      "term": {
+        "@admin.uid": {
+          "#type": "require_throw",
+          "value": "$.path.parameters.PID",
+          "message": "PID must be specified in path parameter",
+          "args": {
+            "status": 400
+          }
+        }
+      }
+    },
+    "size": 1
+  }
+}
