@@ -30,6 +30,9 @@
         "#type": "linked_art_death"
       },
       {
+        "#type": "linked_art_produced_works"
+      },
+      {
         "#type": "linked_art_referred_to_by"
       },
       {
@@ -455,6 +458,18 @@
         }
       }
     }
+  },
+  "linked_art_produced_works": {
+    "#type": "require",
+    "require": "$[?(@.@datatype.base == 'agent')]",
+    "value": {
+		"carried_out": {
+			"#type": "flatten",
+			"values": {
+				"#type": "linked_art_works_by_artist"
+			} 
+		}
+	}
   },
   "linked_art_referred_to_by": {
     "referred_to_by": {
@@ -1253,6 +1268,23 @@
       }
     }
   },
+  "linked_art_producer_of": {
+    "#type": "for_each",
+    "values": "$.hits.hits",
+    "spec": {
+		"#type": "for_each",
+		"values": "$._source",
+		"spec": {
+			"#type": "flatten",
+			"values": {
+          		 "type": "Production" ,
+            	 "produced": {
+              		"#type": "link_to_record"
+				}
+			}
+        }
+    }
+  },
   "linked_art_production_place": {
     "#type": "for_each",
     "values": "$.place",
@@ -1481,7 +1513,23 @@
     "require_evaluate": "true",
     "expression": "$.value"
   },
-  "link_to_record": {
+    "linked_art_works_by_artist": {
+    "#type": "chain",
+    "chain": [
+      {
+        "#type": "http_request",
+        "method": "GET",
+        "url": "{%.es_base_url}/_search?q=creation.maker.@admin.uid:{$.@admin.uid}&size=100",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      {
+        "#type": "linked_art_producer_of"
+      }
+    ]
+  },
+"link_to_record": {
     "#type": "merge",
     "values": [
       {
