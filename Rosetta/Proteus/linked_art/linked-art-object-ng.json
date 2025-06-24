@@ -1,0 +1,1546 @@
+{
+  "process_linked_art_object": {
+    "#type": "merge",
+    "values": [
+      {
+        "#type": "linked_art_context"
+      },
+      {
+        "#type": "linked_art_type"
+      },
+      {
+        "#type": "linked_art_label"
+      },
+      {
+        "#type": "linked_art_classified_as"
+      },
+      {
+        "#type": "linked_art_identified_by"
+      },
+      {
+        "#type": "linked_art_equivalent"
+      },
+      {
+        "#type": "linked_art_event_date"
+      },
+      {
+        "#type": "linked_art_birth"
+      },
+      {
+        "#type": "linked_art_death"
+      },
+      {
+        "#type": "linked_art_produced_works"
+      },
+      {
+        "#type": "linked_art_referred_to_by"
+      },
+      {
+        "#type": "linked_art_member_of"
+      },
+      {
+        "#type": "linked_art_subject_of"
+      },
+      {
+        "#type": "linked_art_attributed_by"
+      },
+      {
+        "#type": "linked_art_part_of"
+      },
+      {
+        "#type": "linked_art_dimension"
+      },
+      {
+        "#type": "linked_art_made_of"
+      },
+      {
+        "#type": "linked_art_member"
+      },
+      {
+        "#type": "linked_art_part_details"
+      },
+      {
+        "#type": "linked_art_current_owner"
+      },
+      {
+        "#type": "linked_art_current_custodian"
+      },
+      {
+        "#type": "linked_art_current_location"
+      },
+      {
+        "#type": "linked_art_carries"
+      },
+      {
+        "#type": "linked_art_shows"
+      },
+      {
+        "#type": "linked_art_produced_by"
+      }
+    ]
+  },
+  "linked_art_context": {
+    "#type": "merge",
+    "values": [
+      {
+        "@context": "https://linked.art/ns/v1/linked-art.json"
+      },
+      {
+        "#type": "id_url"
+      }
+    ]
+  },
+  "linked_art_context_url": {
+    "@context": "https://linked.art/ns/v1/linked-art.json"
+  },
+  "linked_art_type": {
+    "type": {
+      "#type": "switch",
+      "value": "{$.@datatype.base}",
+      "cases": {
+        "event": "Event",
+        "agent": {
+          "#type": "switch",
+          "value": "{$.@datatype.actual}",
+          "cases": {
+            "Individual": "Person",
+            "Organisation": "Group"
+          },
+          "default": "Agent (unspecified)"
+        },
+        "package": "Set",
+        "object": "HumanMadeObject"
+      },
+      "default": "Concept"
+    }
+  },
+  "linked_art_label": {
+    "_label": "{$.summary.title}"
+  },
+  "linked_art_classified_as": {
+    "classified_as": {
+      "#type": "flatten",
+      "values": [
+        {
+          "#type": "linked_art_classified_as_classification"
+        },
+        {
+          "#type": "linked_art_classified_as_category"
+        },
+        {
+          "#type": "linked_art_classified_as_function"
+        },
+        {
+          "#type": "linked_art_classified_as_genre"
+        },
+        {
+          "#type": "linked_art_classified_as_physical"
+        },
+        {
+          "#type": "linked_art_classified_as_legal"
+        }
+      ]
+    }
+  },
+  "linked_art_classified_as_classification": {
+    "#type": "for_each",
+    "values": "$.classification",
+    "spec": {
+      "type": "Type",
+      "classified_as": [
+        {
+          "id": {
+            "#type": "switch",
+            "value": "$.type",
+            "cases": {
+              "classification": "http://vocab.getty.edu/aat/300435444",
+              "school": "http://vocab.getty.edu/aat/300015646"
+            }
+          },
+          "type": "Type",
+          "_label": "$.type"
+        }
+      ],
+      "content": "$.value"
+    }
+  },
+  "linked_art_classified_as_category": {
+    "#type": "for_each",
+    "values": "$.category",
+    "spec": {
+      "type": "Type",
+      "classified_as": [
+        {
+          "type": "Type",
+          "_label": "$.type"
+        }
+      ],
+      "content": "$.value"
+    }
+  },
+  "linked_art_classified_as_function": {
+    "#type": "for_each",
+    "values": "$.function",
+    "spec": {
+	  "#type": "merge",
+	  "values": [
+        { "type": "Type" },
+        { "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300435444",
+            "type": "Type",
+            "_label": "Classification",
+            "classified_as": [
+              {
+                "id": "http://vocab.getty.edu/aat/300068844",
+                "type": "Type",
+                "_label": "function"
+              }
+            ]
+          }
+        ] },
+	    { "#type": "generic_url" },
+        { "_label": "function" },
+        { "content": "$.summary.title" }
+      ]
+    }
+  },
+  "linked_art_classified_as_genre": {
+    "#type": "for_each",
+    "values": "$.genre",
+    "spec": {
+  	  "#type": "merge",
+	  "values": [
+      	{ "type": "Type" },
+      	{ "classified_as": [
+        	{
+          	"id": "http://vocab.getty.edu/aat/300435444",
+          	"type": "Type",
+          	"_label": "Classification",
+         	"classified_as": [
+            	{
+              	"id": "http://vocab.getty.edu/aat/300056462",
+              	"type": "Type",
+              	"_label": "genre"
+            	}
+          	]
+          }
+      	]},
+		{ "#type": "generic_url" },
+	    { "_label": "genre" },
+      	{ "content": "$.summary.title" }			
+	  ]
+    }
+  },
+  "linked_art_classified_as_physical": {
+    "#type": "for_each",
+    "values": "$.physical",
+    "spec": {
+      "type": "Type",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435444",
+          "type": "Type",
+          "_label": "Classification",
+          "classified_as": [
+            {
+              "type": "Type",
+              "_label": "$.@link.role[0].value"
+            }
+          ]
+        }
+      ],
+      "id": "{%.linked_art_base_url}{$.@admin.uid}",
+      "_label": "$.@link.role[0].value",
+      "content": "$.summary.title"
+    }
+  },
+  "linked_art_classified_as_legal": {
+    "#type": "for_each",
+    "values": "$.legal[?(@.status)]",
+    "spec": {
+      "type": "Linguistic Object",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435444",
+          "type": "Type",
+          "_label": "Classification",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300417633",
+              "type": "Type",
+              "_label": "Legal Status"
+            }
+          ]
+        }
+      ],
+      "_label": "Legal Status",
+      "content": "$.status"
+    }
+  },
+  "linked_art_identified_by": {
+    "identified_by": {
+      "#type": "flatten",
+      "values": [
+        {
+          "#type": "linked_art_identified_by_name"
+        },
+        {
+          "#type": "linked_art_identified_by_title"
+        },
+        {
+          "#type": "linked_art_identified_by_identifier"
+        }
+      ]
+    }
+  },
+  "linked_art_identified_by_name": {
+    "#type": "for_each",
+    "values": "$.name",
+    "spec": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "#type": "linked_art_name_type"
+        }
+      ],
+      "content": "$.value",
+      "part": {
+        "#type": "analyse_primary_name"
+      }
+    }
+  },
+  "linked_art_identified_by_title": {
+    "#type": "for_each",
+    "values": "$.title",
+    "spec": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        },
+        {
+          "id": {
+            "#type": "switch",
+            "value": "$.type",
+            "cases": {
+              "full title": "http://vocab.getty.edu/aat/300417476",
+              "short title": "http://vocab.getty.edu/aat/300417477",
+              "foreign language title": "http://vocab.getty.edu/aat/300417478",
+              "exhibition title": "http://vocab.getty.edu/aat/300417478",
+              "lender's title": "http://vocab.getty.edu/aat/300417478",
+              "previous title": "http://vocab.getty.edu/aat/300449151",
+              "previous short title": "http://vocab.getty.edu/aat/300449151"
+            }
+          },
+          "type": "Type",
+          "_label": {
+            "#type": "switch",
+            "value": "$.type",
+            "cases": {
+              "full title": "descriptors (controlled vocabulary)",
+              "short title": "alternate descriptors (controlled vocabulary)",
+              "foreign language title": "used for terms (controlled vocabulary)",
+              "exhibition title": "used for terms (controlled vocabulary)",
+              "lender's title": "used for terms (controlled vocabulary)",
+              "previous title": "historical terms",
+              "previous short title": "historical terms"
+            }
+          }
+        }
+      ],
+      "content": "$.value"
+    }
+  },
+  "linked_art_identified_by_identifier": {
+    "#type": "for_each",
+    "values": "$.identifier",
+    "spec": {
+      "#type": "switch",
+      "value": "{$.type}",
+      "cases": {
+        "display number": {
+          "type": "Identifier",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300312355",
+              "type": "Type",
+              "_label": "Accession Number"
+            }
+          ],
+          "_label": "$.type",
+          "content": "$.value"
+        },
+        "PID": {
+          "type": "Identifier",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300387580",
+              "type": "Type",
+              "_label": "Persistent Identifier"
+            }
+          ],
+          "_label": "$.type",
+          "content": "$.value"
+        },
+        "Previous Object Number": {
+          "type": "Identifier",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300312355",
+              "type": "Type",
+              "_label": "$.type"
+            }
+          ],
+          "_label": "$.type",
+          "content": "$.value"
+        }
+      }
+    }
+  },
+  "linked_art_equivalent": {
+    "equivalent": {
+      "#type": "for_each",
+      "values": "$.identifier[?(@.type == 'PID (external)')]",
+      "spec": {
+        "id": "$.value",
+        "type": {
+          "#type": "switch",
+          "value": "$$.data.@datatype.actual",
+          "cases": {
+            "Individual": "Person"
+          },
+          "default": "Object"
+        },
+        "_label": "$$.data.summary.title"
+      }
+    }
+  },
+  "linked_art_event_date": {
+    "timespan": {
+      "#type": "for_each",
+      "values": "$[?(@.@datatype.base == 'event')].date",
+      "spec": {
+        "#type": "linked_art_process_date"
+      }
+    }
+  },
+  "linked_art_birth": {
+    "#type": "require",
+    "require": "$[?(@.@datatype.base == 'agent' && @.birth.date)]",
+    "value": {
+      "born": {
+        "type": "Birth",
+        "timespan": {
+          "#type": "scope",
+          "scope": "$.birth.date",
+          "value": {
+            "#type": "linked_art_process_date"
+          }
+        }
+      }
+    }
+  },
+  "linked_art_death": {
+    "#type": "require",
+    "require": "$[?(@.@datatype.base == 'agent' && @.death.date)]",
+    "value": {
+      "died": {
+        "type": "Death",
+        "timespan": {
+          "#type": "scope",
+          "scope": "$.death.date",
+          "value": {
+            "#type": "linked_art_process_date"
+          }
+        }
+      }
+    }
+  },
+  "linked_art_produced_works": {
+    "#type": "require",
+    "require": "$[?(@.@datatype.base == 'agent')]",
+    "value": {
+		"carried_out": {
+			"#type": "flatten",
+			"values": {
+				"#type": "linked_art_works_by_artist"
+			} 
+		}
+	}
+  },
+  "linked_art_referred_to_by": {
+    "referred_to_by": {
+      "#type": "as_list",
+      "values": {
+        "#type": "flatten",
+        "values": [
+          {
+            "#type": "linked_art_referred_to_by_description"
+          },
+          {
+            "#type": "linked_art_referred_to_by_materials"
+          },
+          {
+            "#type": "linked_art_referred_to_by_measurements"
+          },
+          {
+            "#type": "linked_art_referred_to_by_provenance"
+          },
+          {
+            "#type": "linked_art_referred_to_by_legal"
+          },
+          {
+            "#type": "linked_art_referred_to_by_research_note"
+          }
+        ]
+      }
+    }
+  },
+  "linked_art_referred_to_by_desc_object": {
+    "#type": "for_each",
+    "values": "$.description",
+    "spec": {
+      "type": "LinguisticObject",
+      "content": "$.value"
+    }
+  },
+  "linked_art_referred_to_by_description": {
+    "#type": "for_each",
+    "values": "$.description[?(@.source !== 'TMS' || @.status == 'Active')]",
+    "spec": {
+      "#type": "switch",
+      "value": "$.type",
+      "cases": {
+        "short text": {
+          "type": "LinguisticObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300435416",
+              "type": "Type",
+              "_label": "Description",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300418049",
+                  "type": "Type",
+                  "_label": "short text"
+                }
+              ]
+            }
+          ],
+          "content": "$.value"
+        },
+        "long text": {
+          "type": "LinguisticObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300435416",
+              "type": "Type",
+              "_label": "Description",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300418049",
+                  "type": "Type",
+                  "_label": "long text"
+                }
+              ]
+            }
+          ],
+          "content": "$.value"
+        },
+        "web text": {
+          "type": "LinguisticObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300435422",
+              "type": "Type",
+              "_label": "Biography Statement",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300418049",
+                  "type": "Type",
+                  "_label": "web text"
+                }
+              ]
+            }
+          ],
+          "content": "$.value"
+        }
+      }
+    }
+  },
+  "linked_art_referred_to_by_materials": {
+    "#type": "for_each",
+    "values": "$.material[?(@.value)]",
+    "spec": {
+      "type": "LinguisticObject",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435429",
+          "type": "Type",
+          "_label": "Material Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ],
+      "content": "$.value"
+    }
+  },
+  "linked_art_referred_to_by_measurements": {
+    "#type": "for_each",
+    "values": "$.measurements[?(@.display && @.type !== 'Packing Case WxDxH')]",
+    "spec": {
+      "type": "LinguisticObject",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ],
+      "content": "$.display"
+    }
+  },
+  "linked_art_referred_to_by_provenance": {
+    "#type": "for_each",
+    "values": "$.provenance.text[?(@.value)]",
+    "spec": {
+      "type": "LinguisticObject",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300055863",
+              "type": "Type",
+              "_label": "Provenance Statement"
+            }
+          ]
+        }
+      ],
+      "content": "$.value"
+    }
+  },
+  "linked_art_referred_to_by_legal": {
+    "#type": "chain",
+    "chain": [
+      {
+        "#type": "entries",
+        "map": "$.legal"
+      },
+      {
+        "#type": "require",
+        "require": "$[?(@.key =~ /credit*/)]",
+        "value": "$"
+      },
+      {
+        "type": "LinguisticObject",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300026687",
+            "type": "Type",
+            "_label": "Credit Statement",
+            "classified_as": [
+              {
+                "id": "http://vocab.getty.edu/aat/300418049",
+                "type": "Type",
+                "_label": {
+                  "#type": "switch",
+                  "value": "{$.[?(@.key =~ /credit*/)].key}",
+                  "cases": {
+                    "credit": "Full Text",
+                    "credit_long": "Full Text",
+                    "credit_AIL": "Acceptance in Lieu Text",
+                    "credit_short": "Brief Text"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "content": "$[?(@.key =~ /credit*/)].value"
+      }
+    ]
+  },
+  "linked_art_referred_to_by_research_note": {
+    "#type": "for_each",
+    "values": "$.note[?(@.project=='lbso')]",
+    "spec": {
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300265639",
+          "type": "Type",
+          "_label": "research notes"
+        }
+      ],
+      "type": "$.type",
+      "content": "$.value"
+    }
+  },
+  "linked_art_member_of": {
+    "member_of": {
+      "#type": "for_each",
+      "values": "$.package",
+      "spec": {
+        "#type": "link_to_record"
+      }
+    }
+  },
+  "linked_art_subject_of": {
+    "subject_of": {
+      "#type": "for_each",
+      "values": "$.bibliography",
+      "spec": {
+		"#type": "merge",
+		"values": [
+		  { "type": "LinguisticObject" },
+          {
+		    "classified_as": [
+              {
+                "id": "http://vocab.getty.edu/aat/300111999",
+                "type": "Type",
+                "_label": "publications (documents)"
+              }
+            ]
+		  },
+          { "#type": "generic_url" },
+          { "_label": "$.summary.title" },
+          {
+		    "referred_to_by": {
+               "#type": "flatten",
+               "values": [
+                 {
+                   "#type": "linked_art_subject_of_note"
+                 },
+                 {
+                   "#type": "linked_art_subject_of_type"
+                 },
+                 {
+                   "#type": "linked_art_subject_of_page"
+                 }
+               ]
+           }
+		  }
+		]
+      }
+    }
+  },
+  "linked_art_subject_of_note": {
+    "#type": "for_each",
+    "values": "$.@link.details.note.value",
+    "spec": {
+      "type": "LinguisticObject",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300379665",
+          "type": "Type",
+          "_label": "note type"
+        }
+      ],
+      "content": "$"
+    }
+  },
+  "linked_art_subject_of_type": {
+    "#type": "for_each",
+    "values": "$.@link.details.type",
+    "spec": {
+      "type": "LinguisticObject",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300379665",
+          "type": "Type",
+          "_label": "note type"
+        }
+      ],
+      "content": "$"
+    }
+  },
+  "linked_art_subject_of_page": {
+    "#type": "for_each",
+    "values": "$.@link.details.page",
+    "spec": {
+      "type": "LinguisticObject",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300445022",
+          "type": "Type",
+          "_label": "page reference"
+        }
+      ],
+      "content": "$"
+    }
+  },
+  "linked_art_attributed_by": {
+    "attributed_by": {
+      "#type": "for_each",
+      "values": "$.provenance.agent",
+      "spec": {
+        "type": "AttributeAssignment",
+        "assigned_property": "former_or_current_owner",
+        "assigned": [
+          {
+            "#type": "link_to_record"
+          }
+        ]
+      }
+    }
+  },
+  "linked_art_part_of": {
+    "part_of": {
+      "#type": "for_each",
+      "values": "$.parent",
+      "spec": {
+        "#type": "merge",
+        "values": [
+          {
+            "#type": "linked_record_entity_type"
+          },
+          {
+            "referred_to_by": {
+              "#type": "for_each",
+              "values": "$.@link.note.value",
+              "spec": {
+                "type": "LinguisticObject",
+                "classified_as": [
+                  {
+                    "id": "http://vocab.getty.edu/aat/300379665",
+                    "type": "Type",
+                    "_label": "note type"
+                  }
+                ],
+                "_label": "note",
+                "content": "$"
+              }
+            }
+          },
+          {
+            "id": "{%.linked_art_base_url}{$.@admin.uid}"
+          },
+          {
+            "_label": "$.summary.title"
+          }
+        ]
+      }
+    }
+  },
+  "linked_art_dimension": {
+    "dimension": {
+      "#type": "flatten",
+      "values": [
+        {
+          "#type": "for_each",
+          "values": "$.measurements[?(@.type !== 'Packing Case WxDxH')]",
+          "spec": {
+            "#type": "for_each",
+            "values": "$.dimensions",
+            "spec": {
+              "type": "Dimension",
+              "classified_as": [
+                {
+                  "id": {
+                    "#type": "switch",
+                    "value": "{$.dimension}",
+                    "cases": {
+                      "Height": "http://vocab.getty.edu/aat/300055644",
+                      "Width": "http://vocab.getty.edu/aat/300055647",
+                      "Weight": "http://vocab.getty.edu/aat/300056240"
+                    }
+                  },
+                  "type": "Type",
+                  "_label": "$.dimension"
+                }
+              ],
+              "_label": "{$.dimension}: {$.value} {$.units}",
+              "value": {
+                "#type": "value_as_float"
+              },
+              "unit": {
+                "#type": "switch",
+                "value": "{$.units}",
+                "cases": {
+                  "cm": {
+                    "type": "MeasurementUnit",
+                    "id": "http://vocab.getty.edu/aat/300379098",
+                    "_label": "Centimeters (Measurements)"
+                  },
+                  "kg": {
+                    "type": "MeasurementUnit",
+                    "id": "http://vocab.getty.edu/aat/300379226",
+                    "_label": "Weight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "linked_art_made_of": {
+    "made_of": {
+      "#type": "for_each",
+      "values": "$.material[?(@.value)]",
+      "spec": {
+        "id": "{%.linked_art_base_url}concept/{$.@admin.uid}",
+        "type": "Material",
+        "_label": "$.value"
+      }
+    }
+  },
+  "linked_art_member": {
+    "member": {
+      "#type": "for_each",
+      "values": "$.object",
+      "spec": {
+        "type": "HumanMadeObject",
+        "id": "{%.linked_art_base_url}{$.@admin.uid}",
+        "identified_by": {
+          "#type": "for_each",
+          "values": "$.summary.title",
+          "spec": {
+            "type": "LinguisticObject",
+            "classified_as": [
+              {
+                "id": "http://vocab.getty.edu/aat/300435445",
+                "type": "Type",
+                "_label": "titles/names"
+              }
+            ],
+            "content": "$"
+          }
+        },
+        "_label": "$.summary.title"
+      }
+    }
+  },
+  "linked_art_part_details": {
+    "part": {
+      "#type": "flatten",
+      "values": [
+        {
+          "#type": "linked_art_part_made_of"
+        },
+        {
+          "#type": "linked_art_part_dimensions"
+        }
+      ]
+    }
+  },
+  "linked_art_part_made_of": {
+    "#type": "for_each",
+    "values": "$.material[?(@.@link.role[0].value)]",
+    "spec": {
+      "type": "HumanMadeObject",
+      "_label": "$.@link.role[0].value",
+      "classified_as": [
+        {
+          "id": {
+            "#type": "switch",
+            "value": "{$.@link.role[0].value}",
+            "cases": {
+              "medium": "http://vocab.getty.edu/aat/300010358",
+              "support": "http://vocab.getty.edu/aat/300014844"
+            }
+          },
+          "type": "Type",
+          "_label": "$.@link.role[0].value",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300241583",
+              "type": "Type",
+              "_label": "Part Type"
+            }
+          ]
+        }
+      ],
+      "made_of": [
+        {
+          "type": "Material",
+          "id": "{%.linked_art_base_url}concept/{$.@admin.uid}",
+          "_label": "$.summary.title"
+        }
+      ]
+    }
+  },
+  "linked_art_part_dimensions": {
+    "#type": "for_each",
+    "values": "$.measurements[?(@.type !== 'Packing Case WxDxH')]",
+    "spec": {
+      "type": "HumanMadeObject",
+      "_label": "$.display",
+      "dimension": {
+        "#type": "for_each",
+        "values": "$.dimensions",
+        "spec": {
+          "type": "Dimension",
+          "classified_as": [
+            {
+              "id": {
+                "#type": "switch",
+                "value": "{$.dimension}",
+                "cases": {
+                  "Height": "http://vocab.getty.edu/aat/300055644",
+                  "Width": "http://vocab.getty.edu/aat/300055647",
+                  "Depth": "http://vocab.getty.edu/aat/300072633",
+                  "Weight": "http://vocab.getty.edu/aat/300056240"
+                }
+              },
+              "type": "Type",
+              "_label": "$.dimension"
+            }
+          ],
+          "_label": "{$.dimension}: {$.value} {$.units}",
+          "value": {
+            "#type": "value_as_float"
+          },
+          "unit": {
+            "#type": "switch",
+            "value": "{$.units}",
+            "cases": {
+              "cm": {
+                "type": "MeasurementUnit",
+                "id": "http://vocab.getty.edu/aat/300379098",
+                "_label": "Centimeters (Measurements)"
+              },
+              "kg": {
+                "type": "MeasurementUnit",
+                "id": "http://vocab.getty.edu/aat/300379226",
+                "_label": "Weight"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "linked_art_current_owner": {
+    "current_owner": {
+      "#type": "as_list",
+      "values": {
+        "#type": "flatten",
+        "values": [
+          {
+            "#type": "current_owner_ng"
+          },
+          {
+            "#type": "current_owner_joint"
+          }
+        ]
+      }
+    }
+  },
+  "current_owner_ng": {
+    "#type": "for_each",
+    "values": "$.@datatype[?(@.base == 'object' || @.base == 'package')]",
+    "spec": {
+      "type": "Agent",
+      "id": "{%.linked_art_base_url}group/0P5X-0001-0000-0000",
+      "_label": "National Gallery, London"
+    }
+  },
+  "current_owner_joint": {
+    "#type": "for_each",
+    "values": "$.possession.agent[?(@.@link.role[0].value == 'Joint Owner with NG')]",
+    "spec": {
+      "#type": "linked_art_joint_owner"
+    }
+  },
+  "linked_art_ng": {
+    "#type": "switch",
+    "value": "{$}",
+    "cases": {
+      "object": {
+        "type": "Agent",
+        "id": "{%.linked_art_base_url}group/0P5X-0001-0000-0000",
+        "_label": "National Gallery, London"
+      },
+      "package": {
+        "type": "Agent",
+        "id": "{%.linked_art_base_url}group/0P5X-0001-0000-0000",
+        "_label": "National Gallery, London"
+      }
+    }
+  },
+  "linked_art_current_custodian": {
+    "current_custodian": {
+      "#type": "for_each",
+      "values": "$.@datatype.base",
+      "spec": {
+        "#type": "linked_art_ng"
+      }
+    }
+  },
+  "linked_art_joint_owner": {
+	"#type": "merge",
+	"values": [
+    	{ "type": "Agent" },
+		{ "#type": "generic_url" },
+    	{ "_label": "$.summary.title" }
+	]
+  },
+  "linked_art_current_location": {
+    "#type": "require",
+    "require": "$.location.current",
+    "value": {
+      "#type": "scope",
+      "scope": "$.location.current",
+      "value": {
+        "#type": "fallback",
+        "strategies": [
+          {
+            "#type": "require",
+            "require": "$.@link.supplement",
+            "value": {
+              "current_location": {
+                "type": "Place",
+                "_label": "$.@link.supplement"
+              }
+            }
+          },
+          {
+            "current_location": {
+				"#type": "merge",
+				"values": [
+              		{ "type": "Place" },
+					{ "#type": "generic_url" },
+              		{ "_label": "$.summary.title" }
+				]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "linked_art_carries": {
+    "carries": {
+      "#type": "for_each",
+      "values": "$.inscription",
+      "spec": {
+        "type": "LinguisticObject",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300028702",
+            "type": "Type",
+            "_label": "inscriptions"
+          }
+        ],
+        "_label": "$.summary",
+        "content": "$.transcription[0].value"
+      }
+    }
+  },
+  "linked_art_shows": {
+    "shows": {
+      "#type": "flatten",
+      "values": [
+        {
+          "#type": "linked_art_shows_classification"
+        },
+        {
+          "#type": "linked_art_shows_genre"
+        },
+        {
+          "#type": "linked_art_shows_style"
+        },
+        {
+          "#type": "linked_art_shows_subject"
+        }
+      ]
+    }
+  },
+  "linked_art_shows_classification": {
+    "#type": "for_each",
+    "values": "$.classification[?(@.type == 'school')]",
+    "spec": {
+      "type": "VisualItem",
+      "classified_as": [
+        {
+          "type": "Type",
+          "_label": "$.value",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300015646",
+              "type": "Type",
+              "_label": "School"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "linked_art_shows_genre": {
+    "#type": "for_each",
+    "values": "$.genre",
+    "spec": {
+      "type": "VisualItem",
+      "classified_as": [
+        {
+			"#type": "merge",
+			"values": [
+				{ "#type": "generic_url" },
+		        { "type": "Type" },
+          		{ "_label": "$.summary.title" },
+          		{ "classified_as": [
+            		{
+		              "id": "http://vocab.getty.edu/aat/300056462",
+        		      "type": "Type",
+		              "_label": "Genre"
+        		    }
+          		]
+        		}
+      		]
+		}
+		]
+    }
+  },
+  "linked_art_shows_style": {
+    "#type": "for_each",
+    "values": "$.style",
+    "spec": {
+      "type": "VisualItem",
+      "classified_as": [
+        {
+			"#type": "merge",
+			"values": [
+				{ "#type": "generic_url" },
+          		{ "type": "Type" },
+          		{ "_label": "$.summary.title" },
+          		{ "classified_as": [
+            		{
+		              "id": "http://vocab.getty.edu/aat/300015646",
+        		      "type": "Type",
+              		  "_label": "Styles and Periods"
+		            }
+        		]
+        		}
+			]
+		}
+      ]
+    }
+  },
+  "linked_art_shows_subject": {
+    "#type": "for_each",
+    "values": "$.subject",
+    "spec": {
+      "type": "VisualItem",
+      "classified_as": [
+        {
+          "#type": "link_to_record"
+        }
+      ]
+    }
+  },
+  "linked_art_produced_by": {
+    "produced_by": {
+      "#type": "for_each",
+      "values": "$.creation",
+      "spec": {
+        "type": "Production",
+        "timespan": {
+          "#type": "for_each",
+          "values": "$.date",
+          "spec": {
+            "#type": "linked_art_process_date"
+          }
+        },
+        "took_place_at": {
+          "#type": "linked_art_production_place"
+        },
+        "carried_out_by": {
+          "#type": "linked_art_production_agent"
+        }
+      }
+    }
+  },
+  "linked_art_producer_of": {
+    "#type": "for_each",
+    "values": "$.hits.hits",
+    "spec": {
+		"#type": "for_each",
+		"values": "$._source",
+		"spec": {
+			"#type": "flatten",
+			"values": {
+          		 "type": "Production" ,
+            	 "produced": {
+              		"#type": "link_to_record"
+				}
+			}
+        }
+    }
+  },
+  "linked_art_production_place": {
+    "#type": "for_each",
+    "values": "$.place",
+    "spec": {
+		"#type": "merge",
+		"values": [
+      		{ "type": "Place" },
+			{ "#type": "generic_url" },
+      		{ "_label": "$.summary.title" }
+		]
+    }
+  },
+  "linked_art_production_agent": {
+    "#type": "for_each",
+    "values": "$.maker",
+    "spec": {
+      "#type": "link_to_record"
+    }
+  },
+  "tidy_school_url": {
+    "#type": "chain",
+    "chain": [
+      "$.value",
+      {
+        "#type": "regex_replace",
+        "value": "$",
+        "pattern": " ",
+        "replacement": "_"
+      },
+      "{%.linked_art_base_url}school/{$}"
+    ]
+  },
+  "linked_record_entity_type": {
+    "#type": "chain",
+    "chain": [
+      {
+        "#type": "http_request",
+        "method": "GET",
+        "url": "{%.es_base_url}/_search?q=@admin.uid:{$.@admin.uid}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "$.hits.hits[0]._source",
+      {
+        "#type": "linked_art_type"
+      }
+    ]
+  },
+  "linked_art_name_type": {
+    "#type": "switch",
+    "value": "$.type",
+    "cases": {
+      "primary name": {
+        "id": "http://vocab.getty.edu/aat/300404654",
+        "type": "Type",
+        "_label": "Primary Name"
+      },
+      "sort name": {
+        "id": "http://vocab.getty.edu/aat/300451544",
+        "type": "Type",
+        "_label": "sort titles"
+      }
+    },
+    "default": {
+      "id": "http://vocab.getty.edu/aat/300435445",
+      "type": "Type",
+      "_label": "titles/names"
+    }
+  },
+  "analyse_primary_name": {
+    "#type": "flatten",
+    "values": {
+      "#type": "for_each",
+      "values": "$[?(@.type == 'primary name')]",
+      "spec": {
+        "#type": "flatten",
+        "values": [
+          {
+            "#type": "name_part_title"
+          },
+          {
+            "#type": "name_part_first"
+          },
+          {
+            "#type": "name_part_middle"
+          },
+          {
+            "#type": "name_part_last"
+          },
+          {
+            "#type": "name_part_suffix"
+          }
+        ]
+      }
+    }
+  },
+  "name_part_title": {
+    "#type": "require",
+    "require": "$[?(@.title)]",
+    "value": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404661",
+          "type": "Type",
+          "_label": "Title"
+        }
+      ],
+      "content": "$.title"
+    }
+  },
+  "name_part_first": {
+    "#type": "require",
+    "require": "$[?(@.first)]",
+    "value": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404651",
+          "type": "Type",
+          "_label": "Given Name"
+        }
+      ],
+      "content": "$.first"
+    }
+  },
+  "name_part_middle": {
+    "#type": "require",
+    "require": "$[?(@.middle)]",
+    "value": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404654",
+          "type": "Type",
+          "_label": "Middle Name"
+        }
+      ],
+      "content": "$.middle"
+    }
+  },
+  "name_part_last": {
+    "#type": "require",
+    "require": "$[?(@.last)]",
+    "value": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404652",
+          "type": "Type",
+          "_label": "Family Name"
+        }
+      ],
+      "content": "$.last"
+    }
+  },
+  "name_part_suffix": {
+    "#type": "require",
+    "require": "$[?(@.suffix)]",
+    "value": {
+      "type": "Name",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404661",
+          "type": "Type",
+          "_label": "Suffix"
+        }
+      ],
+      "content": "$.suffix"
+    }
+  },
+  "linked_art_process_date": {
+    "type": "TimeSpan",
+    "begin_of_the_begin": {
+      "#type": "earliest_date"
+    },
+    "end_of_the_end": {
+      "#type": "latest_date"
+    },
+    "_label": "$.value"
+  },
+  "earliest_date": {
+    "#type": "fallback",
+    "strategies": [
+      {
+        "#type": "require",
+        "require": "$[?(@.from =~ /\\d{4}/)]",
+        "value": "{$.from}-01-01T00:00:00Z"
+      },
+      {
+        "#type": "require",
+        "require": "$[?(@.from =~ /\\d{4}-\\d{2}/)]",
+        "value": "{$.from}-01T00:00:00Z"
+      },
+      {
+        "#type": "require",
+        "require": "$[?(@.from =~ /\\d{4}-\\d{2}-\\d{2}/)]",
+        "value": "{$.from}T00:00:00Z"
+      }
+    ]
+  },
+  "latest_date": {
+    "#type": "fallback",
+    "strategies": [
+      {
+        "#type": "require",
+        "require": "$[?(@.to =~ /\\d{4}/)]",
+        "value": "{$.to}-12-31T23:59:59Z"
+      },
+      {
+        "#type": "require",
+        "require": "$[?(@.to =~ /\\d{4}-\\d{2}/)]",
+        "value": "{$.to}-31T23:59:59Z"
+      },
+      {
+        "#type": "require",
+        "require": "$[?(@.to =~ /\\d{4}-\\d{2}-\\d{2}/)]",
+        "value": "{$.to}T23:59:59Z"
+      }
+    ]
+  },
+  "value_as_float": {
+    "#type": "maths",
+    "output_type": "float",
+    "require_evaluate": "true",
+    "expression": "$.value"
+  },
+    "linked_art_works_by_artist": {
+    "#type": "chain",
+    "chain": [
+      {
+        "#type": "http_request",
+        "method": "GET",
+        "url": "{%.es_base_url}/_search?q=creation.maker.@admin.uid:{$.@admin.uid}&size=100",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      {
+        "#type": "linked_art_producer_of"
+      }
+    ]
+  },
+"link_to_record": {
+    "#type": "merge",
+    "values": [
+      {
+        "#type": "linked_art_type"
+      },
+      {
+        "#type": "generic_url"
+      },
+      {
+        "_label": "$.summary.title"
+      }
+    ]
+  }
+}
