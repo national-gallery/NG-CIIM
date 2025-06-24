@@ -1,0 +1,869 @@
+{
+    "lido-object": {
+        "@xmlformat": "jml",
+        "lido:lidoWrap": {
+            "@attributes": {
+                "xmlns:lido": "http://www.lido-schema.org",
+                "xmlns:gml": "http://www.opengis.net/gml",
+                "xmlns:owl": "http://www.w3.org/2002/07/owl#",
+                "xmlns:rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "xmlns:skos": "http://www.w3.org/2004/02/skos/core#",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.lido-schema.org http://www.lido-schema.org/schema/latest/lido.xsd"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "lido:lido": {
+                            "@attributes": {},
+                            "#type": "process-lido-object"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "process-lido-object": {
+        "@children": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "lido-rec-id"
+                },
+                {
+                    "#type": "lido-object-published-id"
+                },
+                {
+                    "#type": "lido-category"
+                },
+                {
+                    "#type": "lido-application-profile"
+                },
+                {
+                    "#type": "lido-descriptive-metadata"
+                },
+                {
+                    "#type": "lido-administrative-metadata"
+                }
+            ]
+        }
+    },
+    "lido-rec-id": {
+        "lido:lidoRecID": {
+            "@attributes": {
+                "lido:type": "http://terminology.lido-schema.org/lido00100"
+            },
+            "@children": "{$.@admin.uid}"
+        }
+    },
+    "lido-object-published-id": {
+        "lido:objectPublishedID": {
+            "@attributes": {
+                "lido:type": "http://terminology.lido-schema.org/lido00099"
+            },
+            "@children": "{%.xml_base_url}{$.@admin.uid}"
+        }
+    },
+    "lido-category": {
+        "lido:category": {
+            "skos:Concept": {
+                "@attributes": {
+                    "rdf:about": "http://terminology.lido-schema.org/lido00096"
+                },
+                "@children": {
+                    "skos:prefLabel": "Human-made Object"
+                }
+            }
+        }
+    },
+    "lido-application-profile": {},
+    "lido-descriptive-metadata": {
+        "lido:descriptiveMetadata": {
+            "@attributes": {
+                "xml:lang": "en-GB"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "lido-object-classification-wrap"
+                    },
+                    {
+                        "#type": "lido-object-identification-wrap"
+                    },
+                    {
+                        "#type": "lido-event-wrap"
+                    },
+                    {
+                        "#type": "lido-object-relation-wrap"
+                    }
+                ]
+            }
+        }
+    },
+    "lido-object-classification-wrap": {
+        "lido:objectClassificationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "lido-work-type"
+                },
+                {
+                    "#type": "lido-object-classification"
+                }
+            ]
+        }
+    },
+    "lido-work-type": {
+        "lido:objectWorkTypeWrap": {
+            "#type": "for_each",
+            "values": "$.classification[?(@.type == 'classification')]",
+            "spec": {
+                "lido:objectWorkType": {
+                    "@children": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "#type": "for_each",
+                                "values": "$.equivalents",
+                                "spec": {
+                                    "#type": "for_each",
+                                    "values": "$.identifier[?(@.type=='AAT')]",
+                                    "spec": {
+                                        "lido:conceptID": {
+                                            "@attributes": {
+                                                "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                            },
+                                            "@children": "$.id"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "lido:term": "$.value"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "lido-object-classification": {
+        "lido:classificationWrap": {
+            "#type": "lido-classification"
+        }
+    },
+    "lido-classification": {
+        "#type": "for_each",
+        "values": "$.classification[?(@.type=='classification')]",
+        "spec": {
+            "lido:classification": {
+                "skos:Concept": {
+                    "@attributes": {
+                        "rdf:about": "$.equivalents[0].identifier[?(@.type=='AAT')].id"
+                    },
+                    "@children": {
+                        "skos:prefLabel": "$.value"
+                    }
+                }
+            }
+        }
+    },
+    "lido-object-identification-wrap": {
+        "lido:objectIdentificationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "lido-title-wrap"
+                },
+                {
+                    "#type": "lido-inscriptions-wrap"
+                },
+                {
+                    "#type": "lido-repository-wrap"
+                },
+                {
+                    "#type": "lido-display-state-edition-wrap"
+                },
+                {
+                    "#type": "lido-description-wrap"
+                },
+                {
+                    "#type": "lido-measurements-wrap"
+                },
+                {
+                    "#type": "lido-materials-tech-wrap"
+                }
+            ]
+        }
+    },
+    "lido-title-wrap": {
+        "lido:titleWrap": {
+            "lido:titleSet": {
+                "@attributes": {
+                    "lido:type": "title"
+                },
+                "@children": {
+                    "#type": "for_each",
+                    "values": "$.title",
+                    "spec": {
+                        "lido:appellationValue": {
+                            "@attributes": {
+                                "xml:lang": "en-GB"
+                            },
+                            "@children": "$.value"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "lido-inscriptions-wrap": {
+        "lido:inscriptionsWrap": {
+            "#type": "for_each",
+            "values": "$.inscription",
+            "spec": {
+                "lido:inscriptions": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "#type": "for_each",
+                            "values": "$.transcription",
+                            "spec": {
+                                "lido:inscriptionTranscription": "$.value"
+                            }
+                        },
+                        {
+                            "lido:inscriptionDescription": {
+                                "lido:descriptiveNoteValue": "$.summary"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "lido-repository-wrap": {
+        "lido:repositoryWrap": {
+            "lido:repositorySet": {
+                "@attributes": {
+                    "lido:type": "http://terminology.lido-schema.org/lido00475"
+                },
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "lido-display-repository"
+                    },
+                    {
+                        "#type": "lido-repository-name"
+                    },
+                    {
+                        "#type": "lido-workid"
+                    },
+                    {
+                        "#type": "lido-repository-location"
+                    },
+                    {
+                        "#type": "lido-source-repository-set"
+                    }
+                ]
+            }
+        }
+    },
+    "lido-display-repository": {},
+    "lido-repository-name": {
+        "lido:repositoryName": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:legalBodyID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                        },
+                        "@children": "http://vocab.getty.edu/ulan/500125190"
+                    }
+                },
+                {
+                    "lido:legalBodyID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00100"
+                        },
+                        "@children": "NG"
+                    }
+                },
+                {
+                    "lido:legalBodyID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                        },
+                        "@children": "https://www.wikidata.org/entity/Q180788"
+                    }
+                },
+                {
+                    "lido:legalBodyName": {
+                        "@children": {
+                            "lido:appellationValue": {
+                                "@children": "The National Gallery"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "lido-workid": {
+        "#type": "for_each",
+        "values": "$.identifier[?(@.type == 'object number')]",
+        "spec": {
+            "lido:workID": {
+                "@attributes": {
+                    "lido:type": "http://terminology.lido-schema.org/lido00099"
+                },
+                "@children": "$.value"
+            }
+        }
+    },
+    "lido-repository-location": {},
+    "lido-source-repository-set": {},
+    "lido-display-state-edition-wrap": {},
+    "lido-description-wrap": {
+        "lido:objectDescriptionWrap": {
+            "#type": "for_each",
+            "values": "$.description[?(@.type == 'short text')]",
+            "spec": {
+                "lido:objectDescriptionSet": {
+                    "@attributes": {
+                        "lido:type": "http://purl.org/spectrum/units/brief-description"
+                    },
+                    "@children": {
+                        "lido:descriptiveNoteValue": "$.value"
+                    }
+                }
+            }
+        }
+    },
+    "lido-measurements-wrap": {
+        "lido:objectMeasurementsWrap": {
+            "#type": "for_each",
+            "values": "$.measurements",
+            "spec": {
+                "lido:objectMeasurementsSet": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "lido:displayObjectMeasurements": "$.display"
+                        },
+                        {
+                            "lido:objectMeasurements": {
+                                "#type": "flatten",
+                                "values": [
+                                    {
+                                        "#type": "for_each",
+                                        "values": "$.dimensions",
+                                        "spec": {
+                                            "lido:measurementsSet": {
+                                                "#type": "flatten",
+                                                "values": [
+                                                    {
+                                                        "lido:measurementType": "$.dimension"
+                                                    },
+                                                    {
+                                                        "lido:measurementUnit": "$.units"
+                                                    },
+                                                    {
+                                                        "lido:measurementValue": "$.value"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "lido:extentMeasurements": "$.type"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "lido-materials-tech-wrap": {
+        "lido:objectMaterialsTechWrap": {
+            "lido:objectMaterialsTechSet": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "for_each",
+                        "values": "$.material",
+                        "spec": {
+                            "lido:displayMaterialsTech": "$.value"
+                        }
+                    },
+                    {
+                        "#type": "for_each",
+                        "values": "$.material[?(@.summary.title)]",
+                        "spec": {
+                            "lido:materialsTech": {
+                                "#type": "flatten",
+                                "values": [
+                                    {
+                                        "lido:termMaterialsTech": {
+                                            "#type": "lido-concept-and-term"
+                                        }
+                                    },
+                                    {
+                                        "lido:extentMaterialsTech": "$.@link.role.[*].value"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "lido-event-wrap": {
+        "lido:eventWrap": {
+            "#type": "for_each",
+            "values": "$.creation",
+            "spec": {
+                "lido:eventSet": {
+                    "lido:event": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:eventType": {
+                                    "#type": "flatten",
+                                    "values": [
+                                        {
+                                            "lido:conceptID": {
+                                                "@attributes": {
+                                                    "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                                },
+                                                "@children": "http://terminology.lido-schema.org/lido00031"
+                                            }
+                                        },
+                                        {
+                                            "lido:term": {
+                                                "@children": "Execution of design"
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "#type": "for_each",
+                                "values": "$.maker",
+                                "spec": {
+                                    "lido:eventActor": {
+                                        "lido:actorInRole": {
+                                            "#type": "flatten",
+                                            "values": [
+                                                {
+                                                    "lido:actor": {
+                                                        "@attributes": {
+                                                            "lido:type": "http://terminology.lido-schema.org/lido00163"
+                                                        },
+                                                        "@children": {
+                                                            "#type": "flatten",
+                                                            "values": [
+                                                                {
+                                                                    "lido:actorID": {
+                                                                        "@attributes": {
+                                                                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                                                        },
+                                                                        "@children": "{%.xml_base_url}{$.@admin.uid}"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "lido:nameActorSet": {
+                                                                        "#type": "flatten",
+                                                                        "values": [
+                                                                            {
+                                                                                "lido:appellationValue": {
+                                                                                    "@attributes": {
+                                                                                        "lido:label": "display name"
+                                                                                    },
+                                                                                    "@children": "$.summary.title"
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "#type": "for_each",
+                                                                    "values": "$.date",
+                                                                    "spec": {
+                                                                        "lido:vitalDatesActor": {
+                                                                            "#type": "flatten",
+                                                                            "values": [
+                                                                                {
+                                                                                    "lido:earliestDate": "$.from"
+                                                                                },
+                                                                                {
+                                                                                    "lido:latestDate": "$.to"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "lido:roleActor": {
+                                                        "#type": "flatten",
+                                                        "values": [
+                                                            {
+                                                                "#type": "for_each",
+                                                                "values": "$.@link.role.identifier",
+                                                                "spec": {
+                                                                    "lido:conceptID": {
+                                                                        "@attributes": {
+                                                                            "lido:type": "$.url"
+                                                                        },
+                                                                        "@children": "$.value"
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "lido:term": "$.@link.role.value"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "#type": "for_each",
+                                "values": "$.date",
+                                "spec": {
+                                    "lido:eventDate": {
+                                        "#type": "flatten",
+                                        "values": [
+                                            {
+                                                "lido:displayDate": "$.value"
+                                            },
+                                            {
+                                                "lido:date": {
+                                                    "#type": "flatten",
+                                                    "values": [
+                                                        {
+                                                            "lido:earliestDate": "$.from"
+                                                        },
+                                                        {
+                                                            "lido:latestDate": "$.to"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "lido:periodName": {}
+                            },
+                            {
+                                "#type": "for_each",
+                                "values": "$.place",
+                                "spec": {
+                                    "lido:eventPlace": {
+                                        "@attributes": {
+                                            "#type": "for_each",
+                                            "values": "$.@link.role",
+                                            "spec": {
+                                                "lido:type": "$.value"
+                                            }
+                                        },
+                                        "#type": "flatten",
+                                        "values": [
+                                            {
+                                                "lido:displayPlace": "$.summary.title"
+                                            },
+                                            {
+                                                "lido:place": {
+                                                    "#type": "flatten",
+                                                    "values": [
+                                                        {
+                                                            "lido:placeID": {
+                                                                "@attributes": {
+                                                                    "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                                                },
+                                                                "@children": "{%.xml_base_url}{$.@admin.uid}"
+                                                            }
+                                                        },
+                                                        {
+                                                            "lido:namePlaceSet": {
+                                                                "lido:appellationValue": {
+                                                                    "@attributes": {
+                                                                        "lido:label": "display name"
+                                                                    },
+                                                                    "@children": "$.summary.title"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "lido-object-relation-wrap": {
+        "lido:objectRelationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "lido-subject"
+                },
+                {
+                    "#type": "lido-related-works"
+                }
+            ]
+        }
+    },
+    "lido-subject": {
+        "lido:subjectWrap": {
+            "#type": "for_each",
+            "values": "$.subject",
+            "spec": {
+                "lido:subjectSet": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "lido:displaySubject": {
+                                "@attributes": {
+                                    "xml:lang": "en-GB"
+                                },
+                                "@children": "$.summary.title"
+                            }
+                        },
+                        {
+                            "lido:subject": {
+                                "#type": "switch",
+                                "value": "$.@datatype.base",
+                                "cases": {
+                                    "concept": {
+                                        "lido:subjectConcept": {
+                                            "#type": "lido-concept-and-term"
+                                        }
+                                    }
+                                },
+                                "default": {
+                                    "lido:subjectConcept": {
+                                        "#type": "lido-concept-and-term"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "lido-related-works": {},
+    "lido-administrative-metadata": {
+        "lido:administrativeMetadata": {
+            "@attributes": {
+                "xml:lang": "en-GB"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "lido-rights-work-wrap"
+                    },
+                    {
+                        "#type": "lido-record-wrap"
+                    },
+                    {
+                        "#type": "lido-resource-wrap"
+                    }
+                ]
+            }
+        }
+    },
+    "lido-rights-work-wrap": {
+        "lido:rightsWorkWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:rightsWorkSet": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:rightsType": {
+                                    "@attributes": {
+                                        "lido:type": "http://terminology.lido-schema.org/lido00920"
+                                    },
+                                    "@children": {
+                                        "lido:term": "Object rights"
+                                    }
+                                }
+                            },
+                            {
+                                "lido:creditLine": "$.legal.credit"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "#type": "for_each",
+                    "values": "$.legal.rights",
+                    "spec": {
+                        "lido:rightsWorkSet": {
+                            "#type": "flatten",
+                            "values": [
+                                {
+                                    "lido:rightsType": {
+                                        "lido:term": "$.type"
+                                    }
+                                },
+                                {
+                                    "lido:creditLine": "$.details"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "lido-record-wrap": {
+        "lido:recordWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:recordID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00100"
+                        },
+                        "@children": "{%.xml_base_url}{$.@admin.uid}?profile-lido"
+                    }
+                },
+                {
+                    "lido:recordType": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:conceptID": {
+                                    "@attributes": {
+                                        "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                    },
+                                    "@children": "http://terminology.lido-schema.org/lido00141"
+                                }
+                            },
+                            {
+                                "lido:term": "Item-level record"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "lido:recordSource": {
+                        "lido:legalBodyID": {
+                            "@attributes": {
+                                "lido:type": "http://terminology.lido-schema.org/lido00100"
+                            },
+                            "@children": "National Gallery London"
+                        }
+                    }
+                },
+                {
+                    "lido:recordInfoSet": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00470"
+                        },
+                        "@children": {
+                            "lido:recordMetadataDate": {
+                                "@attributes": {
+                                    "lido:type": "http://terminology.lido-schema.org/lido00472"
+                                },
+                                "@children": {
+                                    "#type": "date_format",
+                                    "value": {
+                                        "#type": "date_from_millis",
+                                        "value": "$.@admin.processed"
+                                    },
+                                    "format": "y-MM-dd'T'hh:mm:ssZ"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "#type": "lido-collection"
+                }
+            ]
+        }
+    },
+    "lido-resource-wrap": {
+        "lido:resourceWrap": {
+            "#type": "for_each",
+            "values": "$.multimedia",
+            "spec": {
+                "lido:resourceSet": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "lido:resourceID": {
+                                "#type": "lido-uid-as-url"
+                            }
+                        },
+                        {
+                            "lido:resourceRepresentation": {
+                                "@attributes": {
+                                    "lido:type": "http://terminology.lido-schema.org/lido00464"
+                                },
+                                "@children": {
+                                    "lido:linkResource": {
+                                        "@attributes": {
+                                            "lido:formatResource": "image/jpeg"
+                                        },
+                                        "@children": "https://data.ng.ac.uk/media/iiif/{$.@admin.uid}/full/max/0/default.jpg"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "lido-collection": {},
+    "lido-concept-and-term": {
+        "#type": "flatten",
+        "values": [
+            {
+                "lido:conceptID": {
+                    "@attributes": {
+                        "lido:type": "http://terminology.lido-schema.org/lido00099"
+                    },
+                    "@children": "{%.xml_base_url}{$.@admin.uid}"
+                }
+            },
+            {
+                "lido:term": "$.summary.title"
+            }
+        ]
+    },
+    "lido-uid-as-url": {
+        "@attributes": {
+            "lido:type": "http://terminology.lido-schema.org/lido00099"
+        },
+        "@children": "{%.xml_base_url}{$.@admin.uid}"
+    }
+}
