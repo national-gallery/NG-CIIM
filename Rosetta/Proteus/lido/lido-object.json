@@ -151,7 +151,15 @@
     },
     "lido-object-classification": {
         "lido:classificationWrap": {
-            "#type": "lido-classification"
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "lido-classification"
+                },
+                {
+                    "#type": "lido-genre"
+                }
+            ]
         }
     },
     "lido-classification": {
@@ -167,6 +175,15 @@
                         "skos:prefLabel": "$.value"
                     }
                 }
+            }
+        }
+    },
+    "lido-genre": {
+        "#type": "for_each",
+        "values": "$.genre",
+        "spec": {
+            "lido:classification": {
+                "#type": "lido-concept-and-term"
             }
         }
     },
@@ -568,7 +585,13 @@
                                 }
                             },
                             {
-                                "lido:periodName": {}
+                                "#type": "for_each",
+                                "values": "$$.*.style",
+                                "spec": {
+                                    "lido:periodName": {
+                                        "#type": "lido-concept-and-term"
+                                    }
+                                }
                             },
                             {
                                 "#type": "for_each",
@@ -674,7 +697,260 @@
             }
         }
     },
-    "lido-related-works": {},
+    "lido-related-works": {
+        "lido:relatedWorksWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "lido-related-works-frame"
+                },
+                {
+                    "#type": "lido-related-works-archive"
+                },
+                {
+                    "#type": "lido-related-works-bibliography"
+                }
+            ]
+        }
+    },
+    "lido-related-work": {
+        "lido:relatedWork": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:displayObject": {
+                        "#type": "for_each",
+                        "values": "$.summary.title",
+                        "spec": {
+                            "#type": "escape_xml"
+                        }
+                    }
+                },
+                {
+                    "lido:object": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:objectID": {
+                                    "@attributes": {
+                                        "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                    },
+                                    "@children": "{%.xml_base_url}{$.@admin.uid}"
+                                }
+                            },
+                            {
+                                "#type": "lido-citation-details"
+                            },
+                            {
+                                "#type": "lido-citation-note"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "lido-citation-details": {
+        "lido:objectNote": {
+            "#type": "switch",
+            "value": "$.@datatype.sub[0]",
+            "cases": {
+                "eos": "$.@link.details.page",
+                "tms": {
+                    "#type": "string_join",
+                    "delimiter": ", ",
+                    "values": [
+                        "$.@link.details.type",
+                        "no. {$.@link.details.catalogue}",
+                        "p. {$.@link.details.page}",
+                        {
+                            "#type": "require",
+                            "require": "$.@link.details[?(@.illustrated == true)]",
+                            "value": "ill."
+                        },
+                        "$.@link.details.figure"
+                    ]
+                }
+            },
+            "default": "$.@link.details.page"
+        }
+    },
+    "lido-citation-note": {
+        "lido:objectNote": {
+            "#type": "string_join",
+            "delimiter": ": ",
+            "values": [
+                "$.@link.details.note.type",
+                {
+                    "#type": "chain",
+                    "chain": [
+                        "$.@link.details.note.value",
+                        {
+                            "#type": "escape_xml"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "lido-related-works-frame": {
+        "#type": "for_each",
+        "values": "$.framing.frame",
+        "spec": {
+            "lido:relatedWorkSet": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "lido-related-work"
+                    },
+                    {
+                        "#type": "lido-frame-type"
+                    }
+                ]
+            }
+        }
+    },
+    "lido-frame-type": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.local_base_url}{$.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "#type": "lido-frame-relationship"
+            }
+        ]
+    },
+    "lido-frame-relationship": {
+        "#type": "for_each",
+        "values": "$.classification[?(@.type == 'frame type')]",
+        "spec": {
+            "#type": "switch",
+            "value": "$.value",
+            "cases": {
+                "integral frame": {
+                    "#type": "lido-frame-physical-part"
+                },
+                "engaged frame": {
+                    "#type": "lido-frame-physical-part"
+                },
+                "part integral/part engaged frame": {
+                    "#type": "lido-frame-physical-part"
+                },
+                "removable frame": {
+                    "#type": "lido-frame-conceptual-part"
+                }
+            },
+            "default": {
+                "#type": "lido-frame-conceptual-part"
+            }
+        }
+    },
+    "lido-frame-physical-part": {
+        "lido:relatedWorkRelType": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:conceptID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                        },
+                        "@children": "http://terminology.lido-schema.org/lido00256"
+                    }
+                },
+                {
+                    "lido:term": "has physical part"
+                }
+            ]
+        }
+    },
+    "lido-frame-conceptual-part": {
+        "lido:relatedWorkRelType": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:conceptID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                        },
+                        "@children": "http://terminology.lido-schema.org/lido00581"
+                    }
+                },
+                {
+                    "lido:term": "is complemented by"
+                }
+            ]
+        }
+    },
+    "lido-related-works-archive": {
+        "#type": "for_each",
+        "values": "$.archive",
+        "spec": {
+            "lido:relatedWorkSet": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "lido-related-work"
+                    },
+                    {
+                        "lido:relatedWorkRelType": {
+                            "#type": "flatten",
+                            "values": [
+                                {
+                                    "lido:conceptID": {
+                                        "@attributes": {
+                                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                        },
+                                        "@children": "http://terminology.lido-schema.org/lido00618"
+                                    }
+                                },
+                                {
+                                    "lido:term": "documents"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "lido-related-works-bibliography": {
+        "#type": "for_each",
+        "values": "$.bibliography",
+        "spec": {
+            "lido:relatedWorkSet": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "lido-related-work"
+                    },
+                    {
+                        "lido:relatedWorkRelType": {
+                            "#type": "flatten",
+                            "values": [
+                                {
+                                    "lido:conceptID": {
+                                        "@attributes": {
+                                            "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                        },
+                                        "@children": "http://terminology.lido-schema.org/lido00618"
+                                    }
+                                },
+                                {
+                                    "lido:term": "documents"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    },
     "lido-administrative-metadata": {
         "lido:administrativeMetadata": {
             "@attributes": {
@@ -751,7 +1027,7 @@
                         "@attributes": {
                             "lido:type": "http://terminology.lido-schema.org/lido00100"
                         },
-                        "@children": "{%.xml_base_url}{$.@admin.uid}?profile-lido"
+                        "@children": "{%.xml_base_url}{$.@admin.uid}?profile=lido"
                     }
                 },
                 {
@@ -833,7 +1109,7 @@
                                         "@attributes": {
                                             "lido:formatResource": "image/jpeg"
                                         },
-                                        "@children": "https://data.ng.ac.uk/media/iiif/{$.@admin.uid}/full/max/0/default.jpg"
+                                        "@children": "https://data.ng.ac.uk/iiif/3/{$.@admin.uid}/full/max/0/default.jpg"
                                     }
                                 }
                             }
@@ -865,5 +1141,21 @@
             "lido:type": "http://terminology.lido-schema.org/lido00099"
         },
         "@children": "{%.xml_base_url}{$.@admin.uid}"
+    },
+    "lido-frame-json": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}?q=@admin.uid:{$.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "lido:embeddedObject": "$.hits.hits[0]._source.@admin.uid"
+            }
+        ]
     }
 }
