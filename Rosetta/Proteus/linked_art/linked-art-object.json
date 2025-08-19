@@ -1,5 +1,5 @@
 {
-    "process_linked_art_object_ng": {
+    "process_linked_art_object": {
         "#type": "merge",
         "values": [
             {

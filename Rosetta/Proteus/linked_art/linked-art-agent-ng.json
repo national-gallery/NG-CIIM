@@ -1,277 +1,60 @@
 {
-  "process_linked_art_agent": {
-    "#type": "merge",
-    "values": [
-      {
-        "#type": "linked_art_agent_context"
-      },
-      {
-        "#type": "linked_art_agent_type"
-      },
-      {
-        "#type": "linked_art_agent_label"
-      },
-      {
-        "#type": "linked_art_agent_equivalent"
-      },
-      {
-        "#type": "linked_art_agent_identified_by"
-      },
-      {
-        "#type": "linked_art_agent_referred_to_by"
-      },
-      {
-        "#type": "linked_art_agent_born"
-      },
-      {
-        "#type": "linked_art_agent_death"
-      },
-      {
-        "#type": "linked_art_agent_classified_as"
-      }
-    ]
-  },
-  "linked_art_agent_context": {
-    "#type": "merge",
-    "values": [
-      {
-        "@context": "https://linked.art/ns/v1/linked-art.json"
-      },
-      {
-        "#type": "id_url"
-      }
-    ]
-  },
-  "linked_art_agent_context_url": {
-    "@context": "https://linked.art/ns/v1/linked-art.json"
-  },
-  "linked_art_agent_label": {
-    "_label": "{$.summary.title}"
-  },
-  "linked_art_agent_type": {
-    "type": {
-      "#type": "switch",
-      "value": "{$.@datatype.base}",
-      "cases": {
-        "event": "Event",
-        "agent": "Person",
-        "package": "Set",
-        "object": "HumanMadeObject"
-      },
-      "default": "Concept"
-    }
-  },
-  "linked_art_agent_equivalent": {
-    "equivalent": {
-      "#type": "for_each",
-      "values": "$.link",
-      "spec": {
-        "id": "$.value",
-        "type": "Person",
-        "_label": "$$.summary.title"
-      }
-    }
-  },
-  "linked_art_agent_identified_by": {
-    "identified_by": {
-      "#type": "flatten",
-      "values": [
-        {
-          "#type": "linked_art_agent_identified_by_id"
-        },
-        {
-          "#type": "linked_art_agent_identified_by_name"
-        }
-      ]
-    }
-  },
-  "linked_art_agent_identified_by_id": {
-    "type": "Identifier",
-    "classified_as": [
-      {
-        "id": "http://vocab.getty.edu/page/aat/300404012",
-        "type": "Type",
-        "_label": "Local Identifier"
-      }
-    ],
-    "content": "person/{$.@admin.id}"
-  },
-  "linked_art_agent_identified_by_name": {
-    "#type": "for_each",
-    "values": "$.name",
-    "spec": {
-      "type": "Name",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300404670",
-          "type": "Type",
-          "_label": "Primary Name"
-        }
-      ],
-      "content": "$.value",
-      "part": [
-        {
-          "#type": "require",
-          "require": "$.first",
-          "value": {
-            "type": "Name",
-            "classified_as": [
-              {
-                "id": "http://vocab.getty.edu/aat/300404651",
-                "type": "Type",
-                "_label": "Forename"
-              }
-            ],
-            "content": "$.first"
-          }
-        },
-        {
-          "#type": "require",
-          "require": "$.first",
-          "value": {
-            "type": "Name",
-            "classified_as": [
-              {
-                "id": "http://vocab.getty.edu/page/aat/300404652",
-                "type": "Type",
-                "_label": "Surname"
-              }
-            ],
-            "content": "$.last"
-          }
-        }
-      ]
-    }
-  },
-  "linked_art_agent_referred_to_by": {
-    "referred_to_by": {
-      "#type": "for_each",
-      "values": "$.description",
-      "spec": {
-        "type": "LinguisticObject",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300435422",
-            "type": "Type",
-            "_label": "Biography Statement",
-            "classified_as": [
-              {
-                "id": "http://vocab.getty.edu/aat/300418049",
-                "type": "Type",
-                "_label": "Brief Text"
-              }
-            ]
-          }
-        ],
-        "content": "$.value"
-      }
-    }
-  },
-  "linked_art_agent_born": {
-    "born": {
-      "#type": "for_each",
-      "values": "$.date",
-      "spec": {
-        "#type": "require",
-        "require": "$.role[?(@.value == 'Day of birth')]",
-        "value": {
-          "type": "Birth",
-          "timespan": {
-            "#type": "linked_art_process_date"
-          }
-        }
-      }
-    }
-  },
-  "linked_art_agent_death": {
-    "died": {
-      "#type": "for_each",
-      "values": "$.date",
-      "spec": {
-        "#type": "require",
-        "require": "$.role[?(@.value == 'Day of death')]",
-        "value": {
-          "type": "Death",
-          "timespan": {
-            "#type": "linked_art_process_date"
-          }
-        }
-      }
-    }
-  },
-  "linked_art_process_date": {
-    "begin_of_the_begin": {
-      "#type": "earliest_date"
-    },
-    "end_of_the_end": {
-      "#type": "latest_date"
-    },
-    "_label": "$.value"
-  },
-  "earliest_date": {
-    "#type": "fallback",
-    "strategies": [
-      {
-        "#type": "require",
-        "require": "$[?(@.from =~ /\\d{4}/)]",
-        "value": "{$.from}-01-01T00:00:00Z"
-      },
-      {
-        "#type": "require",
-        "require": "$[?(@.from =~ /\\d{4}-\\d{2}/)]",
-        "value": "{$.from}-01T00:00:00Z"
-      },
-      {
-        "#type": "require",
-        "require": "$[?(@.from =~ /\\d{4}-\\d{2}-\\d{2}/)]",
-        "value": "{$.from}T00:00:00Z"
-      }
-    ]
-  },
-  "latest_date": {
-    "#type": "fallback",
-    "strategies": [
-      {
-        "#type": "require",
-        "require": "$[?(@.to =~ /\\d{4}/)]",
-        "value": "{$.to}-12-31T23:59:59Z"
-      },
-      {
-        "#type": "require",
-        "require": "$[?(@.to =~ /\\d{4}-\\d{2}/)]",
-        "value": "{$.to}-31T23:59:59Z"
-      },
-      {
-        "#type": "require",
-        "require": "$[?(@.to =~ /\\d{4}-\\d{2}-\\d{2}/)]",
-        "value": "{$.to}T23:59:59Z"
-      }
-    ]
-  },
-  "linked_art_agent_classified_as": {
-    "classified_as": {
-      "#type": "require",
-      "require": "$.gender",
-      "value": {
-        "id": {
-          "#type": "switch",
-          "value": "$.gender.value",
-          "cases": {
-            "male": "http://vocab.getty.edu/aat/300189559",
-            "female": "http://vocab.getty.edu/aat/300189557"
-          },
-          "default": "https://vocab.getty.edu/aat/300055146"
-        },
-        "type": "Type",
-        "_label": "$.gender.value",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300055147",
-            "type": "Type",
-            "_label": "Gender"
-          }
+    "process_linked_art_agent": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_equivalent"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_referred_to_by"
+            },
+            {
+                "#type": "linked_art_birth"
+            },
+            {
+                "#type": "linked_art_death"
+            },
+            {
+                "#type": "linked_art_agent_classified_as"
+            }
         ]
-      }
+    },
+    "linked_art_agent_classified_as": {
+        "classified_as": {
+            "#type": "require",
+            "require": "$.gender",
+            "value": {
+                "id": {
+                    "#type": "switch",
+                    "value": "$.gender.value",
+                    "cases": {
+                        "male": "http://vocab.getty.edu/aat/300189559",
+                        "female": "http://vocab.getty.edu/aat/300189557"
+                    },
+                    "default": "https://vocab.getty.edu/aat/300055146"
+                },
+                "type": "Type",
+                "_label": "$.gender.value",
+                "classified_as": [
+                    {
+                        "id": "http://vocab.getty.edu/aat/300055147",
+                        "type": "Type",
+                        "_label": "Gender"
+                    }
+                ]
+            }
+        }
     }
-  }
 }

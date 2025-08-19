@@ -1,0 +1,28 @@
+{
+    "process_linked_art_package": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_member"
+            },
+            {
+                "#type": "linked_art_current_owner"
+            },
+            {
+                "#type": "linked_art_current_custodian"
+            }
+        ]
+    }
+}

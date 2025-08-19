@@ -1,0 +1,136 @@
+{
+    "process_linked_art_publication": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_publication_identified_by"
+            },
+            {
+                "#type": "linked_art_publication_classified_as"
+            },
+            {
+                "#type": "linked_art_publication_produced_by"
+            }
+        ]
+    },
+    "linked_art_publication_identified_by": {
+        "identified_by": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "linked_art_identified_by_title"
+                },
+                {
+                    "#type": "linked_art_identified_by_identifier"
+                },
+                {
+                    "#type": "linked_art_publication_identified_by_related"
+                },
+                {
+                    "#type": "linked_art_identified_by_with_equivalents"
+                },
+                {
+                    "#type": "linked_art_publication_identified_by_citation"
+                }
+            ]
+        }
+    },
+    "linked_art_publication_identified_by_citation": {
+        "type": "Identifier",
+        "classified_as": [
+            {
+                "id": "https://vocab.getty.edu/aat/300435423",
+                "type": "Type",
+                "_label": "citations"
+            }
+        ],
+        "_label": "citation",
+        "content": "$.citation.value"
+    },
+    "linked_art_publication_identified_by_related": {
+        "#type": "for_each",
+        "values": "$.related",
+        "spec": {
+            "#type": "merge",
+            "values": [
+                {
+                    "type": "Identifier"
+                },
+                {
+                    "#type": "id_url"
+                },
+                {
+                    "_label": "$.summary.title"
+                }
+            ]
+        }
+    },
+    "linked_art_publication_classified_as": {
+        "classified_as": [
+            {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "linked_art_classified_by_datatype"
+                    }
+                ]
+            }
+        ]
+    },
+    "linked_art_classified_by_datatype": {
+        "id": {
+            "#type": "specious_actual_datatype_url"
+        },
+        "type": "Type",
+        "_label": "$.@datatype.actual",
+        "classified_as": [
+            {
+                "id": "http://vocab.getty.edu/aat/300435443",
+                "type": "Type",
+                "_label": "Type of Work"
+            }
+        ]
+    },
+    "linked_art_publication_produced_by": {
+        "produced_by": {
+            "#type": "for_each",
+            "values": "$.creation",
+            "spec": {
+                "type": "Production",
+                "timespan": {
+                    "#type": "for_each",
+                    "values": "$.date",
+                    "spec": {
+                        "#type": "linked_art_process_date"
+                    }
+                },
+                "took_place_at": {
+                    "#type": "linked_art_publication_production_place"
+                },
+                "carried_out_by": {
+                    "#type": "linked_art_production_agent"
+                }
+            }
+        }
+    },
+    "linked_art_publication_production_place": {
+        "#type": "for_each",
+        "values": "$.place.*.name",
+        "spec": {
+            "id": {
+                "#type": "specious_place_url"
+            },
+            "type": "Place",
+            "_label": "$.value"
+        }
+    }
+}
