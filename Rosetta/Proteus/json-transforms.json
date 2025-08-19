@@ -1,0 +1,92 @@
+{
+    "#type": "scope",
+    "scope": "$.current",
+    "value": {
+        "#type": "switch",
+        "value": "$$.http_request.query.profile",
+        "cases": {
+            "ciim": "$",
+            "iiif": {
+                "#type": "http_request",
+                "url": "http://localhost:24920/iiif/3/manifest/{$.@admin.uid}",
+                "method": "GET",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "allow": 200,
+                "require_allowed": true,
+                "require_response": true
+            },
+            "json": "$",
+            "jskos": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "concept": {
+                        "#type": "process_jskos"
+                    }
+                },
+                "default": "jskos format is only available for concept records"
+            },
+            "lido": "The lido format is XML, so is not implemented as a JSON response",
+            "linked-art": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "object": {
+                        "#type": "process_linked_art_object"
+                    },
+                    "package": {
+                        "#type": "process_linked_art_package"
+                    },
+                    "agent": {
+                        "#type": "process_linked_art_agent"
+                    },
+                    "publication": {
+                        "#type": "process_linked_art_publication"
+                    },
+                    "archive": "linked art for archives not yet available",
+                    "place": {
+                        "#type": "process_linked_art_place"
+                    },
+                    "concept": {
+                        "#type": "process_linked_art_concept"
+                    },
+                    "event": {
+                        "#type": "process_linked_art_event"
+                    },
+                    "location": {
+                        "#type": "process_linked_art"
+                    },
+                    "dokuwiki": {
+                        "#type": "process_linked_art_dokuwiki"
+                    },
+                    "media": "linked art for media not yet available"
+                },
+                "default": "invalid format for this datatype"
+            },
+            "json-ld": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "object": {
+                        "#type": "process_linked_art_object"
+                    },
+                    "agent": {
+                        "#type": "process_linked_art_agent"
+                    },
+                    "publication": {
+                        "#type": "process_linked_art_publication"
+                    },
+                    "archive": "linked art for archives not yet available",
+                    "place": "linked art for place not yet available",
+                    "concept": "linked art for concept not yet available",
+                    "event": "linked art for event not yet available",
+                    "media": "linked art for media not yet available"
+                },
+                "default": "invalid format for this datatype"
+            }
+        },
+        "default": "$"
+    }
+}
