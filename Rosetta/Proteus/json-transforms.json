@@ -42,6 +42,9 @@
                     "agent": {
                         "#type": "process_linked_art_agent"
                     },
+                    "exhibition": {
+                        "#type": "process_linked_art_exhibition"
+                    },
                     "publication": {
                         "#type": "process_linked_art_publication"
                     },
@@ -61,7 +64,18 @@
                     "dokuwiki": {
                         "#type": "process_linked_art_dokuwiki"
                     },
-                    "media": "linked art for media not yet available"
+                    "media": {
+                        "#type": "switch",
+                        "value": "$.@datatype.actual",
+                        "cases": {
+                            "website media": {
+                                "#type": "process_linked_art_webpage"
+                            },
+                            "image": {
+                                "#type": "process_linked_art_image"
+                            }
+                        }
+                    }
                 },
                 "default": "invalid format for this datatype"
             },
