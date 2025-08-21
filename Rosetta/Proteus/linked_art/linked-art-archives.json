@@ -1,0 +1,74 @@
+{
+    "process_linked_art_archives": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_archives_classified_as"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_referred_to_by_archives"
+            }
+        ]
+    },
+"linked_art_archives_classified_as": {
+"classified_as": [
+
+]
+},
+    "linked_art_referred_to_by_archives": {
+        "referred_to_by": {
+            "#type": "for_each",
+            "values": "$.description",
+            "spec": {
+                "#type": "merge",
+                "values": [
+                    {
+                        "type": "LinguisticObject"
+                    },
+                    {
+                        "#type": "archive_description_classification"
+                    },
+                    {
+                        "content": "$.value"
+                    }
+                ]
+            }
+        }
+    },
+    "archive_description_classification": {
+        "#type": "switch",
+        "value": "$.type",
+        "cases": {
+            "finding aids": {
+                "classified_as": [
+                    {
+                        "id": "http://vocab.getty.edu/aat/300026539",
+                        "type": "Type",
+                        "_label": "$.type"
+                    }
+                ]
+            }
+        },
+        "default": {
+            "classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300418049",
+                    "type": "Type",
+                    "_label": "long text"
+                }
+            ]
+        }
+    }
+}
