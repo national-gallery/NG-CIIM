@@ -54,7 +54,7 @@
                 "#type": "linked_art_part_removal"
             },
             {
-                "#type": "linked_art_dimension"
+                "#type": "linked_art_dimensions"
             },
             {
                 "#type": "linked_art_made_of"
@@ -89,10 +89,12 @@
         "#type": "merge",
         "values": [
             {
-                "@context": "https://linked.art/ns/v1/linked-art.json"
+                "#type": "linked_art_context_url"
             },
             {
-                "#type": "id_url"
+                "id": {
+                    "#type": "generic_url"
+                }
             }
         ]
     },
@@ -213,6 +215,17 @@
             "content": "$.status"
         }
     },
+    "linked_art_classified_as_datatype": {
+        "#type": "switch",
+        "value": "$.@datatype.base",
+        "cases": {
+            "exhibition": {
+                "type": "Type",
+                "id": "http://vocab.getty.edu/aat/300054766",
+                "_label": "exhibitions (events)"
+            }
+        }
+    },
     "linked_art_identified_by": {
         "identified_by": {
             "#type": "flatten",
@@ -247,6 +260,22 @@
                 "#type": "analyse_primary_name"
             }
         }
+    },
+    "linked_art_identified_by_summary_title": {
+        "type": "Name",
+        "classified_as": [
+            {
+                "id": "http://vocab.getty.edu/aat/300404670",
+                "type": "Type",
+                "_label": "Primary Name"
+            },
+            {
+                "id": "https://vocab.getty.edu/aat/300417209",
+                "type": "Type",
+                "_label": "full title"
+            }
+        ],
+        "content": "$.summary.title"
     },
     "linked_art_identified_by_title": {
         "#type": "for_each",
@@ -423,9 +452,11 @@
         "value": {
             "carried_out": {
                 "#type": "flatten",
-                "values":[ {
-                    "#type": "linked_art_works_by_artist"
-                }]
+                "values": [
+                    {
+                        "#type": "linked_art_works_by_artist"
+                    }
+                ]
             }
         }
     },
@@ -669,6 +700,31 @@
             "content": "$.value"
         }
     },
+    "linked_art_referred_to_by_bibliography": {
+        "#type": "for_each",
+        "values": "$.bibliography",
+        "spec": {
+            "#type": "merge",
+            "values": [
+                {
+                    "type": "LinguisticObject"
+                },
+                {
+                    "#type": "id_generic_url"
+                },
+                {
+                    "_label": "$.summary.title",
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300111999",
+                            "type": "Type",
+                            "_label": "publications (documents)"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
     "linked_art_member_of": {
         "member_of": {
             "#type": "for_each",
@@ -815,7 +871,7 @@
                 "#type": "for_each",
                 "values": "$.@link.date",
                 "spec": {
-                    "#type": "crm_timespan"
+                    "#type": "crm_year_only_timespan"
                 }
             }
         }
@@ -839,7 +895,7 @@
                 "#type": "for_each",
                 "values": "$.@link.date",
                 "spec": {
-                    "#type": "crm_timespan"
+                    "#type": "crm_year_only_timespan"
                 }
             }
         }
@@ -890,13 +946,13 @@
             "#type": "linked_art_object"
         }
     },
-    "linked_art_dimension": {
+    "linked_art_dimensions": {
         "dimension": {
             "#type": "flatten",
             "values": [
                 {
                     "#type": "for_each",
-                    "values": "$.measurements[?(@.type !== 'Packing Case WxDxH')]",
+                    "values": "$.measurements[?(@.type != 'Packing Case WxDxH')]",
                     "spec": {
                         "#type": "for_each",
                         "values": "$.dimensions",
@@ -1713,14 +1769,28 @@
             }
         ]
     },
-    "link_to_frame_record": {
+    "link_to_record_with_role": {
         "#type": "merge",
         "values": [
+            {
+                "#type": "id_url"
+            },
             {
                 "#type": "linked_art_type"
             },
             {
+                "_label": "{$.@link.role[0].value}: {$.summary.title}"
+            }
+        ]
+    },
+    "link_to_frame_record": {
+        "#type": "merge",
+        "values": [
+            {
                 "#type": "generic_url"
+            },
+            {
+                "#type": "linked_art_type"
             },
             {
                 "_label": "$.summary.title"

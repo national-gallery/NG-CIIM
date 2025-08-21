@@ -29,7 +29,21 @@
         ]
     },
     "linked_art_dokuwiki_classified_as": {
-        "classified_as": [
+        "classified_as": {
+            "#type": "as_list",
+            "values": [
+                {
+                    "#type": "linked_art_dokuwiki_classified_as_wiki"
+                },
+                {
+                    "#type": "linked_art_dokuwiki_classified_as_full_text"
+                }
+            ]
+        }
+    },
+    "linked_art_dokuwiki_classified_as_wiki": {
+        "#type": "merge",
+        "values": [
             {
                 "id": "http://vocab.getty.edu/aat/300266678",
                 "type": "Type",
@@ -41,6 +55,36 @@
                         "_label": "Type of Work"
                     }
                 ]
+            }
+        ]
+    },
+    "linked_art_dokuwiki_classified_as_full_text": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "regex_replace",
+                "value": "$.summary.title",
+                "pattern": {
+                    "#type": "literal",
+                    "value": "^(paintings:|projects:).*"
+                },
+                "replacement": {
+                    "#type": "literal",
+                    "value": "$1"
+                }
+            },
+            {
+                "#type": "switch",
+                "value": "$",
+                "cases": {
+                    "paintings:": {},
+                    "projects:": {}
+                },
+                "default": {
+                    "id": "http://vocab.getty.edu/aat/300418050",
+                    "type": "Type",
+                    "_label": "full texts"
+                }
             }
         ]
     },
@@ -173,7 +217,7 @@
                 "value": "$.summary.title",
                 "pattern": {
                     "#type": "literal",
-                    "value": "^(paintings:|projects:lbso:).*"
+                    "value": "^(paintings:|projects:lbso:|projects:dbic:).*"
                 },
                 "replacement": {
                     "#type": "literal",
@@ -188,7 +232,10 @@
                         "#type": "linked_art_dokuwiki_painting_content"
                     },
                     "projects:lbso:": {
-                        "#type": "linked_art_dokuwiki_lbso_content"
+                        "#type": "linked_art_dokuwiki_project_content"
+                    },
+                    "projects:dbic:": {
+                        "#type": "linked_art_dokuwiki_project_content"
                     }
                 },
                 "default": {
@@ -225,7 +272,7 @@
             }
         ]
     },
-    "linked_art_dokuwiki_lbso_content": {
+    "linked_art_dokuwiki_project_content": {
         "part": {
             "#type": "flatten",
             "values": [
@@ -249,9 +296,9 @@
         "_label": "abolition",
         "classified_as": [
             {
-                "id": "http://vocab.getty.edu/aat/300418049",
+                "id": "http://vocab.getty.edu/aat/300418050",
                 "type": "Type",
-                "_label": "brief texts"
+                "_label": "full texts"
             }
         ],
         "content": "$$.*.abolition.formatted"
@@ -261,9 +308,9 @@
         "_label": "slavery",
         "classified_as": [
             {
-                "id": "http://vocab.getty.edu/aat/300418049",
+                "id": "http://vocab.getty.edu/aat/300418050",
                 "type": "Type",
-                "_label": "brief texts"
+                "_label": "full texts"
             }
         ],
         "content": "$$.*.slavery.formatted"
@@ -273,9 +320,9 @@
         "_label": "painting",
         "classified_as": [
             {
-                "id": "http://vocab.getty.edu/aat/300418049",
+                "id": "http://vocab.getty.edu/aat/300418050",
                 "type": "Type",
-                "_label": "brief texts"
+                "_label": "full texts"
             }
         ],
         "content": "$$.*.painting.formatted"
@@ -285,9 +332,9 @@
         "_label": "biography",
         "classified_as": [
             {
-                "id": "http://vocab.getty.edu/aat/300418049",
+                "id": "http://vocab.getty.edu/aat/300418050",
                 "type": "Type",
-                "_label": "brief texts"
+                "_label": "full texts"
             }
         ],
         "content": "$$.*.biography.formatted"

@@ -1,0 +1,142 @@
+{
+    "process_linked_art_exhibition": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_exhibition_classified_as"
+            },
+            {
+                "#type": "linked_art_exhibition_identified_by"
+            },
+            {
+                "#type": "linked_art_exhibition_dates"
+            },
+            {
+                "#type": "linked_art_exhibition_venue"
+            },
+            {
+                "#type": "linked_art_exhibition_agents"
+            },
+            {
+                "#type": "linked_art_exhibition_referred_to_by"
+            }
+        ]
+    },
+    "linked_art_exhibition_classified_as": {
+        "classified_as": [
+            {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "linked_art_classified_as_datatype"
+                    }
+                ]
+            }
+        ]
+    },
+    "linked_art_exhibition_identified_by": {
+        "identified_by": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "linked_art_identified_by_summary_title"
+                },
+                {
+                    "#type": "linked_art_identified_by_identifier"
+                },
+                {
+                    "#type": "linked_art_identified_by_with_equivalents"
+                }
+            ]
+        }
+    },
+    "linked_art_exhibition_dates": {
+        "timespan": {
+            "#type": "for_each",
+            "values": "$.date",
+            "spec": {
+                "#type": "crm_dmy_timespan"
+            }
+        }
+    },
+    "linked_art_exhibition_venue": {
+        "took_place_at": {
+            "#type": "for_each",
+            "values": "$.venue",
+            "spec": {
+                "#type": "merge",
+                "values": [
+                    {
+                        "type": "Place"
+                    },
+                    {
+                        "#type": "id_url"
+                    },
+                    {
+                        "_label": "$.summary.title"
+                    }
+                ]
+            }
+        }
+    },
+    "linked_art_exhibition_agents": {
+        "carried_out_by": {
+            "#type": "for_each",
+            "values": "$.agent",
+            "spec": {
+                "#type": "link_to_record_with_role"
+            }
+        }
+    },
+    "linked_art_exhibition_referred_to_by": {
+        "referred_to_by": {
+                "#type": "merge",
+                "values": [
+                    {
+                        "#type": "linked_art_exhibition_description"
+                    },
+                    {
+                        "#type": "linked_art_referred_to_by_bibliography"
+                    },
+                    {
+                        "#type": "linked_art_referred_to_by_rights"
+                    },
+                    {
+                        "#type": "linked_art_referred_to_by_legal"
+                    }
+                ]
+            
+        }
+    },
+    "linked_art_exhibition_description": {
+        "#type": "require",
+        "require": "$.description.value",
+        "value": {
+            "type": "LinguisticObject",
+            "classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300435416",
+                    "type": "Type",
+                    "_label": "Description",
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300418050",
+                            "type": "Type",
+                            "_label": "full texts"
+                        }
+                    ]
+                }
+            ],
+            "content": "$.description.value"
+        }
+    }
+}

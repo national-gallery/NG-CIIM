@@ -1,0 +1,176 @@
+{
+    "process_linked_art_image": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_media_depicts"
+            },
+            {
+                "#type": "linked_art_media_referred_to_by"
+            },
+            {
+                "#type": "linked_art_media_dimensions"
+            }
+        ]
+    },
+    "process_linked_art_webpage": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_media_access_point"
+            },
+            {
+                "#type": "linked_art_webpage_format"
+            },
+            {
+                "#type": "linked_art_media_depicts"
+            }
+        ]
+    },
+    "linked_art_media_access_point": {
+        "access_point": [
+            {
+                "id": "$.source.@location.value",
+                "type": "DigitalObject"
+            }
+        ]
+    },
+    "linked_art_webpage_format": {
+        "#type": "require",
+        "require": "$.source[?(@.format == 'html')]",
+        "value": {
+            "format": "text/html",
+            "conforms_to": [
+                {
+                    "id": "http://w3.org/TR/html",
+                    "type": "InformationObject"
+                }
+            ]
+        }
+    },
+    "linked_art_media_depicts": {
+        "depicts": {
+            "#type": "for_each",
+            "values": "$.object",
+            "spec": {
+                "#type": "link_to_record"
+            }
+        }
+    },
+    "linked_art_media_referred_to_by": {
+        "referred_to_by": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "linked_art_referred_to_by_rights"
+                }
+            ]
+        }
+    },
+    "linked_art_media_dimensions": {
+        "#type": "chain",
+        "chain": [
+            "$.source.measurements",
+            {
+                "dimension": {
+                    "#type": "merge",
+                    "values": [
+                        {
+                            "#type": "linked_art_media_dimension"
+                        },
+                        {
+                            "#type": "linked_art_media_filesize"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "linked_art_media_dimension": {
+        "#type": "for_each",
+        "values": "$.dimensions",
+        "spec": {
+            "type": "Dimension",
+            "classified_as": [
+                {
+                    "id": {
+                        "#type": "switch",
+                        "value": "{$.dimension}",
+                        "cases": {
+                            "Height": "http://vocab.getty.edu/aat/300055644",
+                            "height": "http://vocab.getty.edu/aat/300055644",
+                            "Width": "http://vocab.getty.edu/aat/300055647",
+                            "width": "http://vocab.getty.edu/aat/300055647",
+                            "Weight": "http://vocab.getty.edu/aat/300056240"
+                        }
+                    },
+                    "type": "Type",
+                    "_label": "$.dimension"
+                }
+            ],
+            "_label": "{$.dimension}: {$.value} {$.units}",
+            "value": "$.value",
+            "unit": {
+                "#type": "switch",
+                "value": "{$.units}",
+                "cases": {
+                    "pixels": {
+                        "type": "MeasurementUnit",
+                        "id": "http://vocab.getty.edu/aat/300266190",
+                        "_label": "pixels"
+                    },
+                    "bytes": {
+                        "type": "MeasurementUnit",
+                        "id": "http://vocab.getty.edu/aat/300265869",
+                        "_label": "bytes"
+                    }
+                }
+            }
+        }
+    },
+    "linked_art_media_filesize": {
+        "#type": "require",
+        "require": "$.filesize.value",
+        "value": {
+            "type": "Dimension",
+            "classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300055642",
+                    "type": "Type",
+                    "_label": "size (general extent)"
+                }
+            ],
+            "_label": "filesize: {$.filesize.value} {$.filesize.units}",
+            "value": "$.filesize.value",
+            "unit": {
+                "type": "MeasurementUnit",
+                "id": "http://vocab.getty.edu/aat/300265869",
+                "_label": "bytes"
+            }
+        }
+    }
+}
