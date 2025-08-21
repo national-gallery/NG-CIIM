@@ -48,7 +48,9 @@
                     "publication": {
                         "#type": "process_linked_art_publication"
                     },
-                    "archive": "linked art for archives not yet available",
+                    "archive": {
+                        "#type": "process_linked_art_archives"
+                    },
                     "place": {
                         "#type": "process_linked_art_place"
                     },
