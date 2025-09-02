@@ -240,6 +240,9 @@
                     "#type": "linked_art_identified_by_identifier"
                 },
                 {
+                    "#type": "linked_art_identified_by_rendition_number"
+                },
+                {
                     "#type": "linked_art_identified_by_with_equivalents"
                 }
             ]
@@ -367,6 +370,15 @@
                     "content": "$.value"
                 }
             }
+        }
+    },
+    "linked_art_identified_by_rendition_number": {
+        "#type": "for_each",
+        "values": "$.identifier[?(@.type=='rendition number')]",
+        "spec": {
+            "type": "Identifier",
+            "_label": "{$.type}",
+            "content": "{$.value}"
         }
     },
     "linked_art_identified_by_with_equivalents": {

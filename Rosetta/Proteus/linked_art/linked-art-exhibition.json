@@ -68,21 +68,44 @@
             }
         }
     },
+    "linked_art_exhibition_venue_dates": {
+        "timespan": {
+            "#type": "for_each",
+            "values": "$.@link.date",
+            "spec": {
+                "#type": "crm_dmy_timespan"
+            }
+        }
+    },
     "linked_art_exhibition_venue": {
-        "took_place_at": {
+        "part": {
             "#type": "for_each",
             "values": "$.venue",
             "spec": {
                 "#type": "merge",
                 "values": [
                     {
-                        "type": "Place"
+                        "type": "Activity"
                     },
                     {
-                        "#type": "id_url"
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "#type": "for_each",
+                                "values": "$.@link.title",
+                                "spec": {
+                                    "_label": "{$.type}: {$.value}"
+                                }
+                            }
+                        ]
                     },
                     {
-                        "_label": "$.summary.title"
+                        "took_place_at": {
+                            "#type": "link_to_record"
+                        }
+                    },
+                    {
+                        "#type": "linked_art_exhibition_venue_dates"
                     }
                 ]
             }
@@ -99,22 +122,21 @@
     },
     "linked_art_exhibition_referred_to_by": {
         "referred_to_by": {
-                "#type": "merge",
-                "values": [
-                    {
-                        "#type": "linked_art_exhibition_description"
-                    },
-                    {
-                        "#type": "linked_art_referred_to_by_bibliography"
-                    },
-                    {
-                        "#type": "linked_art_referred_to_by_rights"
-                    },
-                    {
-                        "#type": "linked_art_referred_to_by_legal"
-                    }
-                ]
-            
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "linked_art_exhibition_description"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_bibliography"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_rights"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_legal"
+                }
+            ]
         }
     },
     "linked_art_exhibition_description": {

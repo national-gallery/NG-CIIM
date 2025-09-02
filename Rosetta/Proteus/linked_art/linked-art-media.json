@@ -15,6 +15,12 @@
                 "#type": "linked_art_identified_by"
             },
             {
+                "#type": "linked_art_image_access_point"
+            },
+            {
+                "#type": "linked_art_image_available_via"
+            },
+            {
                 "#type": "linked_art_media_depicts"
             },
             {
@@ -48,16 +54,81 @@
             },
             {
                 "#type": "linked_art_media_depicts"
+            },
+            {
+                "#type": "linked_art_media_referred_to_by"
+            }
+        ]
+    },
+    "process_linked_art_video": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_media_access_point"
+            },
+            {
+                "#type": "linked_art_webpage_format"
+            },
+            {
+                "#type": "linked_art_media_depicts"
+            },
+            {
+                "#type": "linked_art_media_dimensions"
+            },
+            {
+                "#type": "linked_art_media_referred_to_by"
+            }
+        ]
+    },
+    "linked_art_image_access_point": {
+        "access_point": [
+            {
+                "id": "https://data.ng.ac.uk/iiif/3/{$.@admin.uid}/full/max/0/default.jpg",
+                "type": "DigitalObject"
             }
         ]
     },
     "linked_art_media_access_point": {
         "access_point": [
             {
-                "id": "$.source.@location.value",
+                "id": "$.@processed.original.location",
                 "type": "DigitalObject"
             }
         ]
+    },
+    "linked_art_image_available_via": {
+        "digitally_available_via": {
+            "#type": "merge",
+            "values": [
+                {
+                    "type": "DigitalService"
+                },
+                {
+                    "#type": "linked_art_image_access_point"
+                },
+                {
+                    "conforms_to": [
+                        {
+                            "id": "http://iiif.io/api/image",
+                            "type": "InformationObject"
+                        }
+                    ],
+                    "format": "application/ld+json;profile='http://iiif.io/api/image/3/context.json'"
+                }
+            ]
+        }
     },
     "linked_art_webpage_format": {
         "#type": "require",
@@ -73,13 +144,38 @@
         }
     },
     "linked_art_media_depicts": {
-        "depicts": {
-            "#type": "for_each",
-            "values": "$.object",
-            "spec": {
+        "digitally_carries": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "for_each",
+                    "values": "$.object",
+                    "spec": {
+                        "#type": "link_to_record"
+                    }
+                },
+                {
+                    "#type": "linked_art_depicts_publication"
+                }
+            ]
+        }
+    },
+    "linked_art_depicts_publication": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}q=multimedia.@admin.uid:{$.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            "$.hits.hits[0]._source",
+            {
                 "#type": "link_to_record"
             }
-        }
+        ]
     },
     "linked_art_media_referred_to_by": {
         "referred_to_by": {
