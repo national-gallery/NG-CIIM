@@ -345,6 +345,18 @@
                     "_label": "$.type",
                     "content": "$.value"
                 },
+                "reference number": {
+                    "type": "Identifier",
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300312355",
+                            "type": "Type",
+                            "_label": "Accession Number"
+                        }
+                    ],
+                    "_label": "$.type",
+                    "content": "$.value"
+                },
                 "PID": {
                     "type": "Identifier",
                     "classified_as": [

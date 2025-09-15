@@ -54,7 +54,7 @@
                 "#type": "linked_art_part_removal"
             },
             {
-                "#type": "linked_art_dimension"
+                "#type": "linked_art_dimensions"
             },
             {
                 "#type": "linked_art_made_of"

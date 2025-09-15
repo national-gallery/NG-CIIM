@@ -94,7 +94,7 @@
                                 "#type": "for_each",
                                 "values": "$.@link.title",
                                 "spec": {
-                                    "_label": "{$.type}: {$.value}"
+                                    "_label": "$.value"
                                 }
                             }
                         ]

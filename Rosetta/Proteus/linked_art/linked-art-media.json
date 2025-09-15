@@ -155,12 +155,12 @@
                     }
                 },
                 {
-                    "#type": "linked_art_depicts_publication"
+                    "#type": "linked_art_media_depicts_publication"
                 }
             ]
         }
     },
-    "linked_art_depicts_publication": {
+    "linked_art_media_depicts_publication": {
         "#type": "chain",
         "chain": [
             {

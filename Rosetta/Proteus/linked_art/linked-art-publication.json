@@ -40,6 +40,9 @@
                 },
                 {
                     "#type": "linked_art_publication_identified_by_citation"
+                },
+                {
+                    "#type": "linked_art_publication_identified_by_id"
                 }
             ]
         }
@@ -73,6 +76,17 @@
                 }
             ]
         }
+    },
+    "linked_art_publication_identified_by_id": {
+        "type": "Identifier",
+        "classified_as": [
+            {
+                "id": "http://vocab.getty.edu/page/aat/300404012",
+                "type": "Type",
+                "_label": "Local Identifier"
+            }
+        ],
+        "content": "object/{$.@admin.id}"
     },
     "linked_art_publication_classified_as": {
         "classified_as": [
