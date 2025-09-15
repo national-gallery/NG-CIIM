@@ -1,5 +1,5 @@
 {
-    "lido-object": {
+    "process_lido": {
         "@xmlformat": "jml",
         "lido:lidoWrap": {
             "@attributes": {
