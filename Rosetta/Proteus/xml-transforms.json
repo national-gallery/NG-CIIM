@@ -10,25 +10,38 @@
                 "value": "$.@datatype.base",
                 "cases": {
                     "object": {
-                        "#type": "dublin-core-object"
+                        "#type": "process_dublin_core_object"
                     },
-                    "media": "dublin core for media not yet available",
+                    "agent": {
+                        "#type": "process_dublin_core_agent"
+                    },
+                    "media": {
+                        "#type": "process_dublin_core_media"
+                    },
                     "publication": {
-                        "#type": "dublin-core-publication"
+                        "#type": "process_dublin_core_publication"
                     },
-                    "archive": "dublin core for archives not yet available",
-                    "exhibition": "dublin core for exhibition not yet available",
-                    "package": "dublin core for packages not yet available"
+                    "archive": {
+                        "#type": "process_dublin_core_archive"
+                    },
+                    "exhibition": {
+                        "#type": "process_dublin_core_exhibition"
+                    },
+                    "package": {
+                        "#type": "process_dublin_core_package"
+                    }
                 },
-                "default": "Invalid format for datatype"
+                "default": "Dublin Core format for {$.@datatype.base} not available"
             },
             "lido": {
-              "#type": "switch",
-              "value": "$.@datatype.base",
-              "cases": {
-                "object": { "#type": "lido-object" }
-              },
-              "default": "lido format for {$.@datatype.base} not available"
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "object": {
+                        "#type": "process_lido"
+                    }
+                },
+                "default": "LIDO format for {$.@datatype.base} not available"
             },
             "skos": {
                 "#type": "switch",
@@ -41,7 +54,7 @@
                     "exhibition": "Skos xml for exhibition not yet available",
                     "package": "Skos xml for packages not yet available",
                     "concept": {
-                        "#type": "process-skos-xml"
+                        "#type": "process_skos_xml"
                     }
                 },
                 "default": "Invalid format for datatype"
@@ -50,19 +63,29 @@
                 "#type": "switch",
                 "value": "$.@datatype.base",
                 "cases": {
-                    "object": "Lido xml for objects not yet available",
-                    "media": "dublin core for media not yet available",
-                    "publication": {
-                        "#type": "dublin-core-publication"
+                    "object": {
+                        "#type": "process_lido"
                     },
-                    "archive": "dublin core for archives not yet available",
-                    "exhibition": "dublin core for exhibition not yet available",
-                    "package": "dublin core for packages not yet available",
+                    "media": {
+                        "#type": "process_dublin_core_media"
+                    },
+                    "publication": {
+                        "#type": "process_dublin_core_publication"
+                    },
+                    "archive": {
+                        "#type": "process_dublin_core_archive"
+                    },
+                    "exhibition": {
+                        "#type": "process_dublin_core_exhibition"
+                    },
+                    "package": {
+                        "#type": "process_dublin_core_package"
+                    },
                     "concept": {
-                        "#type": "skos-xml"
+                        "#type": "process_skos_xml"
                     }
                 },
-                "default": "Invalid format for datatype"
+                "default": "XML format for {$.@datatype.base} not available"
             }
         },
         "default": {
@@ -70,20 +93,28 @@
             "value": "$.@datatype.base",
             "cases": {
                 "object": {
-                    "#type": "dublin-core-object"
+                    "#type": "process_lido"
                 },
-                "media": "dublin core for media not yet available",
+                "media": {
+                    "#type": "process_dublin_core_media"
+                },
                 "publication": {
-                    "#type": "dublin-core-publication"
+                    "#type": "process_dublin_core_publication"
                 },
-                "archive": "dublin core for archives not yet available",
-                "exhibition": "dublin core for exhibition not yet available",
-                "package": "dublin core for packages not yet available",
+                "archive": {
+                    "#type": "process_dublin_core_archive"
+                },
+                "exhibition": {
+                    "#type": "process_dublin_core_exhibition"
+                },
+                "package": {
+                    "#type": "process_dublin_core_package"
+                },
                 "concept": {
-                    "#type": "skos"
+                    "#type": "process_skos_xml"
                 }
             },
-            "default": "Invalid format for datatype"
+            "default": "No default format for {$.@datatype.base}"
         }
     }
 }
