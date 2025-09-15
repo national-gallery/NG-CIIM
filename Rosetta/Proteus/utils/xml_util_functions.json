@@ -1,0 +1,53 @@
+{
+    "generic_xml_url": {
+        "#type": "string_join",
+        "values": [
+            "{%.xml_base_url}",
+            "{$.@admin.uid}"
+        ]
+    },
+    "escape_xml": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "[L]&",
+                "replacement": "[L]&amp;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "<",
+                "replacement": "[L]&lt;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": ">",
+                "replacement": "[L]&gt;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "\"",
+                "replacement": "[L]&quot;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "'",
+                "replacement": "[L]&apos;"
+            }
+        ]
+    },
+    "escaped_title": {
+        "#type": "chain",
+        "chain": [
+            "$.summary.title",
+            {
+                "#type": "escape_xml"
+            }
+        ]
+    }
+}

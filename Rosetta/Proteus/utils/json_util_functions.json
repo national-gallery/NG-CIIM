@@ -1,0 +1,305 @@
+{
+    "linked_art_type": {
+        "type": {
+            "#type": "switch",
+            "value": "{$.@datatype.base}",
+            "cases": {
+                "event": "Event",
+                "agent": {
+                    "#type": "switch",
+                    "value": "{$.@datatype.actual}",
+                    "cases": {
+                        "Individual": "Person",
+                        "Organisation": "Group"
+                    },
+                    "default": "Agent (unspecified)"
+                },
+                "package": "Set",
+                "archive": "HumanMadeObject",
+                "object": "HumanMadeObject",
+                "exhibition": "Activity",
+                "publication": "LinguisticObject",
+                "dokuwiki": "LinguisticObject",
+                "media": "DigitalObject",
+                "place": "Place"
+            },
+            "default": "Concept"
+        }
+    },
+    "entity_type_for_url": {
+        "#type": "switch",
+        "value": "$.@datatype.base",
+        "cases": {
+            "concept": "concept",
+            "object": "object",
+            "event": "event",
+            "exhibition": "event",
+            "package": "set",
+            "archive": {
+                "#type": "switch",
+                "value": "$.level.value",
+                "cases": {
+                    "Item": "object"
+                },
+                "default": "set"
+            },
+            "place": "place",
+            "agent": {
+                "#type": "switch",
+                "value": "{$.@datatype.actual}",
+                "cases": {
+                    "Individual": "person",
+                    "Organisation": "group"
+                },
+                "default": "person"
+            },
+            "publication": "text",
+            "dokuwiki": "text",
+            "media": "digital"
+        },
+        "default": "linked-art"
+    },
+    "uri_url": {
+        "uri": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}"
+    },
+    "id_url": {
+        "id": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}"
+    },
+    "generic_url": {
+        "#type": "string_join",
+        "values": [
+            "{%.linked_art_base_url}",
+            {
+                "#type": "entity_type_for_url"
+            },
+            "/",
+            "{$.@admin.uid}"
+        ]
+    },
+    "id_generic_url": {
+        "id": {
+            "#type": "generic_url"
+        }
+    },
+    "specious_value_url": {
+        "#type": "string_join",
+        "values": [
+            "{%.linked_art_base_url}linked-data-placeholder/",
+            "{$.type}/",
+            {
+                "#type": "string_to_case",
+                "case": "upper_camel",
+                "value": "$.value"
+            }
+        ]
+    },
+    "specious_place_url": {
+        "#type": "string_join",
+        "values": [
+            "{%.linked_art_base_url}linked-data-placeholder/place/",
+            {
+                "#type": "string_to_case",
+                "case": "upper_camel",
+                "value": "$.value"
+            }
+        ]
+    },
+    "specious_archives_url": {
+        "#type": "string_join",
+        "values": [
+            "{%.linked_art_base_url}linked-data-placeholder/archives/",
+            {
+                "#type": "string_to_case",
+                "case": "upper_camel",
+                "value": "$.value"
+            }
+        ]
+    },
+    "specious_actual_datatype_url": {
+        "#type": "string_join",
+        "values": [
+            "{%.linked_art_base_url}linked-data-placeholder/",
+            {
+                "#type": "string_to_case",
+                "case": "upper_camel",
+                "value": "$.@datatype.actual"
+            }
+        ]
+    },
+    "crm_year_only_timespan": {
+        "#type": "merge",
+        "values": [
+            {
+                "type": "TimeSpan"
+            },
+            {
+                "begin_of_the_begin": {
+                    "#type": "from_year_only_date"
+                }
+            },
+            {
+                "end_of_the_end": {
+                    "#type": "to_year_only_date"
+                }
+            },
+            {
+                "_label": "$.value"
+            }
+        ]
+    },
+    "from_year_only_date": {
+        "#type": "date_format",
+        "value": {
+            "#type": "date_parse",
+            "value": "$.from",
+            "format": "yyyy"
+        },
+        "format": "y-MM-dd'T'HH:mm:ss'Z'"
+    },
+    "to_year_only_date": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "require",
+                "require": "$[?(@.to != '9999')]",
+                "value": "$.to"
+            },
+            {
+                "#type": "maths",
+                "expression": "{$}+1",
+                "output_type": "integer"
+            },
+            {
+                "#type": "as_string",
+                "value": "$"
+            },
+            {
+                "#type": "date_to_millis",
+                "value": {
+                    "#type": "date_parse",
+                    "value": "$",
+                    "format": "y"
+                }
+            },
+            {
+                "#type": "maths",
+                "expression": "{$} - 1"
+            },
+            {
+                "#type": "date_format",
+                "value": {
+                    "#type": "date_from_millis",
+                    "value": "$"
+                },
+                "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            }
+        ]
+    },
+    "crm_dmy_timespan": {
+        "#type": "merge",
+        "values": [
+            {
+                "type": "TimeSpan"
+            },
+            {
+                "begin_of_the_begin": {
+                    "#type": "from_dmy_date"
+                }
+            },
+            {
+                "end_of_the_end": {
+                    "#type": "to_dmy_date"
+                }
+            },
+            {
+                "_label": "$.value"
+            }
+        ]
+    },
+    "from_dmy_date": {
+        "#type": "date_format",
+        "value": {
+            "#type": "date_parse",
+            "value": "$.from",
+            "format": "yyyy-MM-dd"
+        },
+        "format": "y-MM-dd'T'HH:mm:ss'Z'"
+    },
+    "to_dmy_date": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "date_to_millis",
+                "value": {
+                    "#type": "date_parse",
+                    "value": "$.to",
+                    "format": "yyyy-MM-dd"
+                }
+            },
+            {
+                "#type": "maths",
+                "expression": "{$} + 24*60*60*1000 - 1"
+            },
+            {
+                "#type": "date_format",
+                "value": {
+                    "#type": "date_from_millis",
+                    "value": "$"
+                },
+                "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            }
+        ]
+    },
+    "jskos_context_url": {
+        "@context": {
+            "@import": "https:\/\/gbv.github.io\/jskos\/context.json",
+            "_exactMatch": "http:\/\/www.w3.org\/2004\/02\/skos\/core#exactMatch"
+        }
+    },
+    "jskos_context": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "jskos_context_url"
+            },
+            {
+                "#type": "uri_url"
+            }
+        ]
+    },
+    "escape_xml": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "[L]&",
+                "replacement": "[L]&amp;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "<",
+                "replacement": "[L]&lt;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": ">",
+                "replacement": "[L]&gt;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "\"",
+                "replacement": "[L]&quot;"
+            },
+            {
+                "#type": "regex_replace",
+                "value": "$",
+                "pattern": "'",
+                "replacement": "[L]&apos;"
+            }
+        ]
+    }
+}
