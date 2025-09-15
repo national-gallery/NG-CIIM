@@ -1,0 +1,146 @@
+{
+    "process_skos_xml": {
+        "@xmlformat": "jml",
+        "rdf:RDF": {
+            "@attributes": {
+                "xmlns:rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "xmlns:skos": "http://www.w3.org/2004/02/skos/core#",
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+                "xmlns:rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "xmlns:dcterms": "http://purl.org/dc/terms/",
+                "xmlns:foaf": "http://xmlns.com/foaf/0.1/"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "skos:Concept": {
+                            "@attributes": {
+                                "rdf:about": "{%.xml_base_url}{$.@admin.uid}?profile=skos"
+                            },
+                            "@children": {
+                                "#type": "process_skos"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "process_skos": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "skos_prefLabel"
+            },
+            {
+                "#type": "skos_definition"
+            },
+            {
+                "#type": "skos_scope_note"
+            },
+            {
+                "#type": "skos_history_note"
+            },
+            {
+                "#type": "skos_inScheme"
+            },
+            {
+                "#type": "skos_broader"
+            },
+            {
+                "#type": "skos_narrower"
+            }
+        ]
+    },
+    "skos_prefLabel": {
+        "skos:prefLabel": {
+            "@attributes": {
+                "xml:lang": "en-GB"
+            },
+            "@children": "$.summary.title"
+        }
+    },
+    "skos_definition": {
+        "#type": "require",
+        "require": "$[?(@.description[?(@.status=='Active')])].value",
+        "value": {
+            "skos:definition": {
+                "@attributes": {
+                    "xml:lang": "en-GB"
+                },
+                "@children": "$.description[?(@.status=='Active')].value"
+            }
+        }
+    },
+    "skos_scope_note": {
+        "#type": "require",
+        "require": "$[?(@.note[?(@.type == 'scope note')])].value",
+        "value": {
+            "skos:scopeNote": {
+                "@attributes": {
+                    "xml:lang": "en-GB"
+                },
+                "@children": "$.note[?(@.type == 'scope note')].value"
+            }
+        }
+    },
+    "skos_history_note": {
+        "#type": "require",
+        "require": "$[?(@.note[?(@.type == 'history note')])].value",
+        "value": {
+            "skos:historyNote": {
+                "@attributes": {
+                    "xml:lang": "en-GB"
+                },
+                "@children": "$.note[?(@.type == 'history note')].value"
+            }
+        }
+    },
+    "skos_inScheme": {
+        "#type": "for_each",
+        "values": "$.@hierarch",
+        "spec": {
+            "skos:inScheme": {
+                "@attributes": {
+                    "rdf:resource": "{%.xml_base_url}{$.@admin.uid}?profile=skos"
+                }
+            }
+        }
+    },
+    "skos_broader": {
+        "#type": "for_each",
+        "values": "$.parent",
+        "spec": {
+            "skos:broader": {
+                "@attributes": {
+                    "rdf:resource": "{%.xml_base_url}{$.@admin.uid}?profile=skos"
+                }
+            }
+        }
+    },
+    "skos_narrower": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}q=parent.@admin.uid:{$$.current.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.hits.hits",
+                "spec": {
+                    "skos:narrower": {
+                        "@attributes": {
+                            "rdf:resource": "{%.xml_base_url}{$._source.@admin.uid}?profile=skos"
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
