@@ -1,0 +1,79 @@
+{
+    "process_dublin_core_package": {
+        "@xmlformat": "jml",
+        "oai_dc:dc": {
+            "@attributes": {
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+                "xmlns:dcterms": "http://purl.org/dc/terms/",
+                "xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "dc_identifier"
+                    },
+                    {
+                        "#type": "dc_type_package"
+                    },
+                    {
+                        "#type": "dc_title"
+                    },
+                    {
+                        "#type": "dc_description"
+                    },
+                    {
+                        "#type": "dcterms_hasPart_package"
+                    },
+                    {
+                        "#type": "dc_creator_package"
+                    },
+                    {
+                        "#type": "dc_publisher_package"
+                    },
+                    {
+                        "#type": "dc_rights"
+                    }
+                ]
+            }
+        }
+    },
+    "dc_creator_package": {
+        "dc:creator": "The National Gallery, London"
+    },
+    "dcterms_hasPart_package": {
+        "#type": "for_each",
+        "values": "$.object",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dcterms:hasPart": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
+                    "dcterms:hasPart": {
+                        "#type": "escaped_title"
+                    }
+                }
+            ]
+        }
+    },
+    "dc_publisher_package": {
+        "dc:publisher": "The National Gallery, London"
+    },
+    "dc_type_package": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:type": "Collection"
+            },
+            {
+                "dc:type": "http://purl.org/dc/dcmitype/Collection"
+            }
+        ]
+    }
+}

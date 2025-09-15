@@ -1,0 +1,254 @@
+{
+    "process_dublin_core_object": {
+        "@xmlformat": "jml",
+        "oai_dc:dc": {
+            "@attributes": {
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+				"xmlns:dcterms": "http://purl.org/dc/terms/",
+				"xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"                
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "dc_title"
+                    },
+                    {
+                        "#type": "dcterms_alternative"
+                    },
+                    {
+                        "#type": "dc_type_object"
+                    },
+                    {
+                        "#type": "dc_creator"
+                    },
+                    {
+                        "#type": "dcterms_created"
+                    },
+                    {
+                        "#type": "dcterms_spatial"
+                    },
+                    {
+                        "#type": "dcterms_temporal"
+                    },
+                    {
+                        "#type": "dc_identifier"
+                    },
+                    {
+                        "#type": "dc_publisher_object"
+                    },
+                    {
+                        "#type": "dc_rights"
+                    },
+                    {
+                        "#type": "dc_description_object"
+                    },
+                    {
+                        "#type": "dcterms_extent"
+                    },
+                    {
+                        "#type": "dcterms_medium"
+                    },
+                    {
+                        "#type": "dc_relation_object"
+                    },
+                    {
+                        "#type": "dcterms_hasPart"
+                    },
+                    {
+                        "#type": "dcterms_isPartOf"
+                    },
+                    {
+                        "#type": "dcterms_isReferencedBy"
+                    },
+                    {
+                        "#type": "dc_subject_object"
+                    }
+                ]
+            }
+        }
+    },
+    "dc_description_object": {
+        "#type": "for_each",
+        "values": "$.description[?(@.type == 'short text')]",
+        "spec": {
+            "dc:description": "$.value"
+        }
+    },
+    "dcterms_hasPart_object": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:hasPart": {
+                    "#type": "generic_xml_url"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": {
+                    "#type": "distinct",
+                    "values": "$.identifier[?(@.primary == true)].value"
+                },
+                "spec": {
+                    "dc:hasPart": "$"
+                }
+            },
+            {
+                "dc:hasPart": "$.creation[0].attribution[0].value"
+            },
+            {
+                "dc:hasPart": "$.summary.title"
+            }
+        ]
+    },
+    "dc_publisher_object": {
+        "dc:publisher": "The National Gallery, London"
+    },
+    "dc_relation_object": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.framing.frame",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:relation": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dc:relation": "$.summary.title"
+                        },
+                        {
+                            "#type": "for_each",
+                            "values": "$.@link.role",
+                            "spec": {
+                                "dc:relation": "$.value"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.painting",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:relation": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "#type": "for_each",
+                            "values": "$.@link.role",
+                            "spec": {
+                                "dc:relation": "$.value"
+                            }
+                        },
+                        {
+                            "dc:relation": "$.summary.title"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_subject_object": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.function",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:subject": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dc:subject": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.genre",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:subject": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dc:subject": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.style",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:subject": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dc:subject": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.subject",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:subject": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dc:subject": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_type_object": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:type": "PhysicalObject"
+            },
+            {
+                "dc:type": "http://purl.org/dc/dcmitype/PhysicalObject"
+            }
+        ]
+    }
+}

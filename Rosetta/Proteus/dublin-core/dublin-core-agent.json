@@ -1,0 +1,25 @@
+{
+    "process_dublin_core_agent": {
+        "@xmlformat": "jml",
+        "dc": {
+            "@attributes": {
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "https://www.dublincore.org/schemas/xmls/qdc/dc.xsd",
+                "xmlns:dcterms": "http://purl.org/dc/terms/"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "for_each",
+                        "values": "$.name",
+                        "spec": {
+                            "dc:type": "$.value"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,269 @@
+{
+    "process_dublin_core_publication": {
+        "@xmlformat": "jml",
+        "oai_dc:dc": {
+            "@attributes": {
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+                "xmlns:dcterms": "http://purl.org/dc/terms/",
+                "xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "dc_title"
+                    },
+                    {
+                        "#type": "dc_creator_publication"
+                    },
+                    {
+                        "#type": "dc_contributor_publication"
+                    },
+                    {
+                        "#type": "dcterms_created"
+                    },
+                    {
+                        "#type": "dc_description_publication"
+                    },
+                    {
+                        "#type": "dc_bibliographicCitation_publication"
+                    },
+                    {
+                        "#type": "dcterms_isPartOf_publication"
+                    },
+                    {
+                        "#type": "dcterms_extent_publication"
+                    },
+                    {
+                        "#type": "dcterms_tableOfContents"
+                    },
+                    {
+                        "#type": "dc_identifier_publication"
+                    },
+                    {
+                        "#type": "dc_publisher"
+                    },
+                    {
+                        "#type": "dcterms_references_publication"
+                    },
+                    {
+                        "#type": "dc_subject_publication"
+                    },
+                    {
+                        "#type": "dc_type_publication"
+                    },
+                    {
+                        "#type": "dc_rights"
+                    }
+                ]
+            }
+        }
+    },
+    "dc_bibliographicCitation_publication": {
+        "dc:bibliographicCitation": "$.citation.value"
+    },
+    "dc_contributor_publication": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.agent",
+                "spec": {
+                    "dc:contributor": "$.summary.title"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.organisation",
+                "spec": {
+                    "dc:contributor": "$.summary.title"
+                }
+            }
+        ]
+    },
+    "dc_creator_publication": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.creation",
+                "spec": {
+                    "#type": "for_each",
+                    "values": "$.maker",
+                    "spec": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "dc:creator": {
+                                    "#type": "generic_xml_url"
+                                }
+                            },
+                            {
+                                "dc:creator": "$.summary.title"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.work.creation.maker",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dc:creator": "$.summary.title"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_description_publication": {
+        "#type": "for_each",
+        "values": "$.description[?(@.type == 'scope and content')]",
+        "spec": {
+            "dc:description": "$.value"
+        }
+    },
+    "dcterms_extent_publication": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dcterms:extent": "$.measurements.pages"
+            },
+            {
+                "#type": "for_each",
+                "values": "$.measurements.extent",
+                "spec": {
+                    "dcterms:extent": "$"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.measurements.dimensions",
+                "spec": {
+                    "dcterms:extent": "$.value"
+                }
+            }
+        ]
+    },
+    "dc_identifier_publication": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:identifier": {
+                    "#type": "generic_xml_url"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.identifier[?(@.type in ['brief reference', 'Call Number', 'ISBN', 'isbn', 'ISSN', 'issn', 'DOI', 'Handle'])]",
+                "spec": {
+                    "dc:identifier": "$.value"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.item",
+                "spec": {
+                    "#type": "for_each",
+                    "values": "$.identifier[?(@.type == 'shelf mark')]",
+                    "spec": {
+                        "dc:identifier": "$.value"
+                    }
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.related[?(@.@admin.source == 'eos')]",
+                "spec": {
+                    "dc:identifier": "$.@admin.id"
+                }
+            }
+        ]
+    },
+    "dcterms_isPartOf_publication": {
+        "#type": "require",
+        "require": "$.@datatype[?(@.actual=='Article in book')]",
+        "value": {
+            "#type": "for_each",
+            "values": "$.related",
+            "spec": {
+                "dc:isPartOf": {
+                    "#type": "generic_xml_url"
+                }
+            }
+        }
+    },
+    "dcterms_references_publication": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}size=1000&q=bibliography.@admin.uid:{$.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.hits.hits",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "#type": "chain",
+                            "chain": [
+                                "$._source",
+                                {
+                                    "#type": "dc_references"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_subject_publication": {
+        "#type": "for_each",
+        "values": "$.subject",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "require",
+                    "require": "$.@admin.uid",
+                    "value": {
+                        "dc:subject": {
+                            "#type": "generic_xml_url"
+                        }
+                    }
+                },
+                {
+                    "dc:subject": {
+                        "#type": "escaped_title"
+                    }
+                }
+            ]
+        }
+    },
+    "dc_type_publication": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:type": "http://purl.org/dc/dcmitype/Text"
+            },
+            {
+                "dc:type": "Text"
+            },
+            {
+                "dc:type": "$.@datatype.actual"
+            }
+        ]
+    }
+}

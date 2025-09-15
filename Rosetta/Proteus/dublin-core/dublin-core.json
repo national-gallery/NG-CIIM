@@ -1,0 +1,412 @@
+{
+    "dcterms_accessRights": {
+        "dcterms:accessRights": {
+            "#type": "fallback",
+            "strategies": [
+                {
+                    "#type": "require",
+                    "require": "$.access.conditions",
+                    "value": "$.access.conditions"
+                },
+                "$.access.status"
+            ]
+        }
+    },
+    "dcterms_alternative": {
+        "dcterms:alternative": "$.title[?(@.type == 'short title')].value"
+    },
+    "dc_contributor": {
+        "#type": "for_each",
+        "values": "$.agent",
+        "spec": {
+            "dc:contributor": "$.summary.title"
+        }
+    },
+    "dcterms_created": {
+        "dcterms:created": "$.creation[0].date[0].value"
+    },
+    "dc_creator": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:creator": {
+                    "#type": "for_each",
+                    "values": "$.creation[0].maker[?(@.@link.historical == false)]",
+                    "spec": {
+                        "#type": "generic_xml_url"
+                    }
+                }
+            },
+            {
+                "dc:creator": "$.creation[0].attribution[0].value"
+            },
+            {
+                "dc:creator": "$.creation[0].maker[?(@.@link.historical == false)].summary.title"
+            }
+        ]
+    },
+    "dc_date": {
+        "#type": "for_each",
+        "values": "$.date",
+        "spec": {
+            "dc:date": "$.value"
+        }
+    },
+    "dc_description": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.description",
+                "spec": {
+                    "dc:description": "$.value"
+                }
+            }
+        ]
+    },
+    "dcterms_extent": {
+        "#type": "for_each",
+        "values": "$.measurements",
+        "spec": {
+            "dcterms:extent": "$.display"
+        }
+    },
+    "dcterms_hasPart": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}size=1000&q=parent.@admin.uid:{$.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.hits.hits",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "#type": "chain",
+                            "chain": [
+                                "$._source",
+                                {
+                                    "#type": "switch",
+                                    "value": "$.@datatype.base",
+                                    "cases": {
+                                        "object": {
+                                            "#type": "dcterms_hasPart_object"
+                                        },
+                                        "archive": {
+                                            "#type": "dcterms_hasPart_archive"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_identifier": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:identifier": {
+                    "#type": "generic_xml_url"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": {
+                    "#type": "distinct",
+                    "values": "$.identifier[?(@.primary == true)].value"
+                },
+                "spec": {
+                    "dc:identifier": "$"
+                }
+            }
+        ]
+    },
+    "dcterms_isFormatOf": {
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dcterms:isFormatOf": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
+                    "dcterms:isFormatOf": {
+                        "#type": "escaped_title"
+                    }
+                }
+            ]
+        }
+    },
+    "dcterms_isPartOf": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.parent",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dcterms:isPartOf": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dcterms:isPartOf": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.package",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dcterms:isPartOf": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dcterms:isPartOf": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dcterms_isReferencedBy": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.archive",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dcterms:isReferencedBy": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dcterms:isReferencedBy": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.bibliography",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dcterms:isReferencedBy": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dcterms:isReferencedBy": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.multimedia",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "dcterms:isReferencedBy": {
+                                "#type": "generic_xml_url"
+                            }
+                        },
+                        {
+                            "dcterms:isReferencedBy": {
+                                "#type": "escaped_title"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_language": {
+        "#type": "for_each",
+        "values": "$.language",
+        "spec": {
+            "dc:language": "$.code"
+        }
+    },
+    "dcterms_medium": {
+        "#type": "for_each",
+        "values": "$.material",
+        "spec": {
+            "dcterms:medium": "$.value"
+        }
+    },
+    "dc_provenance": {
+        "#type": "for_each",
+        "values": "$.history[?(@.type == 'custodial history')]",
+        "spec": {
+            "dc:provenance": "$.value"
+        }
+    },
+    "dc_publisher": {
+        "#type": "for_each",
+        "values": "$.creation",
+        "spec": {
+            "#type": "for_each",
+            "values": "$.publisher",
+            "spec": {
+                "#type": "for_each",
+                "values": "$.name",
+                "spec": {
+                    "dc:publisher": "$.value"
+                }
+            }
+        }
+    },
+    "dc_references": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:references": {
+                    "#type": "generic_xml_url"
+                }
+            },
+            {
+                "dc:references": {
+                    "#type": "escaped_title"
+                }
+            }
+        ]
+    },
+    "dc_relation": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.exhibition",
+                "spec": {
+                    "dc:relation": "$.text.value"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.literature",
+                "spec": {
+                    "dc:relation": "$.summary.title"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.object",
+                "spec": {
+                    "dc:relation": "$.summary.title"
+                }
+            }
+        ]
+    },
+    "dc_rights": {
+        "#type": "for_each",
+        "values": "$.legal.rights[?(@.type=='use of images and metadata')]",
+        "spec": {
+            "dc:rights": "$.details"
+        }
+    },
+    "dcterms_spatial": {
+        "#type": "for_each",
+        "values": "$.creation",
+        "spec": {
+            "#type": "for_each",
+            "values": "$.place",
+            "spec": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "dcterms:spatial": {
+                            "#type": "generic_xml_url"
+                        }
+                    },
+                    {
+                        "dcterms:spatial": {
+                            "#type": "escaped_title"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "dc_subject": {
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dc:subject": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
+                    "dc:subject": {
+                        "#type": "escaped_title"
+                    }
+                }
+            ]
+        }
+    },
+    "dcterms_tableOfContents": {
+        "#type": "for_each",
+        "values": "$.contents",
+        "spec": {
+            "dcterms:tableOfContents": "$.value"
+        }
+    },
+    "dcterms_temporal": {
+        "#type": "for_each",
+        "values": "$.creation",
+        "spec": {
+            "#type": "for_each",
+            "values": "$.date",
+            "spec": [
+                {
+                    "dcterms:temporal": "$.value"
+                }
+            ]
+        }
+    },
+    "dc_title": {
+        "dc:title": {
+            "#type": "escaped_title"
+        }
+    },
+    "dc_type": {
+        "#type": "for_each",
+        "values": "$.classification",
+        "spec": {
+            "dc:type": "$.value"
+        }
+    }
+}

@@ -1,0 +1,161 @@
+{
+    "process_dublin_core_archive": {
+        "@xmlformat": "jml",
+        "oai_dc:dc": {
+            "@attributes": {
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+				"xmlns:dcterms": "http://purl.org/dc/terms/",
+				"xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"                
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "dc_title"
+                    },
+                    {
+                        "#type": "dc_description"
+                    },
+                    {
+                        "#type": "dc_language"
+                    },
+                    {
+                        "#type": "dc_identifier"
+                    },
+                    {
+                        "#type": "dc_creator_archive"
+                    },
+                    {
+                        "#type": "dc_contributor_archive"
+                    },
+                    {
+                        "#type": "dc_publisher_archive"
+                    },
+                    {
+                        "#type": "dc_temporal_archive"
+                    },
+                    {
+                        "#type": "dcterms_extent_archive"
+                    },
+                    {
+                        "#type": "dcterms_hasPart"
+                    },
+                    {
+                        "#type": "dcterms_isPartOf_archive"
+                    },
+                    {
+                        "#type": "dcterms_created_archive"
+                    },
+                    {
+                        "#type": "dc_provenance"
+                    },
+                    {
+                        "#type": "dc_type_publication"
+                    },
+                    {
+                        "#type": "dc_rights"
+                    },
+                    {
+                        "#type": "dcterms_accessRights"
+                    }
+                ]
+            }
+        }
+    },
+    "dc_contributor_archive": {
+        "#type": "for_each",
+        "values": "$.creation.maker",
+        "spec": {
+            "#type": "for_each",
+            "values": "$.name",
+            "spec": {
+                "dc:contributor": "$.value"
+            }
+        }
+    },
+    "dcterms_created_archive": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.creation.date",
+                "spec": {
+                    "dcterms:created": "$.value"
+                }
+            }
+        ]
+    },
+    "dc_creator_archive": {
+        "#type": "for_each",
+        "values": "$.creation.maker",
+        "spec": {
+            "#type": "for_each",
+            "values": "$.name",
+            "spec": {
+                "dc:creator": "$.value"
+            }
+        }
+    },
+    "dcterms_extent_archive": {
+        "dcterms:extent": "$.measurements.extent"
+    },
+    "dcterms_hasPart_archive": {
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:hasPart": {
+                    "#type": "generic_xml_url"
+                }
+            },
+            {
+                "dc:hasPart": {
+                    "#type": "escaped_title"
+                }
+            }
+        ]
+    },
+    "dcterms_isPartOf_archive": {
+        "#type": "for_each",
+        "values": "$.parent",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dcterms:isPartOf": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
+                    "dcterms:isPartOf": {
+                        "#type": "escaped_title"
+                    }
+                }
+            ]
+        }
+    },
+    "dc_publisher_archive": {
+        "#type": "for_each",
+        "values": "$.repository",
+        "spec": {
+            "#type": "for_each",
+            "values": "$.name",
+            "spec": {
+                "dc:publisher": "$.value"
+            }
+        }
+    },
+    "dc_temporal_archive": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "for_each",
+                "values": "$.creation.date",
+                "spec": {
+                    "dc:temporal": "$.value"
+                }
+            }
+        ]
+    }
+}
