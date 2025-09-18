@@ -34,7 +34,7 @@
                         "#type": "dc_publisher_archive"
                     },
                     {
-                        "#type": "dc_temporal_archive"
+                        "#type": "dcterms_temporal_archive"
                     },
                     {
                         "#type": "dcterms_extent_archive"
@@ -105,12 +105,12 @@
         "#type": "flatten",
         "values": [
             {
-                "dc:hasPart": {
+                "dcterms:hasPart": {
                     "#type": "generic_xml_url"
                 }
             },
             {
-                "dc:hasPart": {
+                "dcterms:hasPart": {
                     "#type": "escaped_title"
                 }
             }
@@ -146,14 +146,14 @@
             }
         }
     },
-    "dc_temporal_archive": {
+    "dcterms_temporal_archive": {
         "#type": "flatten",
         "values": [
             {
                 "#type": "for_each",
                 "values": "$.creation.date",
                 "spec": {
-                    "dc:temporal": "$.value"
+                    "dcterms:temporal": "$.value"
                 }
             }
         ]

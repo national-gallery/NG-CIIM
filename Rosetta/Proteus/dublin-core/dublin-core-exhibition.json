@@ -4,10 +4,10 @@
         "oai_dc:dc": {
             "@attributes": {
                 "xmlns:dc": "http://purl.org/dc/elements/1.1/",
-				"xmlns:dcterms": "http://purl.org/dc/terms/",
-				"xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                "xmlns:dcterms": "http://purl.org/dc/terms/",
+                "xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
                 "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"                
+                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"
             },
             "@children": {
                 "#type": "flatten",
@@ -16,7 +16,7 @@
                         "#type": "dc_identifier_exhibition"
                     },
                     {
-                        "#type": "dc_title"
+                        "#type": "dc_title_exhibition"
                     },
                     {
                         "#type": "dcterms_alternative_exhibition"
@@ -56,18 +56,19 @@
         }
     },
     "dcterms_alternative_exhibition": {
-        "#type": "flatten",
-        "values": [
-            {
-                "#type": "for_each",
-                "values": "$.venue",
-                "spec": {
+        "#type": "for_each",
+        "values": "$.venue",
+        "spec": {
+            "#type": "chain",
+            "chain": [
+                "$.@link.title[0].value",
+                {
                     "dcterms:alternative": {
-                        "#type": "escaped_title"
+                        "#type": "escape_xml"
                     }
                 }
-            }
-        ]
+            ]
+        }
     },
     "dc_contributor_exhibition": {
         "#type": "flatten",
@@ -82,18 +83,23 @@
         ]
     },
     "dc_creator_exhibition": {
-        "#type": "flatten",
-        "values": [
-            {
-                "#type": "for_each",
-                "values": "$.venue",
-                "spec": {
+        "#type": "for_each",
+        "values": "$.venue",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dc:creator": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
                     "dc:creator": {
                         "#type": "escaped_title"
                     }
                 }
-            }
-        ]
+            ]
+        }
     },
     "dcterms_hasPart_exhibition": {
         "#type": "flatten",
@@ -145,18 +151,23 @@
         ]
     },
     "dc_publisher_exhibition": {
-        "#type": "flatten",
-        "values": [
-            {
-                "#type": "for_each",
-                "values": "$.venue",
-                "spec": {
-                    "dc:creator": {
+        "#type": "for_each",
+        "values": "$.venue",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dc:publisher": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
+                    "dc:publisher": {
                         "#type": "escaped_title"
                     }
                 }
-            }
-        ]
+            ]
+        }
     },
     "dcterms_temporal_exhibition": {
         "#type": "for_each",
@@ -165,7 +176,31 @@
             "dcterms:temporal": "$.value"
         }
     },
-"dc_type_exhibition": {
+    "dc_title_exhibition": {
+        "#type": "for_each",
+        "values": "$.venue",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "for_each",
+                    "values": "$.@link.title",
+                    "spec": {
+                        "#type": "chain",
+                        "chain": [
+                            "$.value",
+                            {
+                                "dc:title": {
+                                    "#type": "escape_xml"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "dc_type_exhibition": {
         "#type": "flatten",
         "values": [
             {
@@ -175,5 +210,5 @@
                 "dc:type": "Event"
             }
         ]
-}
+    }
 }

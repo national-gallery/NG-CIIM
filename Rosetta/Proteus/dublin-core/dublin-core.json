@@ -29,19 +29,30 @@
         "#type": "flatten",
         "values": [
             {
-                "dc:creator": {
-                    "#type": "for_each",
-                    "values": "$.creation[0].maker[?(@.@link.historical == false)]",
-                    "spec": {
-                        "#type": "generic_xml_url"
-                    }
-                }
-            },
-            {
                 "dc:creator": "$.creation[0].attribution[0].value"
             },
             {
-                "dc:creator": "$.creation[0].maker[?(@.@link.historical == false)].summary.title"
+                "#type": "for_each",
+                "values": "$.creation",
+                "spec": {
+                    "#type": "for_each",
+                    "values": "$.maker[?(@.@link.historical == false)]",
+                    "spec": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "dc:creator": {
+                                    "#type": "generic_xml_url"
+                                }
+                            },
+                            {
+                                "dc:creator": {
+                                    "#type": "escaped_title"
+                                }
+                            }
+                        ]
+                    }
+                }
             }
         ]
     },
@@ -123,30 +134,35 @@
                 "#type": "for_each",
                 "values": {
                     "#type": "distinct",
-                    "values": "$.identifier[?(@.primary == true)].value"
+                    "values": "$.identifier[?(@.type == 'display number')].value"
                 },
                 "spec": {
                     "dc:identifier": "$"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.identifier[?(@.type == 'rendition number')]",
+                "spec": {
+                    "dc:identifier": "$.value"
                 }
             }
         ]
     },
     "dcterms_isFormatOf": {
-        "spec": {
-            "#type": "flatten",
-            "values": [
-                {
-                    "dcterms:isFormatOf": {
-                        "#type": "generic_xml_url"
-                    }
-                },
-                {
-                    "dcterms:isFormatOf": {
-                        "#type": "escaped_title"
-                    }
+        "#type": "flatten",
+        "values": [
+            {
+                "dcterms:isFormatOf": {
+                    "#type": "generic_xml_url"
                 }
-            ]
-        }
+            },
+            {
+                "dcterms:isFormatOf": {
+                    "#type": "escaped_title"
+                }
+            }
+        ]
     },
     "dcterms_isPartOf": {
         "#type": "flatten",
@@ -289,16 +305,16 @@
             }
         }
     },
-    "dc_references": {
+    "dcterms_references": {
         "#type": "flatten",
         "values": [
             {
-                "dc:references": {
+                "dcterms:references": {
                     "#type": "generic_xml_url"
                 }
             },
             {
-                "dc:references": {
+                "dcterms:references": {
                     "#type": "escaped_title"
                 }
             }
@@ -361,21 +377,19 @@
         }
     },
     "dc_subject": {
-        "spec": {
-            "#type": "flatten",
-            "values": [
-                {
-                    "dc:subject": {
-                        "#type": "generic_xml_url"
-                    }
-                },
-                {
-                    "dc:subject": {
-                        "#type": "escaped_title"
-                    }
+        "#type": "flatten",
+        "values": [
+            {
+                "dc:subject": {
+                    "#type": "generic_xml_url"
                 }
-            ]
-        }
+            },
+            {
+                "dc:subject": {
+                    "#type": "escaped_title"
+                }
+            }
+        ]
     },
     "dcterms_tableOfContents": {
         "#type": "for_each",

@@ -25,10 +25,10 @@
                         "#type": "dcterms_created"
                     },
                     {
-                        "#type": "dc_description_publication"
+                        "#type": "dc_description"
                     },
                     {
-                        "#type": "dc_bibliographicCitation_publication"
+                        "#type": "dcterms_bibliographicCitation_publication"
                     },
                     {
                         "#type": "dcterms_isPartOf_publication"
@@ -61,8 +61,8 @@
             }
         }
     },
-    "dc_bibliographicCitation_publication": {
-        "dc:bibliographicCitation": "$.citation.value"
+    "dcterms_bibliographicCitation_publication": {
+        "dcterms:bibliographicCitation": "$.citation.value"
     },
     "dc_contributor_publication": {
         "#type": "flatten",
@@ -121,13 +121,6 @@
             }
         ]
     },
-    "dc_description_publication": {
-        "#type": "for_each",
-        "values": "$.description[?(@.type == 'scope and content')]",
-        "spec": {
-            "dc:description": "$.value"
-        }
-    },
     "dcterms_extent_publication": {
         "#type": "flatten",
         "values": [
@@ -182,6 +175,9 @@
                 "spec": {
                     "dc:identifier": "$.@admin.id"
                 }
+            },
+            {
+                "dc:identifier": "$.@admin[?(@.source == 'National Gallery EOS Library Management System')].id"
             }
         ]
     },
@@ -220,7 +216,7 @@
                             "chain": [
                                 "$._source",
                                 {
-                                    "#type": "dc_references"
+                                    "#type": "dcterms_references"
                                 }
                             ]
                         }
