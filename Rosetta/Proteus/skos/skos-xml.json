@@ -16,7 +16,7 @@
                     {
                         "skos:Concept": {
                             "@attributes": {
-                                "rdf:about": "{%.xml_base_url}{$.@admin.uid}?profile=skos"
+                                "rdf:about": "{%.xml_base_url}{$.@admin.uid}"
                             },
                             "@children": {
                                 "#type": "process_skos"
@@ -103,7 +103,7 @@
         "spec": {
             "skos:inScheme": {
                 "@attributes": {
-                    "rdf:resource": "{%.xml_base_url}{$.@admin.uid}?profile=skos"
+                    "rdf:resource": "{%.xml_base_url}{$.@admin.uid}"
                 }
             }
         }
@@ -114,7 +114,7 @@
         "spec": {
             "skos:broader": {
                 "@attributes": {
-                    "rdf:resource": "{%.xml_base_url}{$.@admin.uid}?profile=skos"
+                    "rdf:resource": "{%.xml_base_url}{$.@admin.uid}"
                 }
             }
         }
@@ -136,7 +136,7 @@
                 "spec": {
                     "skos:narrower": {
                         "@attributes": {
-                            "rdf:resource": "{%.xml_base_url}{$._source.@admin.uid}?profile=skos"
+                            "rdf:resource": "{%.xml_base_url}{$._source.@admin.uid}"
                         }
                     }
                 }
