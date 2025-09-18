@@ -47,17 +47,17 @@
                 "#type": "switch",
                 "value": "$.@datatype.base",
                 "cases": {
-                    "object": "Skos xml for objects not yet available",
-                    "media": "Skos xml for media not yet available",
-                    "publication": "Skos xml for publications not yet available",
-                    "archive": "Skos xml for archives not yet available",
-                    "exhibition": "Skos xml for exhibition not yet available",
-                    "package": "Skos xml for packages not yet available",
                     "concept": {
+                        "#type": "process_skos_xml"
+                    },
+                    "location": {
+                        "#type": "process_skos_xml"
+                    },
+                    "place": {
                         "#type": "process_skos_xml"
                     }
                 },
-                "default": "Invalid format for datatype"
+                "default": "SKOS XML format for {$.@datatype.base} not available"
             },
             "xml": {
                 "#type": "switch",
