@@ -81,7 +81,7 @@
         "#type": "flatten",
         "values": [
             {
-                "dc:hasPart": {
+                "dcterms:hasPart": {
                     "#type": "generic_xml_url"
                 }
             },

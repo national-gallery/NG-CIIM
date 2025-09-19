@@ -109,12 +109,20 @@
                 "values": "$.venue",
                 "spec": {
                     "dcterms:hasPart": {
-                        "#type": "string_join",
-                        "delimiter": ", ",
-                        "values": [
-                            "$.@link.title[0].value",
-                            "$.summary.title",
-                            "$.@link.date[0].value"
+                        "#type": "chain",
+                        "chain": [
+                            {
+                                "#type": "string_join",
+                                "delimiter": ", ",
+                                "values": [
+                                    "$.@link.title[0].value",
+                                    "$.summary.title",
+                                    "$.@link.date[0].value"
+                                ]
+                            },
+                            {
+                                "#type": "escape_xml"
+                            }
                         ]
                     }
                 }
@@ -177,28 +185,15 @@
         }
     },
     "dc_title_exhibition": {
-        "#type": "for_each",
-        "values": "$.venue",
-        "spec": {
-            "#type": "flatten",
-            "values": [
-                {
-                    "#type": "for_each",
-                    "values": "$.@link.title",
-                    "spec": {
-                        "#type": "chain",
-                        "chain": [
-                            "$.value",
-                            {
-                                "dc:title": {
-                                    "#type": "escape_xml"
-                                }
-                            }
-                        ]
-                    }
+        "#type": "chain",
+        "chain": [
+            "$.summary.title",
+            {
+                "dc:title": {
+                    "#type": "escape_xml"
                 }
-            ]
-        }
+            }
+        ]
     },
     "dc_type_exhibition": {
         "#type": "flatten",
