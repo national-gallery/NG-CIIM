@@ -12,7 +12,7 @@
             {
                 "#type": "regex_replace",
                 "value": "$",
-                "pattern": "[L]&",
+                "pattern": "&",
                 "replacement": "[L]&amp;"
             },
             {
