@@ -15,6 +15,9 @@
                 "#type": "linked_art_classified_as"
             },
             {
+                "#type": "linked_art_about"
+            },
+            {
                 "#type": "linked_art_identified_by"
             },
             {
@@ -39,9 +42,6 @@
                 "#type": "linked_art_member_of"
             },
             {
-                "#type": "linked_art_subject_of"
-            },
-            {
                 "#type": "linked_art_attributed_by"
             },
             {
@@ -54,7 +54,7 @@
                 "#type": "linked_art_part_removal"
             },
             {
-                "#type": "linked_art_dimensions"
+                "#type": "linked_art_overall_dimensions"
             },
             {
                 "#type": "linked_art_made_of"
@@ -63,7 +63,7 @@
                 "#type": "linked_art_member"
             },
             {
-                "#type": "linked_art_part_details"
+                "#type": "linked_art_provenance"
             },
             {
                 "#type": "linked_art_current_owner"
@@ -76,9 +76,6 @@
             },
             {
                 "#type": "linked_art_carries"
-            },
-            {
-                "#type": "linked_art_shows"
             },
             {
                 "#type": "linked_art_produced_by"
@@ -112,10 +109,19 @@
                     "#type": "linked_art_classified_as_classification"
                 },
                 {
+                    "#type": "linked_art_classified_as_school"
+                },
+                {
+                    "#type": "linked_art_classified_as_style"
+                },
+                {
                     "#type": "linked_art_classified_as_category"
                 },
                 {
                     "#type": "linked_art_classified_as_function"
+                },
+                {
+                    "#type": "linked_art_classified_as_genre"
                 },
                 {
                     "#type": "linked_art_classified_as_physical"
@@ -140,6 +146,27 @@
             "#type": "string_value_classification"
         }
     },
+    "linked_art_classified_as_style": {
+        "#type": "for_each",
+        "values": "$.style",
+        "spec": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "linked_art_class"
+                },
+                {
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300015646",
+                            "type": "Type",
+                            "_label": "Styles and Periods"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
     "linked_art_classified_as_category": {
         "#type": "for_each",
         "values": "$.category",
@@ -151,7 +178,7 @@
                     "_label": "$.type"
                 }
             ],
-            "content": "$.value"
+            "_label": "$.value"
         }
     },
     "linked_art_classified_as_function": {
@@ -166,22 +193,28 @@
                     "_label": "function"
                 }
             ],
-            "content": "$.summary.title"
+            "_label": "$.summary.title"
         }
     },
     "linked_art_classified_as_genre": {
         "#type": "for_each",
         "values": "$.genre",
         "spec": {
-            "type": "Type",
-            "classified_as": [
+            "#type": "merge",
+            "values": [
                 {
-                    "id": "http://vocab.getty.edu/aat/300056462",
-                    "type": "Type",
-                    "_label": "genre"
+                    "#type": "linked_art_class"
+                },
+                {
+                    "classified_as": [
+                        {
+                            "id": "http://vocab.getty.edu/aat/300056462",
+                            "type": "Type",
+                            "_label": "Genre"
+                        }
+                    ]
                 }
-            ],
-            "content": "$.summary.title"
+            ]
         }
     },
     "linked_art_classified_as_physical": {
@@ -196,15 +229,14 @@
                 }
             ],
             "id": "{%.linked_art_base_url}{$.@admin.uid}",
-            "_label": "$.@link.role[0].value",
-            "content": "$.summary.title"
+            "_label": "$.@link.role[0].value"
         }
     },
     "linked_art_classified_as_legal": {
         "#type": "for_each",
         "values": "$.legal[?(@.status)]",
         "spec": {
-            "type": "Linguistic Object",
+            "type": "Type",
             "classified_as": [
                 {
                     "id": "http://vocab.getty.edu/aat/300417633",
@@ -212,7 +244,7 @@
                     "_label": "Legal Status"
                 }
             ],
-            "content": "$.status"
+            "_label": "$.status"
         }
     },
     "linked_art_classified_as_datatype": {
@@ -223,6 +255,15 @@
                 "type": "Type",
                 "id": "http://vocab.getty.edu/aat/300054766",
                 "_label": "exhibitions (events)"
+            }
+        }
+    },
+    "linked_art_about": {
+        "about": {
+            "#type": "for_each",
+            "values": "$.subject",
+            "spec": {
+                "#type": "linked_art_subject"
             }
         }
     },
@@ -241,9 +282,6 @@
                 },
                 {
                     "#type": "linked_art_identified_by_rendition_number"
-                },
-                {
-                    "#type": "linked_art_identified_by_with_equivalents"
                 }
             ]
         }
@@ -342,7 +380,6 @@
                             "_label": "Accession Number"
                         }
                     ],
-                    "_label": "$.type",
                     "content": "$.value"
                 },
                 "reference number": {
@@ -354,7 +391,6 @@
                             "_label": "Accession Number"
                         }
                     ],
-                    "_label": "$.type",
                     "content": "$.value"
                 },
                 "PID": {
@@ -366,7 +402,6 @@
                             "_label": "persistent identifiers"
                         }
                     ],
-                    "_label": "$.type",
                     "content": "$.value"
                 },
                 "Previous Object Number": {
@@ -378,7 +413,6 @@
                             "_label": "$.type"
                         }
                     ],
-                    "_label": "$.type",
                     "content": "$.value"
                 }
             }
@@ -494,19 +528,22 @@
                         "#type": "linked_art_referred_to_by_description"
                     },
                     {
+                        "#type": "linked_art_referred_to_by_signed"
+                    },
+                    {
                         "#type": "linked_art_referred_to_by_materials"
                     },
                     {
                         "#type": "linked_art_referred_to_by_measurements"
                     },
                     {
-                        "#type": "linked_art_referred_to_by_provenance"
-                    },
-                    {
                         "#type": "linked_art_referred_to_by_rights"
                     },
                     {
                         "#type": "linked_art_referred_to_by_legal"
+                    },
+                    {
+                        "#type": "linked_art_referred_to_by_bibliography"
                     },
                     {
                         "#type": "linked_art_referred_to_by_research_note"
@@ -587,16 +624,16 @@
             }
         }
     },
-    "linked_art_referred_to_by_materials": {
+    "linked_art_referred_to_by_signed": {
         "#type": "for_each",
-        "values": "$.material[?(@.value)]",
+        "values": "$.inscription",
         "spec": {
             "type": "LinguisticObject",
             "classified_as": [
                 {
-                    "id": "http://vocab.getty.edu/aat/300435429",
+                    "id": "http://vocab.getty.edu/aat/300404794",
                     "type": "Type",
-                    "_label": "Material Statement",
+                    "_label": "inscribing",
                     "classified_as": [
                         {
                             "id": "http://vocab.getty.edu/aat/300418049",
@@ -606,8 +643,49 @@
                     ]
                 }
             ],
-            "content": "$.value"
+            "content": "$.summary"
         }
+    },
+    "linked_art_referred_to_by_materials": {
+        "#type": "fallback",
+        "strategies": [
+            {
+                "#type": "require",
+                "require": "$.material[?(@.type == 'detailed')]",
+                "value": {
+                    "#type": "scope",
+                    "scope": "$.material[?(@.type == 'detailed')]",
+                    "value": {
+                        "#type": "materials_statement"
+                    }
+                }
+            },
+            {
+                "#type": "scope",
+                "scope": "$.material",
+                "value": {
+                    "#type": "materials_statement"
+                }
+            }
+        ]
+    },
+    "materials_statement": {
+        "type": "LinguisticObject",
+        "classified_as": [
+            {
+                "id": "http://vocab.getty.edu/aat/300435429",
+                "type": "Type",
+                "_label": "Material Statement",
+                "classified_as": [
+                    {
+                        "id": "http://vocab.getty.edu/aat/300418049",
+                        "type": "Type",
+                        "_label": "Brief Text"
+                    }
+                ]
+            }
+        ],
+        "content": "$.value"
     },
     "linked_art_referred_to_by_measurements": {
         "#type": "for_each",
@@ -652,6 +730,22 @@
             ],
             "content": "$.value"
         }
+    },
+    "linked_art_provenance": {
+        "changed_ownership_through": [
+            {
+                "#type": "for_each",
+                "values": "$.provenance.agent[?(@.@link.role.value == 'Previous owner')]",
+                "spec": {
+                    "type": "Acquisition",
+                    "transferred_title_to": [
+                        {
+                            "#type": "link_to_record"
+                        }
+                    ]
+                }
+            }
+        ]
     },
     "linked_art_referred_to_by_legal": {
         "#type": "chain",
@@ -737,7 +831,9 @@
                     "#type": "id_generic_url"
                 },
                 {
-                    "_label": "$.summary.title",
+                    "#type": "linked-art-bibliography-citation"
+                },
+                {
                     "classified_as": [
                         {
                             "id": "http://vocab.getty.edu/aat/300111999",
@@ -887,7 +983,7 @@
         "spec": {
             "type": "PartAddition",
             "added": {
-                "id": "{%.linked_art_base_url}object/{$.@admin.uid}",
+                "id": "{%.linked_art_base_url}object/{$.@admin.uid}.json",
                 "type": "HumanMadeObject",
                 "_label": "$.summary.title"
             },
@@ -895,7 +991,7 @@
                 "#type": "for_each",
                 "values": "$.@link.date",
                 "spec": {
-                    "#type": "crm_year_only_timespan"
+                    "#type": "crm_from_year_only_timespan"
                 }
             }
         }
@@ -919,7 +1015,7 @@
                 "#type": "for_each",
                 "values": "$.@link.date",
                 "spec": {
-                    "#type": "crm_year_only_timespan"
+                    "#type": "crm_from_year_only_timespan"
                 }
             }
         }
@@ -970,13 +1066,13 @@
             "#type": "linked_art_object"
         }
     },
-    "linked_art_dimensions": {
+    "linked_art_overall_dimensions": {
         "dimension": {
             "#type": "flatten",
             "values": [
                 {
                     "#type": "for_each",
-                    "values": "$.measurements[?(@.type != 'Packing Case WxDxH')]",
+                    "values": "$.measurements[?(@.type == 'Overall')]",
                     "spec": {
                         "#type": "for_each",
                         "values": "$.dimensions",
@@ -1025,13 +1121,7 @@
     },
     "linked_art_made_of": {
         "made_of": {
-            "#type": "for_each",
-            "values": "$.material[?(@.value)]",
-            "spec": {
-                "id": "{%.linked_art_base_url}concept/{$.@admin.uid}",
-                "type": "Material",
-                "_label": "$.value"
-            }
+            "#type": "linked_art_part_made_of"
         }
     },
     "linked_art_member": {
@@ -1060,56 +1150,13 @@
             }
         }
     },
-    "linked_art_part_details": {
-        "part": {
-            "#type": "flatten",
-            "values": [
-                {
-                    "#type": "linked_art_part_made_of"
-                },
-                {
-                    "#type": "linked_art_part_dimensions"
-                },
-                {
-                    "#type": "linked_art_part_frame"
-                }
-            ]
-        }
-    },
     "linked_art_part_made_of": {
         "#type": "for_each",
         "values": "$.material[?(@.@link.role[0].value)]",
         "spec": {
-            "type": "HumanMadeObject",
-            "_label": "$.@link.role[0].value",
-            "classified_as": [
-                {
-                    "id": {
-                        "#type": "switch",
-                        "value": "{$.@link.role[0].value}",
-                        "cases": {
-                            "medium": "http://vocab.getty.edu/aat/300010358",
-                            "support": "http://vocab.getty.edu/aat/300014844"
-                        }
-                    },
-                    "type": "Type",
-                    "_label": "$.@link.role[0].value",
-                    "classified_as": [
-                        {
-                            "id": "http://vocab.getty.edu/aat/300241583",
-                            "type": "Type",
-                            "_label": "Part Type"
-                        }
-                    ]
-                }
-            ],
-            "made_of": [
-                {
-                    "type": "Material",
-                    "id": "{%.linked_art_base_url}concept/{$.@admin.uid}",
-                    "_label": "$.summary.title"
-                }
-            ]
+            "type": "Material",
+            "id": "{%.linked_art_base_url}concept/{$.@admin.uid}",
+            "_label": "$.summary.title"
         }
     },
     "linked_art_part_dimensions": {
@@ -1268,7 +1315,7 @@
         "#type": "for_each",
         "values": "$.@datatype[?(@.base == 'object' || @.base == 'package')]",
         "spec": {
-            "type": "Agent",
+            "type": "Group",
             "id": "{%.linked_art_base_url}group/0P5X-0001-0000-0000",
             "_label": "National Gallery, London"
         }
@@ -1285,12 +1332,12 @@
         "value": "{$}",
         "cases": {
             "object": {
-                "type": "Agent",
+                "type": "Group",
                 "id": "{%.linked_art_base_url}group/0P5X-0001-0000-0000",
                 "_label": "National Gallery, London"
             },
             "package": {
-                "type": "Agent",
+                "type": "Group",
                 "id": "{%.linked_art_base_url}group/0P5X-0001-0000-0000",
                 "_label": "National Gallery, London"
             }
@@ -1309,7 +1356,7 @@
         "#type": "merge",
         "values": [
             {
-                "type": "Agent"
+                "type": "Person"
             },
             {
                 "#type": "generic_url"
@@ -1333,8 +1380,18 @@
                         "require": "$.@link.supplement",
                         "value": {
                             "current_location": {
-                                "type": "Place",
-                                "_label": "$.@link.supplement"
+                                "#type": "merge",
+                                "values": [
+                                    {
+                                        "type": "Place"
+                                    },
+                                    {
+                                        "#type": "id_url"
+                                    },
+                                    {
+                                        "_label": "$.@link.supplement"
+                                    }
+                                ]
                             }
                         }
                     },
@@ -1346,7 +1403,7 @@
                                     "type": "Place"
                                 },
                                 {
-                                    "#type": "generic_url"
+                                    "#type": "id_url"
                                 },
                                 {
                                     "_label": "$.summary.title"
@@ -1462,6 +1519,20 @@
             "#type": "linked_art_subject"
         }
     },
+    "linked_art_class": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "id_url"
+            },
+            {
+                "type": "Type"
+            },
+            {
+                "_label": "$.summary.title"
+            }
+        ]
+    },
     "linked_art_subject": {
         "#type": "merge",
         "values": [
@@ -1491,24 +1562,35 @@
         ]
     },
     "linked_art_produced_by": {
-        "produced_by": {
-            "#type": "for_each",
-            "values": "$.creation",
-            "spec": {
-                "type": "Production",
-                "timespan": {
-                    "#type": "for_each",
-                    "values": "$.date",
-                    "spec": {
-                        "#type": "linked_art_process_date"
+        "#type": "scope",
+        "scope": "$.creation[0]",
+        "value": {
+            "produced_by": {
+                "#type": "merge",
+                "values": [
+                    {
+                        "type": "Production"
+                    },
+                    {
+                        "timespan": {
+                            "#type": "scope",
+                            "scope": "$.date[0]",
+                            "value": {
+                                "#type": "linked_art_process_date"
+                            }
+                        }
+                    },
+                    {
+                        "took_place_at": {
+                            "#type": "linked_art_production_place"
+                        }
+                    },
+                    {
+                        "carried_out_by": {
+                            "#type": "linked_art_production_agent"
+                        }
                     }
-                },
-                "took_place_at": {
-                    "#type": "linked_art_production_place"
-                },
-                "carried_out_by": {
-                    "#type": "linked_art_production_agent"
-                }
+                ]
             }
         }
     },
@@ -1573,7 +1655,7 @@
             {
                 "#type": "http_request",
                 "method": "GET",
-                "url": "{%.es_base_url}/_search?q=@admin.uid:{$.@admin.uid}",
+                "url": "{%.es_base_url}q=@admin.uid:{$.@admin.uid}",
                 "headers": {
                     "Content-Type": "application/json"
                 }
@@ -1709,6 +1791,12 @@
     },
     "linked_art_process_date": {
         "type": "TimeSpan",
+        "identified_by": [
+            {
+                "type": "Name",
+                "content": "$.value"
+            }
+        ],
         "begin_of_the_begin": {
             "#type": "earliest_date"
         },
@@ -1769,7 +1857,7 @@
             {
                 "#type": "http_request",
                 "method": "GET",
-                "url": "{%.es_base_url}/_search?q=creation.maker.@admin.uid:{$.@admin.uid}&size=100",
+                "url": "{%.es_base_url}q=creation.maker.@admin.uid:{$.@admin.uid}&size=100",
                 "headers": {
                     "Content-Type": "application/json"
                 }
@@ -1866,6 +1954,39 @@
                     }
                 }
             }
+        ]
+    },
+    "linked-art-bibliography-citation": {
+        "#type": "fallback",
+        "strategies": [
+            {
+                "#type": "require",
+                "require": {
+                    "#type": "linked-art-text-citation"
+                },
+                "value": {
+                    "_label": {
+                        "#type": "linked-art-text-citation"
+                    }
+                }
+            },
+            {
+                "_label": "$.summary.title"
+            }
+        ]
+    },
+    "linked-art-text-citation": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.local_base_url}{$.@admin.uid}",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            "$.citation.value"
         ]
     }
 }
