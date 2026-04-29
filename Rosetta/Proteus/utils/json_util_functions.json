@@ -60,10 +60,10 @@
         "default": "linked-art"
     },
     "uri_url": {
-        "uri": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}"
+        "uri": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}.json"
     },
     "id_url": {
-        "id": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}"
+        "id": "{%.linked_art_base_url}{$.@datatype.base}/{$.@admin.uid}.json"
     },
     "generic_url": {
         "#type": "string_join",
@@ -147,6 +147,30 @@
             }
         ]
     },
+    "crm_from_year_only_timespan": {
+        "#type": "merge",
+        "values": [
+            {
+                "type": "TimeSpan"
+            },
+            {
+                "begin_of_the_begin": {
+                    "#type": "from_year_only_date"
+                }
+            },
+            {
+                "end_of_the_end": {
+                    "#type": "from_year_only_date_as_end"
+                }
+            },
+            {
+                "identified_by": [{
+                    "type": "Name",
+                    "content": "$.value"
+                }]
+            }
+        ]
+    },
     "from_year_only_date": {
         "#type": "date_format",
         "value": {
@@ -163,6 +187,45 @@
                 "#type": "require",
                 "require": "$[?(@.to != '9999')]",
                 "value": "$.to"
+            },
+            {
+                "#type": "maths",
+                "expression": "{$}+1",
+                "output_type": "integer"
+            },
+            {
+                "#type": "as_string",
+                "value": "$"
+            },
+            {
+                "#type": "date_to_millis",
+                "value": {
+                    "#type": "date_parse",
+                    "value": "$",
+                    "format": "y"
+                }
+            },
+            {
+                "#type": "maths",
+                "expression": "{$} - 1"
+            },
+            {
+                "#type": "date_format",
+                "value": {
+                    "#type": "date_from_millis",
+                    "value": "$"
+                },
+                "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            }
+        ]
+    },
+    "from_year_only_date_as_end": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "require",
+                "require": "$[?(@.from != '9999')]",
+                "value": "$.from"
             },
             {
                 "#type": "maths",
