@@ -15,6 +15,9 @@
                 "#type": "linked_art_classified_as"
             },
             {
+                "#type": "linked_art_about"
+            },
+            {
                 "#type": "linked_art_identified_by"
             },
             {
@@ -39,9 +42,6 @@
                 "#type": "linked_art_member_of"
             },
             {
-                "#type": "linked_art_subject_of"
-            },
-            {
                 "#type": "linked_art_attributed_by"
             },
             {
@@ -54,7 +54,7 @@
                 "#type": "linked_art_part_removal"
             },
             {
-                "#type": "linked_art_dimension"
+                "#type": "linked_art_overall_dimensions"
             },
             {
                 "#type": "linked_art_made_of"
@@ -63,7 +63,7 @@
                 "#type": "linked_art_member"
             },
             {
-                "#type": "linked_art_part_details"
+                "#type": "linked_art_provenance"
             },
             {
                 "#type": "linked_art_current_owner"
@@ -76,9 +76,6 @@
             },
             {
                 "#type": "linked_art_carries"
-            },
-            {
-                "#type": "linked_art_shows"
             },
             {
                 "#type": "linked_art_produced_by"

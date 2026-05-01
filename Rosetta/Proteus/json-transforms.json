@@ -24,9 +24,12 @@
                 "cases": {
                     "concept": {
                         "#type": "process_jskos"
+                    },
+                    "location": {
+                        "#type": "process_jskos"
                     }
                 },
-                "default": "jskos format is only available for concept records"
+                "default": "jskos format is only available for concept and location records"
             },
             "lido": "The lido format is XML, so is not implemented as a JSON response",
             "linked-art": {
@@ -75,6 +78,9 @@
                             },
                             "image": {
                                 "#type": "process_linked_art_image"
+                            },
+                            "video": {
+                                "#type": "process_linked_art_video"
                             }
                         }
                     }
@@ -94,11 +100,21 @@
                     "publication": {
                         "#type": "process_linked_art_publication"
                     },
-                    "archive": "linked art for archives not yet available",
-                    "place": "linked art for place not yet available",
-                    "concept": "linked art for concept not yet available",
-                    "event": "linked art for event not yet available",
-                    "media": "linked art for media not yet available"
+                    "archive": {
+                        "#type": "process_linked_art_archives"
+                    },
+                    "place": {
+                        "#type": "process_linked_art_place"
+                    },
+                    "concept": {
+                        "#type": "process_linked_art_concept"
+                    },
+                    "event": {
+                        "#type": "process_linked_art_event"
+                    },
+                    "media": {
+                        "#type": "process_linked_art_media"
+                    }
                 },
                 "default": "invalid format for this datatype"
             }
