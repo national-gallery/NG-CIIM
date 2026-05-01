@@ -1,0 +1,41 @@
+{
+  "process_linked_art_publication_ng": {
+    "#type": "merge",
+    "values": [
+      {
+        "#type": "linked_art_context"
+      },
+      {
+        "#type": "linked_art_type"
+      },
+      {
+        "#type": "linked_art_label"
+      },
+      {
+        "#type": "linked_art_pub_identified_by_id"
+      }
+    ]
+  },
+  "linked_art_pub_context": {
+    "#type": "merge",
+    "values": [
+      {
+        "@context": "https://linked.art/ns/v1/linked-art.json"
+      },
+      {
+        "#type": "id_url"
+      }
+    ]
+  },
+  "linked_art_pub_identified_by_id": {
+    "type": "Identifier",
+    "classified_as": [
+      {
+        "id": "http://vocab.getty.edu/page/aat/300404012",
+        "type": "Type",
+        "_label": "Local Identifier"
+      }
+    ],
+    "content": "object/{$.@admin.id}"
+  }
+}

@@ -1,0 +1,79 @@
+{
+    "type_registry": {
+        "target_format": {
+            "#type": "switch",
+            "value": "$.@datatype.base",
+            "cases": {
+                "concept": "jskos",
+                "place": "jskos",
+                "object": "linked_art",
+                "agent": "linked_art",
+                "event": "linked_art",
+                "package": "linked_art",
+                "publication": "bibframe"
+            }
+        },
+        "process_ng_record": {
+            "#type": "switch",
+            "value": {
+                "#type": "target_format"
+            },
+            "cases": {
+                "jskos": {
+                    "#type": "process_jskos"
+                },
+                "linked_art": {
+                    "#type": "process_linked_art"
+                },
+                "bibframe": {
+                    "#type": "process_bibframe"
+                }
+            }
+        },
+        "process_bibframe": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "bibframe_context"
+                }
+            ]
+        },
+        "uri_url": {
+            "uri": "https://data.ng.ac.uk/{$.@admin.uid}"
+        },
+        "id_url": {
+            "id": "https://data.ng.ac.uk/{$.@admin.uid}"
+        },
+        "jskos_context_url": {
+            "@context": {
+                "@import": "https:\/\/gbv.github.io\/jskos\/context.json",
+                "_exactMatch": "http:\/\/www.w3.org\/2004\/02\/skos\/core#exactMatch"
+            }
+        },
+        "bibframe_context_url": {
+            "@context": "http://richardofsussex.me.uk/ng/bibframe-context.json"
+        },
+        "jskos_context": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "jskos_context_url"
+                },
+                {
+                    "#type": "uri_url"
+                }
+            ]
+        },
+        "bibframe_context": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "bibframe_context_url"
+                },
+                {
+                    "#type": "id_url"
+                }
+            ]
+        }
+    }
+}

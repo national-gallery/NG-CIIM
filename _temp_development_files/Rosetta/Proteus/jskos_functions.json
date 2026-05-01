@@ -1,0 +1,85 @@
+{
+    "type_registry": {
+        "process_jskos": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "jskos_context"
+                },
+                {
+                    "#type": "jskos_prefLabel"
+                },
+                {
+                    "#type": "jskos_definition"
+                },
+                {
+                    "#type": "jskos_broader"
+                },
+                {
+                    "#type": "jskos_hierarchy"
+                },
+                {
+                    "#type": "jskos_inScheme"
+                }
+            ]
+        },
+        "jskos_prefLabel": {
+            "prefLabel": {
+                "en": "$.term[?(@.primary)].value"
+            }
+        },
+        "jskos_definition": {
+            "definition": {
+                "en": "$.description[?(@.status=='Active')].value"
+            }
+        },
+        "jskos_broader": {
+            "broader": {
+                "#type": "for_each",
+                "values": "$.parent",
+                "spec": {
+                    "uri": "https://data.ng.ac.uk/{$.@admin.uid}",
+                    "prefLabel": {
+                        "en": "$.summary.title"
+                    }
+                }
+            }
+        },
+        "jskos_hierarchy": {
+            "ancestors": {
+                "#type": "chain",
+                "chain": [
+                    "$.@hierarchy[0]",
+                    {
+                        "#type": "sort",
+                        "values": "$",
+                        "by": "&.index",
+                        "direction": "desc"
+                    },
+                    {
+                        "#type": "for_each",
+                        "values": "[C]$[?(@.@admin.uid != '{$$.data.@admin.uid}')]",
+                        "spec": {
+                            "uri": "https://data.ng.ac.uk/{$.@admin.uid}",
+                            "prefLabel": {
+                                "en": "$.summary.title"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "jskos_inScheme": {
+            "inScheme": {
+                "#type": "for_each",
+                "values": "$.@hierarch",
+                "spec": {
+                    "uri": "https://data.ng.ac.uk/{$.@admin.uid}",
+                    "prefLabel": {
+                        "en": "$.summary.title"
+                    }
+                }
+            }
+        }
+    }
+}

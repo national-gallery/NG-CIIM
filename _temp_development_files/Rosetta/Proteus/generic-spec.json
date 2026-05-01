@@ -1,0 +1,9 @@
+{
+    "#type": "scope",
+    "scope": "$.data",
+    "value": [
+        {
+            "#type": "process_ng_record"
+        }
+    ]
+}
