@@ -11,22 +11,46 @@
 # ---------------------------------------------------------
 
 
+# Added from Richard Light's Proteus implementation:
 base_paths:
   proteus: ../config/proteus
   
 server:
   # You can change the port that Rosetta runs on here
   # 4923 is the default
-  # Staging uses 24920
-  # Live uses t.b.c.
-  port: 24920 
+  # Staging uses 4923
+  # RL was using 24920
+  port: 4923 
 
 logging:
+  pattern:
+    level: "%5p %X{CorrelationId}"
   level: 
-    com.k_int.rosetta: TRACE
+    root: warn
+    org.elasticsearch.client: error
+    com.k_int.rosetta: info # RL had TRACE
+    com.k_int.rosetta.iiif.presentation.v3: trace
+    # Added from Richard Light's Proteus implementation:
     com.k_int.proteus: TRACE
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+
+spring:
+  graphql:
+    path: /api/graphql
+
+springdoc:
+  api-docs:
+    path: /spec
+    
+
 rosetta:
+  # Added from Richard Light's Proteus implementation:
   view:
     # A "view" is essentially a REST endpoint that is highly configurable.
     views:
@@ -85,6 +109,7 @@ rosetta:
     manager: 
       enabled: false
       
+  # Added from Richard Light's Proteus implementation:
   profile:
     profiles:
       - name: search
@@ -118,16 +143,31 @@ rosetta:
                   - iiif-proteus
   plugins:
     iiif:
-      profile: iiif
-      # N.b. update value as required:
-      base_url: https://staging-data.ng.ac.uk
-      exclude_api_path: true
-      manifest_key:
-        key_type: IDENTIFIER
-        identifier_type: PID
-      identifier_query_string: identifier.__pid
-      IIIF_media_base_url: ${rosetta.plugins.iiif.base_url}/media/iiif/
-      external_media_base_url: ${rosetta.plugins.iiif.base_url}/media/static/   
+       baseUrl: http://localhost:4923/
+       mediaArtifact: mid # This can be changed to "zoom" or other artifacts
+       externalMediaBaseUrl: http://localhost/mediaLib/
+       IIIFMediaBaseUrl: http://localhost:8182/iiif/3/
+       manifestKey:
+         keyType: IDENTIFIER
+         identifierType: pid
+       externalMediaKey:
+         keyType: ARTIFACT_LOCATION
+       IIIFMediaKey:
+         keyType: IDENTIFIER
+         identifierType: pid
+    # RL values:
+    # iiif:
+      # profile: iiif
+      # base_url: https://staging-data.ng.ac.uk
+      # exclude_api_path: true
+      # manifest_key:
+        # key_type: IDENTIFIER
+        # identifier_type: PID
+      # identifier_query_string: identifier.__pid
+      # IIIF_media_base_url: ${rosetta.plugins.iiif.base_url}/media/iiif/
+      # external_media_base_url: ${rosetta.plugins.iiif.base_url}/media/static/   
+
+    # Added from Richard Light's Proteus implementation:
     proteus:
       api:
         http_client: ok_http
@@ -174,23 +214,47 @@ rosetta:
               # E.g. if the file path is "./linked_art/repository/types/my_custom_type.json", then its type will be "my_custom_type"
 
   provider:
-    timeout: 1m
-    global_timeout: 1m
+    globalTimeoutMillis: 60000
+    timeoutMillis: 60000
     providers:
       - name: elasticsearch
         type: elasticsearch
+        domainConverter: es-converter
         properties:
-          # N.b. update value as required:
-          host: staging-data.ng.ac.uk
-          protocol: https
-          path_prefix: /es/
-          port: 443
-          index: public
-          skip_ping: true
+          host: localhost
+          index: ciim # This can be changed to "public", "internal-sensitive" etc. to point at ES publication endpoints
+          port: 19200
+
+  # RL values for remote access to staging:
+  # provider:
+    # timeout: 1m
+    # global_timeout: 1m
+    # providers:
+      # - name: elasticsearch
+        # type: elasticsearch
+        # properties:
+          # host: staging-data.ng.ac.uk
+          # protocol: https
+          # path_prefix: /es/
+          # port: 443
+          # index: public
+          # skip_ping: true
   
+  domain:
+    converters:
+      - name: es-converter
+        type: elastic-default
+
   transform:
-    timeout: 1m
+    timeoutMillis: 60000 # RL had: timeout: 1m
     glyphs:
+      - name: jolt-iiif-metadata
+        type: jolt
+        properties:
+          specPath: D:/CIIM/config/rosetta/jolt-iiif-metadata-spec.json
+          mutable: true
+
+      # All the following added from Richard Light's Proteus implementation:
       # System
       - name: to-generic-search
         type: to-generic-search
