@@ -1,0 +1,24 @@
+{
+	"id": "$.@admin.id",
+	"type": "manifest",
+	"label": "$.summary.title",
+	"summary": "$.description[0].value",
+	"thumbnail": {
+		"#type": "require_catch",
+		"value": {
+			"#type": "scope",
+			"scope": "[R]$.multimedia[0]",
+			"value": {
+				"#type": "thumbnail"
+			}
+		}
+	},
+	"items": {
+		"#type": "for_each",
+		"values": "$.multimedia[*]",
+		"spec": {
+			"#type": "canvas"
+		}
+	}
+
+}

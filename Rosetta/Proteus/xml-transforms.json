@@ -12,9 +12,6 @@
                     "object": {
                         "#type": "process_dublin_core_object"
                     },
-                    "agent": {
-                        "#type": "process_dublin_core_agent"
-                    },
                     "media": {
                         "#type": "process_dublin_core_media"
                     },

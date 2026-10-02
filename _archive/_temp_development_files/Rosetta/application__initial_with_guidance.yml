@@ -1,0 +1,134 @@
+server:
+  port: 4923 # You can change the port that Rosetta runs on here (4923 is the default)
+
+base_paths:
+  proteus: ../config/proteus
+
+rosetta:
+  plugins:
+    proteus:
+      api:
+        http_client: ok_http
+        enable_file_read: true
+      
+      # Type repositories are the new way to manage custom types without the need to declare each individual include file.
+      # Instead you define one base path per repository and Proteus will automatically discover any types defined within the file tree.
+      # The form each file within a repository should take depends on its "shape", as described below.
+      # By default, repositories are mutable, so you don't need to restart Rosetta to update/add/remove types.
+      repository:
+        repositories:
+          - name: linked-art-libs
+            type: file
+            properties:
+              path: ${base_paths.proteus}/linked_art/repository/libs
+              # Repositories of shape "map" expect a top-level map of custom type definitions
+              # (i.e. the contents of "type_registry" in a regular include file)
+              shape: map
+
+          - name: linked-art-types
+            type: file
+            properties:
+              path: ${base_paths.proteus}/linked_art/repository/types
+              # Repositories of shape "root" treat each file as the full type definition for the specific type given by its base file name.
+              # E.g. if the file path is "./linked_art/repository/types/my_custom_type.json", then its type will be "my_custom_type"
+              # I have moved process_ng_record and process_bibframe out of the top-level file into individual files in order to demonstrate this kind of repository.
+              shape: root
+  
+  cache:
+    enabled: true
+    manager:
+      enabled: false
+  
+  view:
+    views:
+      # A "view" is essentially a REST endpoint that is highly configurable.
+      # This view allows you to get a linked art record by its PID via request uri of form "http://localhost:4923/linked-art/{PID}"
+      # E.g. http://localhost:4923/linked-art/0F6J-0001-0000-0000
+      - name: linked-art
+        paths:
+          - /linked-art/{PID} # You can customize the path and path parameters here. Path segments enclosed in {} define the path parameters' positions/names
+          - /linked-art/{entity-type}/{PID}
+        methods:
+          - GET
+        profile: linked-art # The choice of profile affects what data is available and what transforms are applied to each record
+        transforms:
+          request:
+            policy: list
+            names:
+              - linked-art-view-request # You can control the request model by altering the Proteus spec for this glyph
+          response:
+            policy: list
+            names:
+              - to-simple-data-response
+              - linked-art-view-response # You can control the response model by altering the Proteus spec for this glyph
+  
+  profile:
+    profiles:
+      - name: linked-art
+        providers:
+          policy: list
+          names:
+            - staging-es
+        transforms:
+          data:
+            - glyphs:
+                policy: list
+                names:
+                  - linked-art-transform
+  
+  provider:
+    timeout: 1m
+    global_timeout: 1m
+    providers:
+      - name: staging-es
+        type: proteus-simple
+        properties:
+          mutable: true
+          spec: ${base_paths.proteus}/es/provider.json
+          config:
+            properties:
+              url: https://staging-data.ng.ac.uk/es/public
+  
+  transform:
+    timeout: 1m
+    glyphs:
+      # Linked art
+      - name: linked-art-view-request
+        type: proteus
+        properties:
+          mutable: true
+          spec: ${base_paths.proteus}/linked_art/view_request.json # Edit this file to change how requests are handled
+
+      - name: linked-art-transform
+        type: proteus
+        properties:
+          mutable: true
+          spec: ${base_paths.proteus}/linked_art/transform.json # This is the main linked art transform and simple invokes your "process_ng_record" custom type
+          repositories:
+            policy: list
+            names:
+              - linked-art-libs
+              - linked-art-types
+          config:
+            http_client: ok_http
+            properties:
+              es_base_url: https://staging-data.ng.ac.uk/es/public # This configures the Elasticsearch base url used in the "linked_record_entity_type" custom type
+              linked_art_base_url: http://richardofsussex.me.uk/ # Base for URLs generated within this end-point 
+
+      - name: linked-art-view-response
+        type: proteus
+        properties:
+          mutable: true
+          spec: ${base_paths.proteus}/linked_art/view_response.json # Edit this file to control the final output of the response.
+            # I assumed you didn't want the "data" wrapper array and vaguely remember the final output
+            # should be a top-level array contained the sole linked art record for the given PID
+          # but feel free to change it as you see fit.
+      
+      # System
+      - name: to-simple-data-response
+        type: to-simple-data-response
+
+logging:
+  level:
+    com.k_int.rosetta: info
+    com.k_int.proteus.component.core.HttpRequestSpec: trace

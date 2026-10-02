@@ -1,0 +1,223 @@
+{
+    "process_dublin_core_media": {
+        "@xmlformat": "jml",
+        "oai_dc:dc": {
+            "@attributes": {
+                "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+                "xmlns:dcterms": "http://purl.org/dc/terms/",
+                "xmlns:oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://purl.org/dc/terms/ https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "dc_identifier"
+                    },
+                    {
+                        "#type": "dc_type_media"
+                    },
+                    {
+                        "#type": "dc_title_media"
+                    },
+                    {
+                        "#type": "dc_description_media"
+                    },
+                    {
+                        "#type": "dc_subject_media"
+                    },
+                    {
+                        "#type": "dc_relation_media"
+                    },
+                    {
+                        "#type": "dcterms_isFormatOf_media"
+                    },
+                    {
+                        "#type": "dcterms_extent_media"
+                    },
+                    {
+                        "#type": "dc_rights"
+                    }
+                ]
+            }
+        }
+    },
+    "dc_description_media": {
+        "#type": "switch",
+        "value": "$.@datatype.actual",
+        "cases": {
+            "image": {
+                "dc:description": "$.title[?(@.type == 'caption')].value"
+            },
+            "website media": {
+                "dc:description": "$.title[?(@.type == 'caption')].value"
+            }
+        }
+    },
+    "dcterms_extent_media": {
+        "#type": "flatten",
+        "values": [
+            {
+                "#type": "chain",
+                "chain": [
+                    "$.source.measurements.filesize",
+                    {
+                        "dcterms:extent": "filesize {$.value} {$.units}"
+                    }
+                ]
+            },
+            {
+                "#type": "for_each",
+                "values": "$.source.measurements.dimensions",
+                "spec": {
+                    "dcterms:extent": "{$.dimension} {$.value} {$.units}"
+                }
+            }
+        ]
+    },
+"dcterms_isFormatOf_media": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}size=1000&q=multimedia.@admin.uid:{$.@admin.uid} AND @datatype.base:%22publication%22",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.hits.hits",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "#type": "chain",
+                            "chain": [
+                                "$._source",
+                                {
+                                    "#type": "dcterms_isFormatOf"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+},
+    "dc_relation_media": {
+        "#type": "for_each",
+        "values": "$.object",
+        "spec": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "dc:relation": {
+                        "#type": "generic_xml_url"
+                    }
+                },
+                {
+                    "dc:relation": {
+                        "#type": "escaped_title"
+                    }
+                }
+            ]
+        }
+    },
+    "dc_subject_media": {
+        "#type": "chain",
+        "chain": [
+            {
+                "#type": "http_request",
+                "method": "GET",
+                "url": "{%.es_base_url}size=1000&q=multimedia.@admin.uid:{$.@admin.uid} AND NOT @datatype.base:%22publication%22",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            },
+            {
+                "#type": "for_each",
+                "values": "$.hits.hits",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "#type": "chain",
+                            "chain": [
+                                "$._source",
+                                {
+                                    "#type": "dc_subject"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "dc_title_media": {
+        "#type": "switch",
+        "value": "$.@datatype.actual",
+        "cases": {
+            "image": {
+                "#type": "dc_title"
+            },
+            "video": {
+                "dc:title": "$.title[?(@.type=='caption')].value"
+            }
+        }
+    },
+    "dc_type_media": {
+        "#type": "switch",
+        "value": "$.@datatype.actual",
+        "cases": {
+            "image": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "dc:type": "Image"
+                    },
+                    {
+                        "dc:type": "http://purl.org/dc/dcmitype/Image"
+                    },
+                    {
+                        "dc:type": "StillImage"
+                    },
+                    {
+                        "dc:type": "http://purl.org/dc/dcmitype/StillImage"
+                    }
+                ]
+            },
+            "video": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "dc:type": "Image"
+                    },
+                    {
+                        "dc:type": "http://purl.org/dc/dcmitype/Image"
+                    },
+                    {
+                        "dc:type": "MovingImage"
+                    },
+                    {
+                        "dc:type": "http://purl.org/dc/dcmitype/MovingImage"
+                    }
+                ]
+            },
+            "website media": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "dc:type": "Text"
+                    },
+                    {
+                        "dc:type": "http://purl.org/dc/dcmitype/Text"
+                    }
+                ]
+            }
+        }
+    }
+}

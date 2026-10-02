@@ -1,0 +1,13 @@
+{
+    "#type": "scope",
+    "scope": "$.current",
+    "value": {
+        "#type": "switch",
+        "value": "$$.http_request.query.profile",
+        "cases": {
+            "help": {
+                "#type": "display-help"
+            }
+        }
+    }
+}

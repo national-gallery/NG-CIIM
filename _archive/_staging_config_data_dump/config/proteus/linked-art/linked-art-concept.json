@@ -1,0 +1,71 @@
+{
+    "process_linked_art_concept": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_equivalent"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_referred_to_by"
+            },
+            {
+                "#type": "linked_art_broader"
+            }
+        ]
+    },
+    "linked_art_broader": {
+        "broader": {
+            "#type": "merge",
+            "values": {
+                "#type": "linked_art_part_of_concept"
+            }
+        }
+    },
+    "linked_art_part_of_concept": {
+        "#type": "for_each",
+        "values": "$.parent",
+        "spec": {
+            "#type": "chain",
+            "chain": [
+                {
+                    "#type": "http_request",
+                    "method": "GET",
+                    "url": "{%.local_base_url}{$.@admin.uid}",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    }
+                },
+                {
+                    "#type": "require",
+                    "require": "$.parent[0].summary[?((@.title != 'Keywords') && (@.title != 'Materials and techniques') && (@.title != 'Timespans'))]",
+                    "value": {
+                        "#type": "merge",
+                        "values": [
+                            {
+                                "#type": "id_url"
+                            },
+                            {
+                                "type": "Concept"
+                            },
+                            {
+                                "_label": "$.summary.title"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

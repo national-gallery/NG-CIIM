@@ -1,0 +1,60 @@
+{
+    "process_linked_art_agent": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_equivalent"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_referred_to_by"
+            },
+            {
+                "#type": "linked_art_birth"
+            },
+            {
+                "#type": "linked_art_death"
+            },
+            {
+                "#type": "linked_art_agent_classified_as"
+            }
+        ]
+    },
+    "linked_art_agent_classified_as": {
+        "classified_as": {
+            "#type": "require",
+            "require": "$.gender",
+            "value": {
+                "id": {
+                    "#type": "switch",
+                    "value": "$.gender.value",
+                    "cases": {
+                        "male": "http://vocab.getty.edu/aat/300189559",
+                        "female": "http://vocab.getty.edu/aat/300189557"
+                    },
+                    "default": "https://vocab.getty.edu/aat/300055146"
+                },
+                "type": "Type",
+                "_label": "$.gender.value",
+                "classified_as": [
+                    {
+                        "id": "http://vocab.getty.edu/aat/300055147",
+                        "type": "Type",
+                        "_label": "Gender"
+                    }
+                ]
+            }
+        }
+    }
+}

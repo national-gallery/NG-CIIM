@@ -1,0 +1,15 @@
+{
+  "query": {
+    "term": {
+      "@admin.uid": {
+        "#type": "require_throw",
+        "value": "$.path.parameters.ID",
+        "message": "ID must be specified in path parameter",
+        "args": {
+          "status": 400
+        }
+      }
+    }
+  },
+  "size": 1
+}

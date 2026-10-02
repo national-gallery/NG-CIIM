@@ -1,0 +1,117 @@
+{
+    "#type": "scope",
+    "scope": "$.current",
+    "value": {
+        "#type": "switch",
+        "value": "$$.http_request.query.profile",
+        "cases": {
+            "dc": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "object": {
+                        "#type": "process_dublin_core_object"
+                    },
+                    "media": {
+                        "#type": "process_dublin_core_media"
+                    },
+                    "publication": {
+                        "#type": "process_dublin_core_publication"
+                    },
+                    "archive": {
+                        "#type": "process_dublin_core_archive"
+                    },
+                    "exhibition": {
+                        "#type": "process_dublin_core_exhibition"
+                    },
+                    "package": {
+                        "#type": "process_dublin_core_package"
+                    }
+                },
+                "default": "Dublin Core format for {$.@datatype.base} not available"
+            },
+            "lido": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "object": {
+                        "#type": "process_lido"
+                    }
+                },
+                "default": "LIDO format for {$.@datatype.base} not available"
+            },
+            "skos": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "concept": {
+                        "#type": "process_skos_xml"
+                    },
+                    "location": {
+                        "#type": "process_skos_xml"
+                    },
+                    "place": {
+                        "#type": "process_skos_xml"
+                    }
+                },
+                "default": "SKOS XML format for {$.@datatype.base} not available"
+            },
+            "xml": {
+                "#type": "switch",
+                "value": "$.@datatype.base",
+                "cases": {
+                    "object": {
+                        "#type": "process_lido"
+                    },
+                    "media": {
+                        "#type": "process_dublin_core_media"
+                    },
+                    "publication": {
+                        "#type": "process_dublin_core_publication"
+                    },
+                    "archive": {
+                        "#type": "process_dublin_core_archive"
+                    },
+                    "exhibition": {
+                        "#type": "process_dublin_core_exhibition"
+                    },
+                    "package": {
+                        "#type": "process_dublin_core_package"
+                    },
+                    "concept": {
+                        "#type": "process_skos_xml"
+                    }
+                },
+                "default": "XML format for {$.@datatype.base} not available"
+            }
+        },
+        "default": {
+            "#type": "switch",
+            "value": "$.@datatype.base",
+            "cases": {
+                "object": {
+                    "#type": "process_lido"
+                },
+                "media": {
+                    "#type": "process_dublin_core_media"
+                },
+                "publication": {
+                    "#type": "process_dublin_core_publication"
+                },
+                "archive": {
+                    "#type": "process_dublin_core_archive"
+                },
+                "exhibition": {
+                    "#type": "process_dublin_core_exhibition"
+                },
+                "package": {
+                    "#type": "process_dublin_core_package"
+                },
+                "concept": {
+                    "#type": "process_skos_xml"
+                }
+            },
+            "default": "No default format for {$.@datatype.base}"
+        }
+    }
+}

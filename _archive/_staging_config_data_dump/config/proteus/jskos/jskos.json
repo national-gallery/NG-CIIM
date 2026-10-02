@@ -1,0 +1,145 @@
+{
+    "process_jskos": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "jskos_context"
+            },
+            {
+                "#type": "jskos_type"
+            },
+            {
+                "#type": "jskos_prefLabel"
+            },
+            {
+                "#type": "jskos_definition"
+            },
+            {
+                "#type": "jskos_scope_note"
+            },
+            {
+                "#type": "jskos_history_note"
+            },
+            {
+                "#type": "jskos_note"
+            },
+            {
+                "#type": "jskos_inScheme"
+            },
+            {
+                "#type": "jskos_broader"
+            },
+            {
+                "#type": "jskos_narrower"
+            },
+            {
+                "#type": "jskos_hierarchy"
+            }
+        ]
+    },
+    "jskos_type": {
+        "type": [
+            "http://www.w3.org/2004/02/skos/core#Concept"
+        ]
+    },
+    "jskos_prefLabel": {
+        "prefLabel": {
+            "en": "$.summary.title"
+        }
+    },
+    "jskos_definition": {
+        "definition": {
+            "en": "$.description[?(@.status=='Active')].value"
+        }
+    },
+    "jskos_scope_note": {
+        "scopeNote": {
+            "en": "$.note[?(@.type == 'scope note')].value"
+        }
+    },
+    "jskos_history_note": {
+        "historyNote": {
+            "en": "$.note[?(@.type == 'history note')].value"
+        }
+    },
+    "jskos_note": {
+        "note": {
+            "en": [
+                "Floor {$.floor}"
+            ]
+        }
+    },
+    "jskos_inScheme": {
+        "inScheme": {
+            "#type": "for_each",
+            "values": "$.@hierarch",
+            "spec": {
+                "uri": "{%.linked_art_base_url}{$.@admin.uid}",
+                "prefLabel": {
+                    "en": "$.summary.title"
+                }
+            }
+        }
+    },
+    "jskos_broader": {
+        "broader": {
+            "#type": "for_each",
+            "values": "$.parent",
+            "spec": {
+                "uri": "{%.linked_art_base_url}{$.@admin.uid}",
+                "prefLabel": {
+                    "en": "$.summary.title"
+                }
+            }
+        }
+    },
+    "jskos_hierarchy": {
+        "ancestors": {
+            "#type": "chain",
+            "chain": [
+                "$.@hierarchy[0]",
+                {
+                    "#type": "sort",
+                    "values": "$",
+                    "by": "&.index",
+                    "direction": "desc"
+                },
+                {
+                    "#type": "for_each",
+                    "values": "[C]$[?(@.@admin.id != '{$$.current.@admin.uid}')]",
+                    "spec": {
+                        "uri": "{%.linked_art_base_url}{$.@admin.uid}",
+                        "prefLabel": {
+                            "en": "$.summary.title"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "jskos_narrower": {
+        "narrower": {
+            "#type": "chain",
+            "chain": [
+                {
+                    "#type": "http_request",
+                    "method": "GET",
+                    "url": "{%.es_base_url}q=parent.@admin.uid:{$$.current.@admin.uid}",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    }
+                },
+                {
+                    "#type": "for_each",
+                    "values": "$.hits.hits",
+                    "spec": {
+                        "uri": "{%.linked_art_base_url}{$._source.@admin.uid}",
+                        "prefLabel": {
+                            "en": "$._source.summary.title"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

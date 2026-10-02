@@ -1,0 +1,350 @@
+{
+    "process_linked_art_archives": {
+        "#type": "merge",
+        "values": [
+            {
+                "#type": "linked_art_context"
+            },
+            {
+                "#type": "linked_art_archive_type"
+            },
+            {
+                "#type": "linked_art_label"
+            },
+            {
+                "#type": "linked_art_archives_classified_as"
+            },
+            {
+                "#type": "linked_art_identified_by"
+            },
+            {
+                "#type": "linked_art_part_of_archival_hierarchy"
+            },
+            {
+                "#type": "linked_art_archives_produced_by"
+            },
+            {
+                "#type": "linked_art_archives_extent"
+            },
+            {
+                "#type": "linked_art_archives_current_location"
+            },
+            {
+                "#type": "linked_art_referred_to_by_archives"
+            }
+        ]
+    },
+    "linked_art_archive_type": {
+        "type": {
+            "#type": "switch",
+            "value": "$.level.value",
+            "cases": {
+                "Item": "HumanMadeObject"
+            },
+            "default": "Set"
+        }
+    },
+    "linked_art_archives_classified_as": {
+        "classified_as": [
+            {
+                "#type": "linked_art_level_of_description"
+            }
+        ]
+    },
+    "linked_art_level_of_description": {
+        "#type": "merge",
+        "values": [
+            {
+                "type": "Type"
+            },
+            {
+                "classified_as": [
+                    {
+                        "type": "Type",
+                        "_label": "Level of Description"
+                    }
+                ]
+            },
+            {
+                "id": {
+                    "#type": "chain",
+                    "chain": [
+                        "$.level",
+                        {
+                            "#type": "specious_archives_url"
+                        }
+                    ]
+                }
+            },
+            {
+                "_label": {
+                    "#type": "string_to_case",
+                    "value": "$.level.value",
+                    "case": "upper_camel"
+                }
+            }
+        ]
+    },
+    "linked_art_part_of_archival_hierarchy": {
+        "member_of": {
+            "#type": "for_each",
+            "values": "$.parent",
+            "spec": {
+                "#type": "merge",
+                "values": [
+                    {
+                        "type": "Set"
+                    },
+                    {
+                        "id": "{%.linked_art_base_url}set/{$.@admin.uid}"
+                    },
+                    {
+                        "_label": "$.summary.title"
+                    }
+                ]
+            }
+        }
+    },
+    "linked_art_referred_to_by_archives": {
+        "referred_to_by": {
+            "#type": "merge",
+            "values": [
+                {
+                    "#type": "linked_art_referred_to_by_archives_description"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_archives_note"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_archives_access"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_archives_custodial_history"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_archives_arrangement"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_archives_related_material"
+                },
+                {
+                    "#type": "linked_art_referred_to_by_rights"
+                }
+            ]
+        }
+    },
+    "linked_art_referred_to_by_archives_description": {
+        "#type": "for_each",
+        "values": "$.description",
+        "spec": {
+            "#type": "merge",
+            "values": [
+                {
+                    "type": "LinguisticObject"
+                },
+                {
+                    "#type": "archive_description_classification"
+                },
+                {
+                    "content": "$.value"
+                }
+            ]
+        }
+    },
+    "linked_art_referred_to_by_archives_note": {
+        "#type": "for_each",
+        "values": "$.note",
+        "spec": {
+            "#type": "merge",
+            "values": [
+                {
+                    "type": "LinguisticObject"
+                },
+                {
+                    "#type": "archive_note_type"
+                },
+                {
+                    "content": "$.value"
+                }
+            ]
+        }
+    },
+    "archive_note_type": {
+        "#type": "switch",
+        "value": "$.type",
+        "cases": {
+            "publication note": {
+                "_label": "$.type",
+                "classified_as": [
+                    {
+                        "id": "https://vocab.getty.edu/aat/300435419",
+                        "type": "Type",
+                        "_label": "bibliography"
+                    }
+                ]
+            }
+        },
+        "default": {
+            "_label": "$.type",
+            "classified_as": [
+                {
+                    "id": "https://vocab.getty.edu/aat/300435415",
+                    "type": "Type",
+                    "_label": "remarks"
+                }
+            ]
+        }
+    },
+    "linked_art_referred_to_by_archives_access": {
+        "type": "LinguisticObject",
+        "classified_as": [
+            {
+                "id": "https://vocab.getty.edu/aat/300133046",
+                "type": "Type",
+                "_label": "access"
+            }
+        ],
+        "_label": "access conditions",
+        "content": "$.access.conditions"
+    },
+    "linked_art_referred_to_by_archives_custodial_history": {
+        "#type": "for_each",
+        "values": "$.history",
+        "spec": {
+            "#type": "merge",
+            "values": [
+                {
+                    "type": "LinguisticObject"
+                },
+                {
+                    "#type": "archive_history_type"
+                },
+                {
+                    "content": "$.value"
+                }
+            ]
+        }
+    },
+    "archive_history_type": {
+        "#type": "switch",
+        "value": "$.type",
+        "cases": {
+            "custodial history": {
+                "classified_as": [
+                    {
+                        "id": "http://vocab.getty.edu/aat/300438486",
+                        "type": "Type",
+                        "_label": "chain of custody events"
+                    }
+                ]
+            }
+        }
+    },
+    "linked_art_referred_to_by_archives_arrangement": {
+        "type": "LinguisticObject",
+        "classified_as": [
+            {
+                "id": "http://vocab.getty.edu/aat/300444118",
+                "type": "Type",
+                "_label": "arrangement description"
+            }
+        ],
+        "content": "$.arrangement.system"
+    },
+    "linked_art_referred_to_by_archives_related_material": {
+        "type": "LinguisticObject",
+        "classified_as": [
+            {
+                "id": "http://vocab.getty.edu/aat/300444119",
+                "type": "Type",
+                "_label": "related material"
+            }
+        ],
+        "content": "$.material.related"
+    },
+    "linked_art_archives_produced_by": {
+        "produced_by": {
+            "#type": "for_each",
+            "values": "$.creation",
+            "spec": {
+                "type": "Production",
+                "timespan": {
+                    "#type": "for_each",
+                    "values": "$.date",
+                    "spec": {
+                        "#type": "linked_art_process_date"
+                    }
+                },
+                "took_place_at": {
+                    "#type": "linked_art_production_place"
+                },
+                "carried_out_by": {
+                    "#type": "linked_art_archives_production_agent"
+                }
+            }
+        }
+    },
+    "linked_art_archives_production_agent": {
+        "#type": "for_each",
+        "values": "$.maker",
+        "spec": {
+            "#type": "flatten",
+            "values": {
+                "#type": "for_each",
+                "values": "$.name",
+                "spec": {
+                    "type": "Person",
+                    "_label": "$.value"
+                }
+            }
+        }
+    },
+    "linked_art_archives_extent": {
+        "dimension": [
+            {
+                "type": "Dimension",
+                "classified_as": [
+                    {
+                        "id": "https://vocab.getty.edu/aat/300435430",
+                        "type": "Type",
+                        "_label": "dimensions description"
+                    }
+                ],
+                "_label": "$.measurements.extent"
+            }
+        ]
+    },
+    "linked_art_archives_current_location": {
+        "current_location": {
+            "#type": "for_each",
+            "values": "$.repository[0].name",
+            "spec": {
+                "_label": "$.value"
+            }
+        }
+    },
+    "archive_description_classification": {
+        "#type": "switch",
+        "value": "$.type",
+        "cases": {
+            "finding aids": {
+                "classified_as": [
+                    {
+                        "id": "http://vocab.getty.edu/aat/300026539",
+                        "type": "Type",
+                        "_label": "finding aids"
+                    }
+                ]
+            }
+        },
+        "default": {
+            "classified_as": [
+                {
+                    "id": "http://vocab.getty.edu/aat/300435415",
+                    "type": "Type",
+                    "_label": "remarks"
+                }
+            ]
+        }
+    }
+}

@@ -1,25 +1,12 @@
-# ---------------------------------------------------------
-# 
 # Rosetta Configuration
 #
 # See https://gitlab.com/knowledge-integration/ciim/rosetta/-/wikis/Build,%20Development%20and%20Deployment/Configuration
 # for available configuration options.
-#
-# Note that further settings may be required to allow for other mappings etc.';
-# always check before over-writing a live file with this one 
-#
-# ---------------------------------------------------------
-
-
 base_paths:
   proteus: ../config/proteus
   
 server:
-  # You can change the port that Rosetta runs on here
-  # 4923 is the default
-  # Staging uses 24920
-  # Live uses t.b.c.
-  port: 24920 
+  port: 24920
 
 logging:
   level: 
@@ -28,27 +15,22 @@ logging:
 
 rosetta:
   view:
-    # A "view" is essentially a REST endpoint that is highly configurable.
     views:
       - name: json-formats
-      # You can customize the path and path parameters here. Path segments enclosed in {} define the path parameters' positions/names:
         paths:
           - /json/{ID}
           - /json/{datatype}/{ID}
-        # The choice of profile affects what data is available and what transforms are applied to each record:
         profile: search
         methods:
           - GET
         transforms:
           response:
             policy: list
-            # You can control the response model by altering the Proteus spec for these glyphs:
             names:
               - to-simple-data-response
               - view-response
               - json-transforms
-          # The same syntax applies to a 'request' block, where you can control the request model by altering the Proteus spec for the glyphs specified in 'names'.
-          
+              
       - name: xml-formats
         paths:
           - /xml/{ID}
@@ -97,7 +79,7 @@ rosetta:
             - glyphs:
                 policy: list
                 names:
-                  - view-request
+                  - view-request            
                   
       - name: iiif
         providers:
@@ -119,7 +101,6 @@ rosetta:
   plugins:
     iiif:
       profile: iiif
-      # N.b. update value as required:
       base_url: https://staging-data.ng.ac.uk
       exclude_api_path: true
       manifest_key:
@@ -133,17 +114,12 @@ rosetta:
         http_client: ok_http
         enable_file_read: true
       
-      # Type repositories are the new way to manage custom types without the need to declare each individual include file.
-      # Instead you define one base path per repository and Proteus will automatically discover any types defined within the file tree.
-      # The form each file within a repository should take depends on its "shape", as described below.
-      # By default, repositories are mutable, so you don't need to restart Rosetta to update/add/remove types.
       repository:
         repositories:
           - name: dublin-core
             type: file
             properties:
               path: ${base_paths.proteus}/dublin-core
-              # Repositories of shape "map" expect a top-level map of custom type definitions (i.e. the contents of "type_registry" in a regular include file)
               shape: map
           - name: linked-art
             type: file
@@ -170,8 +146,6 @@ rosetta:
             properties:
               path: ${base_paths.proteus}/utils
               shape: map
-              # Repositories of shape "root" treat each file as the full type definition for the specific type given by its base file name.
-              # E.g. if the file path is "./linked_art/repository/types/my_custom_type.json", then its type will be "my_custom_type"
 
   provider:
     timeout: 1m
@@ -180,7 +154,6 @@ rosetta:
       - name: elasticsearch
         type: elasticsearch
         properties:
-          # N.b. update value as required:
           host: staging-data.ng.ac.uk
           protocol: https
           path_prefix: /es/
@@ -191,7 +164,6 @@ rosetta:
   transform:
     timeout: 1m
     glyphs:
-      # System
       - name: to-generic-search
         type: to-generic-search
 
@@ -209,14 +181,12 @@ rosetta:
         type: proteus
         properties:
           mutable: true
-          # Edit this file to change how requests are handled:
           spec: ${base_paths.proteus}/view-request.json
           
       - name: view-response
         type: proteus
         properties:
           mutable: true
-          # Edit this file to control the final output of the response:
           spec: ${base_paths.proteus}/view-response.json
               
       - name: xml-transforms
@@ -224,7 +194,6 @@ rosetta:
         input: full
         properties:
           mutable: true
-          # This is the main XML transform and simple invokes your various dc, lido and skos custom types
           spec: ${base_paths.proteus}/xml-transforms.json
           repositories:
             policy: list
@@ -235,10 +204,7 @@ rosetta:
               - utils
           config:
             properties:
-              # Base for URLs generated within this end-point:
-              xml_base_url: https://data.ng.ac.uk/
-              # This configures the Elasticsearch base url used in the "linked_record_entity_type" custom type
-              # N.b. update value as required:
+              xml_base_url: https://data.ng.ac.uk/ # Base for URLs generated within this end-point    
               es_base_url: https://staging-data.ng.ac.uk/es/public/_search?
               local_base_url: http://localhost:24920/json/
               
@@ -256,10 +222,7 @@ rosetta:
               - utils
           config:
             properties:
-              # Base for URLs generated within this end-point:
-              linked_art_base_url: https://data.ng.ac.uk/ 
-              # This configures the Elasticsearch base url used in the "linked_record_entity_type" custom type
-              # N.b. update value as required:
+              linked_art_base_url: https://data.ng.ac.uk/ # Base for URLs generated within this end-point                  
               es_base_url: https://staging-data.ng.ac.uk/es/public/_search?
               local_base_url: http://localhost:24920/json/
 

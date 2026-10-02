@@ -1,0 +1,111 @@
+{
+	"type_registry": {
+		"artifact": {
+			"#type": "require",
+			"require": "[C]$.@processed.{&.artifact}",
+			"value": {
+				"name": "&.artifact",
+				"location": "[C]$.@processed.{&.artifact}.location",
+				"format": {
+					"#type": "string_join",
+					"values": [
+						"image/",
+						"[C]$.@processed.{&.artifact}.format"
+					]
+				},
+				"width": "[C]$.@processed.{&.artifact}.measurements.dimensions[?(@.dimension == 'width')].value",
+				"height": "[C]$.@processed.{&.artifact}.measurements.dimensions[?(@.dimension == 'height')].value"
+			}
+		},
+		"zoom": {
+			"#description": "Gets the zoom artifact from a media record/reference link",
+			"#type": "require",
+			"require": "$.@processed.zoom",
+			"value": {
+				"#type": "merge",
+				"values": [
+					{
+						"name": "zoom",
+						"location": "$.@admin.uid",
+						"format": "image/jpeg",
+						"info_path": {
+							"#type": "literal",
+							"value": "{location}/info.json"
+						}
+					}
+				]
+			}
+		},
+		"thumbnail": {
+			"#type": "require_catch",
+			"value": [
+				{
+					"#type": "require_throw",
+					"value": {
+						"#type": "scope",
+						"scope": {
+							"#type": "artifact",
+							"artifact": "preview"
+						},
+						"value": {
+							"type": "image",
+							"id": "{[R]%.base_url.media}{[R]$.location}",
+							"format": "$.format",
+							"width": "$.width",
+							"height": "$.height"
+						}
+					}
+				}
+			]
+		},
+		"canvas": {
+			"#type": "require_catch",
+			"value": {
+				"type": "canvas",
+				"artifact": {
+					"#type": "require_throw",
+					"value": {
+						"#type": "fallback",
+						"strategies": [
+							{
+								"#type": "zoom"
+							},
+							{
+								"#type": "artifact",
+								"artifact": "mid"
+							}
+						]
+					}
+				},
+				"metadata": {
+					"#type": "merge",
+					"values": [
+						"&.custom_metadata"
+					]
+				},
+				"thumbnail": {
+					"#type": "thumbnail"
+				}
+			}
+		},
+		"metadata": {
+			"#type": "require_catch",
+			"value": {
+				"label": {
+					"#type": "require_throw",
+					"value": {
+						"#type": "invoke",
+						"spec": "&.label"
+					}
+				},
+				"value": {
+					"#type": "require_throw",
+					"value": {
+						"#type": "invoke",
+						"spec": "&.value"
+					}
+				}
+			}
+		}
+	}
+}

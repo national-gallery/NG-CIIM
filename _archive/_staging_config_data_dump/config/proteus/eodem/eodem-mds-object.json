@@ -1,0 +1,631 @@
+{
+    "process_eodem": {
+        "@xmlformat": "jml",
+        "lido:lidoWrap": {
+            "@attributes": {
+                "xmlns:lido": "http://www.lido-schema.org",
+                "xmlns:gml": "http://www.opengis.net/gml",
+                "xmlns:owl": "http://www.w3.org/2002/07/owl#",
+                "xmlns:rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "xmlns:skos": "http://www.w3.org/2004/02/skos/core#",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation": "http://www.lido-schema.org http://www.lido-schema.org/schema/latest/lido.xsd"
+            },
+            "@children": {
+                "#type": "for_each",
+                "spec": {
+                    "lido:lido": {
+                        "@attributes": {},
+                        "#type": "process-eodem-object"
+                    }
+                }
+            }
+        }
+    },
+    "process-eodem-object": {
+        "@children": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "eodem-object-id"
+                },
+                {
+                    "#type": "eodem-object-published-id"
+                },
+                {
+                    "#type": "eodem-category"
+                },
+                {
+                    "#type": "eodem-application-profile"
+                },
+                {
+                    "#type": "eodem-descriptive-metadata"
+                },
+                {
+                    "#type": "eodem-administrative-metadata"
+                }
+            ]
+        }
+    },
+    "eodem-object-id": {
+        "lido:lidoRecID": {
+            "@attributes": {
+                "lido:type": "http://terminology.lido-schema.org/lido00100"
+            },
+            "@children": "{$.@admin.uid}"
+        }
+    },
+    "eodem-object-published-id": {
+        "lido:objectPublishedID": {
+            "@attributes": {
+                "lido:type": "http://terminology.lido-schema.org/lido00099"
+            },
+            "@children": "{%.xml_base_url}{$.@admin.uid}"
+        }
+    },
+    "eodem-category": {
+        "#type": "fallback",
+        "strategies": [
+            {
+                "#type": "require",
+                "require": "$.@document.units[?(@.type == 'spectrum/object_production_*')]",
+                "value": {
+                    "lido:category": {
+                        "skos:Concept": {
+                            "@attributes": {
+                                "rdf:about": "http://terminology.lido-schema.org/lido00096"
+                            },
+                            "@children": {
+                                "skos:prefLabel": "Human-made Object"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "#type": "require",
+                "require": "$.@document.units[?(@.type == 'spectrum/field_collection_*')]",
+                "value": {
+                    "lido:category": {
+                        "skos:Concept": {
+                            "@attributes": {
+                                "rdf:about": "http://terminology.lido-schema.org/lido00817"
+                            },
+                            "@children": {
+                                "skos:prefLabel": "Natural Object"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "eodem-application-profile": {
+        "lido:applicationProfile": {
+            "@attributes": {
+                "lido:type": "http://terminology.lido-schema.org/lido00100"
+            },
+            "@children": "https://lido-schema.org/profiles/v1.1/lido-v1.1-profile-eodem-v1.0.xsd"
+        }
+    },
+    "eodem-descriptive-metadata": {
+        "lido:descriptiveMetadata": {
+            "@attributes": {
+                "xml:lang": "en-GB"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "eodem-object-classification-wrap"
+                    },
+                    {
+                        "#type": "eodem-object-identification-wrap"
+                    },
+                    {
+                        "#type": "eodem-event-wrap"
+                    },
+                    {
+                        "#type": "eodem-object-relation-wrap"
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-object-classification-wrap": {
+        "lido:objectClassificationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "eodem-work-type"
+                },
+                {
+                    "#type": "eodem-object-classification"
+                }
+            ]
+        }
+    },
+    "eodem-work-type": {
+        "lido:objectWorkTypeWrap": {
+            "#type": "for_each",
+            "values": "$.@document.units[?(@.type == 'spectrum/object_name' && @.units[][?(@.value == 'simple name')])]",
+            "spec": {
+                "lido:objectWorkType": {
+                    "@children": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:term": "$.value"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "eodem-object-classification": {
+        "lido:classificationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "eodem-classification"
+                }
+            ]
+        }
+    },
+    "eodem-classification": {
+        "#type": "for_each",
+        "values": "$.@document.units[?(@.type == 'spectrum/object_name' && @.units[][?(@.value == 'classified name')])]",
+        "spec": {
+            "lido:classification": {
+                "skos:Concept": {
+                    "skos:prefLabel": "$.value"
+                }
+            }
+        }
+    },
+    "eodem-object-identification-wrap": {
+        "lido:objectIdentificationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "eodem-title-wrap"
+                },
+                {
+                    "#type": "eodem-inscriptions-wrap"
+                },
+                {
+                    "#type": "eodem-repository-wrap"
+                },
+                {
+                    "#type": "eodem-display-state-edition-wrap"
+                },
+                {
+                    "#type": "eodem-description-wrap"
+                },
+                {
+                    "#type": "eodem-measurements-wrap"
+                },
+                {
+                    "#type": "eodem-materials-tech-wrap"
+                }
+            ]
+        }
+    },
+    "eodem-title-wrap": {
+        "lido:titleWrap": {
+            "lido:titleSet": {
+                "@attributes": {
+                    "lido:type": "title"
+                },
+                "@children": {
+                    "#type": "for_each",
+                    "values": "$.@document.units[?(@.type == 'spectrum/'title)]",
+                    "spec": {
+                        "lido:appellationValue": {
+                            "@attributes": {
+                                "xml:lang": "en-GB"
+                            },
+                            "@children": "$.value"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "eodem-inscriptions-wrap": {
+        "lido:inscriptionsWrap": {
+            "#type": "for_each",
+            "values": "$.@document.units[?(@.type == 'spectrum/inscription_content')]",
+            "spec": {
+                "lido:inscriptions": {
+                    "lido:inscriptionTranscription": "$.value"
+                }
+            }
+        }
+    },
+    "eodem-repository-wrap": {
+        "lido:repositoryWrap": {
+            "lido:repositorySet": {
+                "@attributes": {
+                    "lido:type": "http://terminology.lido-schema.org/lido00475"
+                },
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "eodem-display-repository"
+                    },
+                    {
+                        "#type": "eodem-repository-name"
+                    },
+                    {
+                        "#type": "eodem-workid"
+                    },
+                    {
+                        "#type": "eodem-repository-location"
+                    },
+                    {
+                        "#type": "eodem-source-repository-set"
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-display-repository": {},
+    "eodem-repository-name": {
+        "lido:repositoryName": {
+            "lido:legalBodyName": {
+                "@children": "$.@admin.data_source.organisation"
+            }
+        }
+    },
+    "eodem-workid": {
+        "#type": "for_each",
+        "values": "$.document.units[?(@.type == 'spectrum/object_number')]",
+        "spec": {
+            "lido:workID": {
+                "@attributes": {
+                    "lido:type": "$.label"
+                },
+                "@children": "$.value"
+            }
+        }
+    },
+    "eodem-repository-location": {},
+    "eodem-source-repository-set": {},
+    "eodem-display-state-edition-wrap": {},
+    "eodem-description-wrap": {
+        "lido:objectDescriptionWrap": {
+            "#type": "for_each",
+            "values": "$.document.units[?(@.type == 'spectrum/brief_description')]",
+            "spec": {
+                "lido:objectDescriptionSet": {
+                    "@attributes": {
+                        "lido:type": "http://purl.org/spectrum/units/brief-description"
+                    },
+                    "@children": {
+                        "lido:descriptiveNoteValue": "$.value"
+                    }
+                }
+            }
+        }
+    },
+    "eodem-measurements-wrap": {
+        "lido:objectMeasurementsWrap": {
+            "#type": "for_each",
+            "values": "$.measurements",
+            "spec": {
+                "lido:objectMeasurementsSet": {
+                    "lido:objectMeasurements": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "#type": "for_each",
+                                "values": "$.@document.units[?(@.type == 'spectrum/dimension')]",
+                                "spec": {
+                                    "lido:measurementsSet": {
+                                        "#type": "flatten",
+                                        "values": [
+                                            {
+                                                "lido:measurementType": "$.value"
+                                            },
+                                            {
+                                                "lido:measurementUnit": "$.units[?(@.type == 'spectrum/dimension_measurement_unit')].value"
+                                            },
+                                            {
+                                                "lido:measurementValue": "$.units[?(@.type == 'spectrum/dimension_value')].value"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "eodem-materials-tech-wrap": {
+        "lido:objectMaterialsTechWrap": {
+            "lido:objectMaterialsTechSet": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "for_each",
+                        "values": "$.@document.units[?(@.type == 'spectrum/technique || @.type == 'spectrum/material')]",
+                        "spec": {
+                            "lido:displayMaterialsTech": "$.value"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-event-wrap": {
+        "lido:eventWrap": {
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "eodem-production-event"
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-production-event": {
+        "lido:eventSet": {
+            "lido:event": {
+                "@children": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "#type": "eodem-production-event-type"
+                        },
+                        {
+                            "#type": "eodem-production-person"
+                        },
+                        {
+                            "#type": "eodem-production-place"
+                        },
+                        {
+                            "#type": "eodem-production-date"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "eodem-production-event-type": {
+        "lido:eventType": {
+            "@children": {
+                "lido:conceptID": {
+                    "@attributes": {
+                        "lido:type": "http://terminology.lido-schema.org/lido00099"
+                    },
+                    "@children": "http://terminology.lido-schema.org/lido00028"
+                },
+                "lido:term": "Beginning of existence"
+            }
+        }
+    },
+    "eodem-production-person": {
+        "#type": "for_each",
+        "values": "$.@document.units[?(@.type == 'spectrum/object_production_person')]",
+        "spec": {
+            "lido:eventActor": {
+                "lido:actorInRole": {
+                    "@children": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:actor": {
+                                    "lido:nameActorSet": {
+                                        "lido:appellationValue": "$.value"
+                                    }
+                                }
+                            },
+                            {
+                                "#type": "for_each",
+                                "values": "$.units[?(@.type == 'spectrum/persons_occupation')]",
+                                "spec": {
+                                    "lido:roleActor": {
+                                        "lido:term": "$.value"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "eodem-production-place": {
+        "#type": "for_each",
+        "values": "$.@document.units[?(@.type == 'spectrum/object_production_place')]}",
+        "spec": {
+            "lido:eventPlace": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "for_each",
+                        "values": "$.units[?(@.type == 'spectrum/place_association')]",
+                        "spec": {
+                            "@attributes": {
+                                "lido:type": "$.value"
+                            }
+                        }
+                    },
+                    {
+                        "lido:displayPlace": "$.value"
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-production-date": {
+        "#type": "for_each",
+        "values": "$.@document.units[?(@.type == 'spectrum/object_production_date')]}",
+        "spec": {
+            "lido:eventDate": {
+                "lido:displayDate": "$.value"
+            }
+        }
+    },
+    "eodem-object-relation-wrap": {
+        "lido:objectRelationWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "eodem-subject"
+                },
+                {
+                    "#type": "eodem-related-works"
+                }
+            ]
+        }
+    },
+    "eodem-subject": {
+        "lido:subjectWrap": {
+            "lido:subjectSet": {
+                "#type": "for_each",
+                "values": "$.@document.units[?(@.type == 'spectrum/associated_concept')]",
+                "spec": {
+                    "#type": "flatten",
+                    "values": [
+                        {
+                            "lido:subject": {
+                                "lido:subjectConcept": {
+                                    "lido:term": "$.value"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "eodem-related-works": {
+        "lido:relatedWorksWrap": {
+            "lido:relatedWorkSet": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "eodem-related-object-number"
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-related-object-number": {
+        "#type": "for_each",
+        "values": "$.@document.units[?(@.type == 'spectrum/related_object_number')]",
+        "spec": {
+            "lido:displayRelatedWork": "$.value"
+        }
+    },
+    "eodem-administrative-metadata": {
+        "lido:administrativeMetadata": {
+            "@attributes": {
+                "xml:lang": "en-GB"
+            },
+            "@children": {
+                "#type": "flatten",
+                "values": [
+                    {
+                        "#type": "eodem-rights-work-wrap"
+                    },
+                    {
+                        "#type": "eodem-record-wrap"
+                    },
+                    {
+                        "#type": "eodem-resource-wrap"
+                    }
+                ]
+            }
+        }
+    },
+    "eodem-rights-work-wrap": {
+        "lido:rightsWorkWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "for_each",
+                    "values": "@document.units[?(@.type == 'spectrum/right_holder')]",
+                    "spec": {
+                        "lido:rightsWorkSet": {
+                            "lido:rightsHolder": {
+                                "lido:legalBodyName": {
+                                    "lido:appellationValue": "$.value"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "#type": "for_each",
+                    "values": "@document.units[?(@.type == 'spectrum/right_note')]",
+                    "spec": {
+                        "lido:rightsWorkSet": {
+                            "lido:creditLine": "$.value"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "eodem-record-wrap": {
+        "lido:recordWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "lido:recordID": {
+                        "@attributes": {
+                            "lido:type": "http://terminology.lido-schema.org/lido00100"
+                        },
+                        "@children": "{%.xml_base_url}{$.@admin.uid}?profile=lido"
+                    }
+                },
+                {
+                    "lido:recordType": {
+                        "#type": "flatten",
+                        "values": [
+                            {
+                                "lido:conceptID": {
+                                    "@attributes": {
+                                        "lido:type": "http://terminology.lido-schema.org/lido00099"
+                                    },
+                                    "@children": "http://terminology.lido-schema.org/lido00141"
+                                }
+                            },
+                            {
+                                "lido:term": "Item-level record"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "lido:recordSource": {
+                        "lido:legalBodyID": "$.@admin.data_source.organisation"
+                    }
+                }
+            ]
+        }
+    },
+    "eodem-resource-wrap": {
+        "lido:resourceWrap": {
+            "#type": "flatten",
+            "values": [
+                {
+                    "#type": "for_each",
+                    "values": "$.@document.units[?(@.type == 'spectrum/reproduction_number')]",
+                    "spec": {
+                        "lido:resourceSet": {
+                            "lido:resourceID": "$.value"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
